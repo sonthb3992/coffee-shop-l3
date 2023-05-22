@@ -1,29 +1,14 @@
-import { OrderBase } from "./base_order";
-import { MenuOption } from "./menu_option";
+import { OrderItem } from "./selected_item";
 
-class Order extends OrderBase {
-    private _menuOption: MenuOption;
+class Order {
 
-    constructor(menuOption: MenuOption) {
-        super();
-        this._menuOption = menuOption;
-    }
+    items: OrderItem[] = [];
+    orderCount: number = this.items.length;
+    address: string = '';
+    phoneNumber: string = '';
+    status: string = '';
+    receiver: string = '';
 
-    getDescription(): string {
-        return this._menuOption.nameEn;
-    }
-
-    getPrice(): number {
-        return this._menuOption.basePrice;
-    }
-
-    getType(): string {
-        return this._menuOption.type;
-    }
-
-    getBaseItem(): MenuOption {
-        return this._menuOption;
-    }
 }
 
 export { Order }

@@ -2,7 +2,9 @@
 // import { OptionBase } from 'path/to/option_base';
 // import { kDebugMode } from 'path/to/flutter';
 
+import { CollectionReference, DocumentSnapshot, QuerySnapshot, collection, doc, getDocs, getFirestore, query, setDoc, where } from "firebase/firestore";
 import { OptionBase } from "./base_option";
+import { app } from "./firebase";
 
 class ToppingOption extends OptionBase {
     readonly nameEn: string;
@@ -40,20 +42,20 @@ class ToppingOption extends OptionBase {
         return this.basePrice;
     }
 
-    // static fromFirestore(snapshot: DocumentSnapshot<any>): ToppingOption {
-    //     const data = snapshot.data();
+    static fromFirestore(snapshot: DocumentSnapshot<any>): ToppingOption {
+        const data = snapshot.data();
 
-    //     if (!data) {
-    //         return ToppingOption.empty();
-    //     }
-    //     return new ToppingOption({
-    //         nameEn: data.nameEn,
-    //         nameVi: data.nameVi,
-    //         basePrice: parseFloat(data.basePrice.toString()),
-    //         maxCount: parseInt(data.maxCount.toString(), 10),
-    //         freeCount: parseInt(data.freeCount.toString(), 10),
-    //     });
-    // }
+        if (!data) {
+            return ToppingOption.empty();
+        }
+        return new ToppingOption({
+            nameEn: data.nameEn,
+            nameVi: data.nameVi,
+            basePrice: parseFloat(data.basePrice.toString()),
+            maxCount: parseInt(data.maxCount.toString(), 10),
+            freeCount: parseInt(data.freeCount.toString(), 10),
+        });
+    }
 
     static empty(): ToppingOption {
         return new ToppingOption({
@@ -75,37 +77,50 @@ class ToppingOption extends OptionBase {
         };
     }
 
-    // static async pushToFirebase(option: ToppingOption): Promise<string> {
-    //     try {
-    //         const toppingsCollection: CollectionReference<any> = FirebaseFirestore.instance.collection('toppings');
-    //         const existingOptionsSnapshot: QuerySnapshot<any> = await toppingsCollection
-    //             .where('nameEn', '==', option.nameEn)
-    //             .get();
+    static async pushToFirebase(option: ToppingOption): Promise<string> {
 
-    //         if (existingOptionsSnapshot.empty) {
-    //             await toppingsCollection.add(ToppingOption.toFirestore(option));
-    //             return 'success';
-    //         } else {
-    //             return 'Topping Option with the same name already exists';
-    //         }
-    //     } catch (e) {
-    //         return 'Error adding Topping Option to Firestore: ' + e;
-    //     }
-    // }
+        try {
+            const db = getFirestore(app);
+            const toppingOptionsRef = collection(db, "toppings");
 
-    // static async getAll(): Promise<ToppingOption[]> {
-    //     try {
-    //         const toppingsCollection: CollectionReference<any> = FirebaseFirestore.instance.collection('toppings');
-    //         const snapshot: QuerySnapshot<any> = await toppingsCollection.orderBy('maxCount').get();
-    //         const toppingOptions: ToppingOption[] = snapshot.docs.map((doc) => ToppingOption.fromFirestore(doc));
-    //         return toppingOptions;
-    //     } catch (e) {
-    //         if (kDebugMode) {
-    //             console.log('Error getting Topping Options from Firestore: ' + e);
-    //         }
-    //         return [];
-    //     }
-    // }
+            // Create a query against the collection.
+            const q = query(toppingOptionsRef, where("nameEn", "==", option?.nameEn));
+            const querySnapshot = await getDocs(q);
+            if (querySnapshot.empty) {
+                return "Another topping_options with the same name already existed.";
+            }
+
+            if (option == null)
+                return "Null topping_options.";
+
+            await setDoc(doc(db, "toppings"), ToppingOption.toFirestore(option));
+            return "success";
+
+        } catch (e) {
+            return 'Error adding topping_options to Firestore: ' + e;
+        }
+    }
+
+    static async getAll(): Promise<ToppingOption[]> {
+        try {
+            const db = getFirestore(app);
+            const toppingOptionRef = collection(db, "toppings");
+
+            // Create a query against the collection.
+            const querySnapshot = await getDocs(toppingOptionRef);
+
+            if (querySnapshot.empty) {
+                return [];
+            }
+
+            var result = querySnapshot.docs.map(m => ToppingOption.fromFirestore(m));
+            return result;
+
+        } catch (e) {
+            console.log(e);
+            return [];
+        }
+    }
 
     getCountPrice(count: number): number {
         return Math.max(count - this.freeCount, 0) * this.basePrice;

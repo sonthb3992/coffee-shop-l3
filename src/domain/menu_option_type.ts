@@ -1,4 +1,6 @@
 // import { DocumentSnapshot, QuerySnapshot, CollectionReference } from 'firebase/firestore';
+import { CollectionReference, DocumentSnapshot, SnapshotOptions, getFirestore, addDoc, getDocs, collection, query, where, setDoc, doc } from 'firebase/firestore';
+import { app } from './firebase';
 
 class MenuItemTypeOption {
     private readonly _nameEn: string;
@@ -15,39 +17,61 @@ class MenuItemTypeOption {
         this._nameVi = nameVi;
     }
 
-    // static fromFirestore(snapshot: DocumentSnapshot<any>): MenuItemTypeOption {
-    //     const data = snapshot.data();
-    //     return new MenuItemTypeOption({
-    //         nameEn: data?.nameEn,
-    //         nameVi: data?.nameVi,
-    //     });
-    // }
+    static fromFirestore(snapshot: DocumentSnapshot<any>): MenuItemTypeOption {
+        const data = snapshot.data();
+        return new MenuItemTypeOption({
+            nameEn: data?.nameEn,
+            nameVi: data?.nameVi,
+        });
+    }
 
-    // static toFirestore(type: MenuItemTypeOption): any {
-    //     return { nameEn: type.nameEn, nameVi: type.nameVi };
-    // }
+    static toFirestore(type: MenuItemTypeOption): any {
+        return { nameEn: type.nameEn, nameVi: type.nameVi };
+    }
 
-    // static async addMenuTypeOption(option: MenuItemTypeOption): Promise<void> {
-    //     try {
-    //         const menuOptionsCollection: CollectionReference<any> = FirebaseFirestore.instance.collection('menu_item_types');
-    //         await menuOptionsCollection.add(MenuItemTypeOption.toFirestore(option));
-    //     } catch (e) {
-    //         console.error('Error adding MenuTypeOption to Firestore:', e);
-    //     }
-    // }
+    static async pushToFirebase(option: MenuItemTypeOption | null): Promise<string> {
+        try {
+            const db = getFirestore(app);
+            const dbRef = collection(db, "menu_item_types");
 
-    // static async getAllMenuTypeOptions(): Promise<MenuItemTypeOption[]> {
-    //     try {
-    //         const menuOptionsCollection: CollectionReference<any> = FirebaseFirestore.instance.collection('menu_item_types');
-    //         const snapshot: QuerySnapshot<any> = await menuOptionsCollection.get();
-    //         const menuTypeOptions: MenuItemTypeOption[] = snapshot.docs
-    //             .map((doc) => MenuItemTypeOption.fromFirestore(doc));
-    //         return menuTypeOptions;
-    //     } catch (e) {
-    //         console.error('Error getting MenuTypeOptions from Firestore:', e);
-    //         return [];
-    //     }
-    // }
+            // Create a query against the collection.
+            const q = query(dbRef, where("nameEn", "==", option?.nameEn));
+            const querySnapshot = await getDocs(q);
+            if (querySnapshot.empty) {
+                return "Another menu_item_types with the same name already existed.";
+            }
+
+            if (option == null)
+                return "Null menu_item_types option.";
+
+            await setDoc(doc(db, "menu_item_types"), MenuItemTypeOption.toFirestore(option));
+            return "success";
+
+        } catch (e) {
+            return 'Error adding menu_item_types to Firestore: ' + e;
+        }
+    }
+
+    static async getAll(): Promise<MenuItemTypeOption[]> {
+        try {
+            const db = getFirestore(app);
+            const menuOptionRef = collection(db, "menu_item_types");
+
+            // Create a query against the collection.
+            const querySnapshot = await getDocs(menuOptionRef);
+
+            if (querySnapshot.empty) {
+                return [];
+            }
+
+            var result = querySnapshot.docs.map(m => MenuItemTypeOption.fromFirestore(m));
+            return result;
+
+        } catch (e) {
+            console.log(e);
+            return [];
+        }
+    }
 }
 
 export { MenuItemTypeOption }

@@ -2,8 +2,10 @@
 // import { OptionBase } from 'path/to/option_base';
 // import { kDebugMode } from 'path/to/flutter';
 
+import { CollectionReference, DocumentSnapshot, collection, doc, getDocs, getFirestore, query, setDoc, where } from "firebase/firestore";
 import { OptionBase } from "./base_option";
 import { SizeOption } from "./option_size";
+import { app } from "./firebase";
 
 class StyleOption extends OptionBase {
     readonly nameEn: string;
@@ -45,15 +47,15 @@ class StyleOption extends OptionBase {
         return this.basePrice;
     }
 
-    // static fromFirestore(snapshot: DocumentSnapshot<any>): StyleOption {
-    //     const data = snapshot.data();
-    //     return new StyleOption({
-    //         nameEn: data?.nameEn,
-    //         nameVi: data?.nameVi,
-    //         basePrice: parseFloat(data?.basePrice?.toString() ?? '0'),
-    //         availableSizes: data?.availableSizes,
-    //     });
-    // }
+    static fromFirestore(snapshot: DocumentSnapshot<any>): StyleOption {
+        const data = snapshot.data();
+        return new StyleOption({
+            nameEn: data?.nameEn,
+            nameVi: data?.nameVi,
+            basePrice: parseFloat(data?.basePrice?.toString() ?? '0'),
+            availableSizes: data?.availableSizes,
+        });
+    }
 
     static toFirestore(option: StyleOption): any {
         return {
@@ -64,35 +66,51 @@ class StyleOption extends OptionBase {
         };
     }
 
-    // static async pushToFirebase(option: StyleOption): Promise<string> {
-    //     try {
-    //         const styleOptionsCollection: CollectionReference<any> = FirebaseFirestore.instance.collection('styles_options');
-    //         const existingOptionsSnapshot: QuerySnapshot<any> = await styleOptionsCollection
-    //             .where('nameEn', '==', option.nameEn)
-    //             .get();
+    static async pushToFirebase(option: StyleOption): Promise<string> {
 
-    //         if (existingOptionsSnapshot.empty) {
-    //             await styleOptionsCollection.add(StyleOption.toFirestore(option));
-    //             return 'success';
-    //         } else {
-    //             return 'Style option with the same name already exists';
-    //         }
-    //     } catch (e) {
-    //         return 'Error adding Style Option to Firestore: ' + e;
-    //     }
-    // }
+        try {
+            const db = getFirestore(app);
+            const menuOptionRef = collection(db, "style_options");
 
-    // static async getAll(): Promise<StyleOption[]> {
-    //     try {
-    //         const styleOptionsCollection: CollectionReference<any> = FirebaseFirestore.instance.collection('style_options');
-    //         const snapshot: QuerySnapshot<any> = await styleOptionsCollection.get();
-    //         const styleOptions: StyleOption[] = snapshot.docs.map((doc) => StyleOption.fromFirestore(doc));
-    //         return styleOptions;
-    //     } catch (e) {
-    //         console.log('Error getting Style Option from Firestore: ' + e);
-    //         return [];
-    //     }
-    // }
+            // Create a query against the collection.
+            const q = query(menuOptionRef, where("nameEn", "==", option?.nameEn));
+            const querySnapshot = await getDocs(q);
+            if (querySnapshot.empty) {
+                return "Another style option with the same name already existed.";
+            }
+
+            if (option == null)
+                return "Null style option.";
+
+            await setDoc(doc(db, "style_options"), StyleOption.toFirestore(option));
+            return "success";
+
+        } catch (e) {
+            return 'Error adding style option to Firestore: ' + e;
+        }
+    }
+
+    static async getAll(): Promise<StyleOption[]> {
+        try {
+            const db = getFirestore(app);
+            const styleOptionRef = collection(db, "style_options");
+
+            // Create a query against the collection.
+            const querySnapshot = await getDocs(styleOptionRef);
+
+            if (querySnapshot.empty) {
+                return [];
+            }
+
+            var result = querySnapshot.docs.map(m => StyleOption.fromFirestore(m));
+
+            return result;
+
+        } catch (e) {
+            console.log(e);
+            return [];
+        }
+    }
 
     getCountPrice(count: number): number {
         return this.basePrice;
