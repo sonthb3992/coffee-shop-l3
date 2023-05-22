@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 interface QuantitySelectorProps {
     min?: number;
     max?: number;
-    onQuantityChange?: (quantity: number) => void;
+    current?: number;
+    onQuantityChanged?: (quantity: number) => void;
 }
 
-const QuantitySelector: React.FC<QuantitySelectorProps> = ({ min = 1, max = Infinity, onQuantityChange }) => {
-    const [quantity, setQuantity] = useState(min);
+const QuantitySelector: React.FC<QuantitySelectorProps> = ({ min = 1, max = Infinity, current = 1, onQuantityChanged: onQuantityChange }) => {
+    const [quantity, setQuantity] = useState(current);
 
     const increaseQuantity = () => {
         if (quantity < max) {
@@ -29,13 +30,13 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({ min = 1, max = Infi
 
     return (
         <div>
-            <button className='button is-primary is-rounded' onClick={decreaseQuantity}>
+            <button className='button is-white is-rounded is-small' onClick={decreaseQuantity}>
                 <span className="icon is-small">
                     <i className="fa-solid fa-minus"></i>
                 </span>
             </button>
-            <span className="is-size-4 p-3">{quantity}</span>
-            <button className='button is-primary is-rounded' onClick={increaseQuantity}>
+            <span className="is-size-5 p-3">{quantity}</span>
+            <button className='button is-white is-rounded is-small' onClick={increaseQuantity}>
                 <span className="icon is-small">
                     <i className="fa-solid fa-plus"></i>
                 </span>

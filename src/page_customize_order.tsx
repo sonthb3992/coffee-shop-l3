@@ -15,6 +15,7 @@ import { RootState } from './reducer/store';
 
 const CustomizeOrderPage: React.FC = () => {
     const { optionId, isEditing } = useParams();
+
     const [menuOption, setMenuOptions] = useState<MenuOption | null>();
 
     const [styles, setStyles] = useState<StyleOption[]>();
@@ -102,25 +103,6 @@ const CustomizeOrderPage: React.FC = () => {
         navigate("/all-items/");
     }
 
-    var rendered = false;
-    const fetchEditingItem = () => {
-        if (isEditing === "true" && !rendered) {
-            if (option) {
-                if (option.selectedSize)
-                    selectedSizeChanged(option.selectedSize?.nameEn);
-                // if (option.selectedStyle)
-                //     selectedStyleChanged(option.selectedStyle?.nameEn);
-                // if (option.selectedToppings)
-                //     (option.selectedToppings.forEach((t) => toggleTopping(t.nameEn)));
-            }
-            rendered = true;
-        }
-    }
-
-    if (isEditing === "true") {
-        fetchEditingItem();
-    }
-
     useEffect(() => {
         const fetchMenuOptions = async () => {
             const result = await MenuOption.getOption(optionId);
@@ -141,14 +123,10 @@ const CustomizeOrderPage: React.FC = () => {
             setToppings(result);
         };
 
-        if (isEditing === undefined) {
-            fetchEditingItem();
-        } else {
-            fetchMenuOptions();
-            fetchStyles();
-            fetchSizes();
-            fetchToppings();
-        }
+        fetchMenuOptions();
+        fetchStyles();
+        fetchSizes();
+        fetchToppings();
 
     }, [optionId, isEditing]);
 
@@ -179,7 +157,7 @@ const CustomizeOrderPage: React.FC = () => {
                                 </div>
                                 <div className='column is-two-fifths'>
                                     <div className='is-flex is-flex-direction-row is-justify-content-flex-start-mobile'>
-                                        <QuantitySelector max={99} min={1} onQuantityChange={(value) => quanlityChanged(value)}></QuantitySelector>
+                                        <QuantitySelector max={99} min={1} onQuantityChanged={(value) => quanlityChanged(value)}></QuantitySelector>
                                     </div>
                                 </div>
                             </div>

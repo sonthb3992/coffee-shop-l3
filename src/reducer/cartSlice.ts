@@ -51,14 +51,21 @@ export const cartSlice = createSlice({
                 localStorage.setItem('orders', JSON.stringify(state.orderItems));
             }
         },
-        setEditingItem: (state, action: PayloadAction<OrderItem>) => {
-            state.editingItem = action.payload;
-            localStorage.setItem("editingItem", JSON.stringify(state.editingItem));
+        // setEditingItem: (state, action: PayloadAction<OrderItem>) => {
+        //     state.editingItem = action.payload;
+        //     localStorage.setItem("editingItem", JSON.stringify(state.editingItem));
+        // },
+        setItemQuantity: (state, action: PayloadAction<{ id: string, quantity: number }>) => {
+            const index = state.orderItems.findIndex(order => order.id === action.payload.id);
+            if (index !== -1) {
+                state.orderItems[index].quantity = action.payload.quantity;
+                localStorage.setItem('orders', JSON.stringify(state.orderItems));
+            }
         },
 
     },
 });
 
 // export const { setOrderCount } = cartSlice.actions;
-export const { addToCart, setAddress, deleteFromCart, setEditingItem } = cartSlice.actions;
+export const { addToCart, setAddress, deleteFromCart, setItemQuantity } = cartSlice.actions;
 export default cartSlice.reducer;

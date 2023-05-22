@@ -1,11 +1,11 @@
 import { OrderDecorator } from "./base_decorator";
-import { OrderBase } from "./base_order";
+import { ItemBase } from "./base_order";
 import { StyleOption } from "./option_stype";
 
 class StyleDecorator extends OrderDecorator {
     private style: StyleOption;
 
-    constructor(orderBase: OrderBase, style: StyleOption) {
+    constructor(orderBase: ItemBase, style: StyleOption) {
         super(orderBase);
         this.style = style;
     }

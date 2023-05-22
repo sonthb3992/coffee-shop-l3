@@ -1,11 +1,11 @@
-import { OrderBase } from "./base_order";
+import { ItemBase } from "./base_order";
 import { MenuOption } from "./menu_option";
 
-abstract class OrderDecorator implements OrderBase {
-    decoratedOrder: OrderBase;
+abstract class OrderDecorator implements ItemBase {
+    decoratedOrder: ItemBase;
     basePrice: number = 0;
 
-    constructor(decoratedOrder: OrderBase) {
+    constructor(decoratedOrder: ItemBase) {
         this.decoratedOrder = decoratedOrder;
     }
 

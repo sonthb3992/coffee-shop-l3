@@ -1,11 +1,11 @@
 import { OrderDecorator } from "./base_decorator";
-import { OrderBase } from "./base_order";
+import { ItemBase } from "./base_order";
 import { SizeOption } from "./option_size";
 
 class SizeDecorator extends OrderDecorator {
     private size: SizeOption;
 
-    constructor(orderBase: OrderBase, size: SizeOption) {
+    constructor(orderBase: ItemBase, size: SizeOption) {
         super(orderBase);
         this.size = size;
     }

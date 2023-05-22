@@ -1,3 +1,4 @@
+import { ItemBase } from "./base_order";
 import { MenuOption } from "./menu_option";
 import { SizeOption } from "./option_size";
 import { StyleOption } from "./option_stype";
@@ -12,6 +13,13 @@ abstract class OrderItem {
     price: number | undefined;
     id: string | undefined;
 }
+
+// const buildOrder = (item: OrderItem): ItemBase => {
+
+
+
+// }
+
 const getDescription = (item: OrderItem): string => {
     let description = "";
 
@@ -34,5 +42,27 @@ const getDescription = (item: OrderItem): string => {
     return description;
 }
 
+const calculatePrice = (item: OrderItem) => {
+    let price = 0;
+    if (!item.menuOption) return price;
+
+    price += item.menuOption.basePrice;
+    if (item.selectedStyle) {
+        price += item.selectedStyle.basePrice;
+    }
+
+    if (item.selectedSize) {
+        price += item.selectedSize.basePrice;
+    }
+
+    if (item.selectedToppings) {
+        item.selectedToppings.forEach((t) => price += t.basePrice);
+    }
+    if (item.quantity)
+        price *= item.quantity;
+    return price;
+}
+
 export { OrderItem as OrderItem }
 export { getDescription }
+export { calculatePrice }

@@ -1,11 +1,11 @@
 import { OrderDecorator } from "./base_decorator";
-import { OrderBase } from "./base_order";
+import { ItemBase } from "./base_order";
 import { ToppingOption } from "./option_topping";
 
 class ToppingDecorator extends OrderDecorator {
     private toppingMap: Map<ToppingOption, number>;
 
-    constructor(orderBase: OrderBase, toppingMap: Map<ToppingOption, number>) {
+    constructor(orderBase: ItemBase, toppingMap: Map<ToppingOption, number>) {
         super(orderBase);
         this.toppingMap = toppingMap;
     }

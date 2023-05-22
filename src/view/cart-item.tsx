@@ -1,33 +1,38 @@
 import React from 'react';
 import { MenuOption } from '../domain/menu_option';
 import { Link, useNavigate } from 'react-router-dom';
-import { OrderItem, getDescription } from '../domain/selected_item';
+import { OrderItem, calculatePrice, getDescription } from '../domain/selected_item';
 import { useDispatch } from 'react-redux';
-import { deleteFromCart, setEditingItem } from '../reducer/cartSlice';
+import { deleteFromCart, setItemQuantity } from '../reducer/cartSlice';
+import QuantitySelector from './quanlity-selector';
 
 interface MenuOptionProps {
     option: OrderItem;
 }
 
-const CartPageItem: React.FC<MenuOptionProps> = ({ option }) => {
+const CartPageItem: React.FC<MenuOptionProps> = ({ option: item }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const handleDelete = () => {
-        if (option.id)
-            dispatch(deleteFromCart(option.id));
+        if (item.id)
+            dispatch(deleteFromCart(item.id));
     }
 
     const handleEdit = () => {
-        dispatch(setEditingItem(option));
-        navigate(`/customize-order/${option.menuOption?.nameEn}/true`);
+        //dispatch(setEditingItem(option));
+        navigate(`/customize-order/${item.menuOption?.nameEn}/true`);
+    }
+
+    const handleOnQuantityChanged = (value: number) => {
+        dispatch(setItemQuantity({ id: item.id!, quantity: value }));
     }
 
     return (
         <article className="media">
             <figure className="media-left   ">
                 <p className="image is-64x64">
-                    <img src={option.menuOption!.imageUrl}></img>
+                    <img src={item.menuOption!.imageUrl}></img>
                 </p>
             </figure>
             <div className="media-content">
@@ -35,20 +40,18 @@ const CartPageItem: React.FC<MenuOptionProps> = ({ option }) => {
                     <p>
                         <div className='level m-0'>
                             <div className='level-left'>
-                                <strong>{option.menuOption!.nameEn}</strong> <br></br>
+                                <strong>{item.menuOption!.nameEn}</strong> <br></br>
                             </div>
                             <div className='level-right'>
-                                <strong className='has-text-primary'>${option.price?.toFixed(2)}</strong> <br></br>
+                                <strong className='has-text-primary'>${calculatePrice(item).toFixed(2)}</strong> <br></br>
                             </div>
                         </div>
-                        <small>{getDescription(option)}</small>
+                        <small>{getDescription(item)}</small>
                     </p>
                 </div>
-                <nav className="level is-mobile">
+                <nav className="level">
                     <div className="level-left">
-                        <a className="level-item has-text-grey" onClick={handleEdit}>
-                            <span className="icon is-small"><i className="fas fa-edit"></i></span>
-                        </a>
+                        <QuantitySelector min={1} max={99} current={item.quantity} onQuantityChanged={(value) => handleOnQuantityChanged(value)}></QuantitySelector>
                     </div>
                 </nav>
             </div>
