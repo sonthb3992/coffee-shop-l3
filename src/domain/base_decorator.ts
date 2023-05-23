@@ -1,4 +1,4 @@
-import { ItemBase } from "./base_order";
+import { ItemBase } from "./base_order_item";
 import { MenuOption } from "./menu_option";
 
 abstract class OrderDecorator implements ItemBase {

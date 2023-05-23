@@ -1,5 +1,5 @@
 import { OrderDecorator } from "./base_decorator";
-import { ItemBase } from "./base_order";
+import { ItemBase } from "./base_order_item";
 import { StyleOption } from "./option_stype";
 
 class StyleDecorator extends OrderDecorator {

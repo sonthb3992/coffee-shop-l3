@@ -29,7 +29,7 @@ const CartPageItem: React.FC<MenuOptionProps> = ({ option: item }) => {
     }
 
     return (
-        <article className="media">
+        <article className="media mb-0">
             <figure className="media-left   ">
                 <p className="image is-64x64">
                     <img src={item.menuOption!.imageUrl}></img>
@@ -40,10 +40,10 @@ const CartPageItem: React.FC<MenuOptionProps> = ({ option: item }) => {
                     <p>
                         <div className='level m-0'>
                             <div className='level-left'>
-                                <strong>{item.menuOption!.nameEn}</strong> <br></br>
+                                <strong>{item.menuOption!.nameEn}</strong>
                             </div>
                             <div className='level-right'>
-                                <strong className='has-text-primary'>${calculatePrice(item).toFixed(2)}</strong> <br></br>
+                                <strong className='has-text-primary'>${calculatePrice(item).toFixed(2)}</strong>
                             </div>
                         </div>
                         <small>{getDescription(item)}</small>

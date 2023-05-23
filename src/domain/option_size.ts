@@ -64,7 +64,7 @@ class SizeOption extends OptionBase {
             // Create a query against the collection.
             const q = query(menuOptionRef, where("nameEn", "==", option?.nameEn));
             const querySnapshot = await getDocs(q);
-            if (querySnapshot.empty) {
+            if (!querySnapshot.empty) {
                 return "Another size item with the same name already existed.";
             }
 

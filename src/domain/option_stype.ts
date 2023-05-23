@@ -75,7 +75,7 @@ class StyleOption extends OptionBase {
             // Create a query against the collection.
             const q = query(menuOptionRef, where("nameEn", "==", option?.nameEn));
             const querySnapshot = await getDocs(q);
-            if (querySnapshot.empty) {
+            if (!querySnapshot.empty) {
                 return "Another style option with the same name already existed.";
             }
 

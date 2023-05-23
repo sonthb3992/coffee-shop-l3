@@ -11,6 +11,7 @@ import SelectionPage from './page-selection';
 import { Provider } from 'react-redux';
 import { store } from './reducer/store';
 import CartPage from './page-cart';
+import TrackOrderPage from './page-track-order';
 
 const App: React.FC = () => {
   return (
@@ -23,6 +24,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/customize-order/:optionId/:isEditing?" element={<CustomizeOrderPage />}>
             </Route>
+            <Route path='/track-order/:orderId' element={<TrackOrderPage />}></Route>
             <Route path="/all-items/" element={<SelectionPage />}>
             </Route>
             <Route path="/cart/" element={<CartPage />}>

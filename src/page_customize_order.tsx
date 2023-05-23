@@ -4,7 +4,7 @@ import { MenuOption } from './domain/menu_option';
 import QuantitySelector from './view/quanlity-selector';
 import { StyleOption } from './domain/option_stype';
 import { SizeOption } from './domain/option_size';
-import { OrderItem } from './domain/selected_item';
+import { OrderItem, buildOrder } from './domain/selected_item';
 import { ToppingOption } from './domain/option_topping';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -87,16 +87,15 @@ const CustomizeOrderPage: React.FC = () => {
 
     const addToCartC = () => {
         // create an order object based on your current state
-        const newOrder: OrderItem = {
-            id: uuidv4().toLowerCase(),
-            menuOption: menuOption,
-            selectedStyle: selectedStyle,
-            selectedSize: selectedSize,
-            selectedToppings: selectedToppings,
-            quantity: quantity,
-            price: price,
-        };
-
+        const newOrder = new OrderItem(
+            uuidv4().toLowerCase(),
+            menuOption,
+            selectedStyle,
+            selectedSize,
+            selectedToppings,
+            quantity,
+            price
+        );
         dispatch(addToCart(newOrder));
         // dispatch(setOrderCount()); // Update the Redux state
 

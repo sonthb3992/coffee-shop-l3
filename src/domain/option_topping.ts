@@ -86,7 +86,7 @@ class ToppingOption extends OptionBase {
             // Create a query against the collection.
             const q = query(toppingOptionsRef, where("nameEn", "==", option?.nameEn));
             const querySnapshot = await getDocs(q);
-            if (querySnapshot.empty) {
+            if (!querySnapshot.empty) {
                 return "Another topping_options with the same name already existed.";
             }
 
