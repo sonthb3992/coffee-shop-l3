@@ -4,10 +4,11 @@ interface QuantitySelectorProps {
     min?: number;
     max?: number;
     current?: number;
+    disabled?: boolean;
     onQuantityChanged?: (quantity: number) => void;
 }
 
-const QuantitySelector: React.FC<QuantitySelectorProps> = ({ min = 1, max = Infinity, current = 1, onQuantityChanged: onQuantityChange }) => {
+const QuantitySelector: React.FC<QuantitySelectorProps> = ({ min = 1, max = Infinity, current = 1, disabled = false, onQuantityChanged: onQuantityChange }) => {
     const [quantity, setQuantity] = useState(current);
 
     const increaseQuantity = () => {
@@ -30,13 +31,13 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({ min = 1, max = Infi
 
     return (
         <div>
-            <button className='button is-white is-rounded is-small' onClick={decreaseQuantity}>
+            <button className={`button is-white is-rounded is-small ${disabled ? 'is-static' : ''}`} onClick={decreaseQuantity}>
                 <span className="icon is-small">
                     <i className="fa-solid fa-minus"></i>
                 </span>
             </button>
             <span className="is-size-5 p-3">{quantity}</span>
-            <button className='button is-white is-rounded is-small' onClick={increaseQuantity}>
+            <button className={`button is-white is-rounded is-small ${disabled ? 'is-static' : ''}`} onClick={increaseQuantity}>
                 <span className="icon is-small">
                     <i className="fa-solid fa-plus"></i>
                 </span>

@@ -133,7 +133,7 @@ const TrackOrderPage: React.FC = () => {
                             <div className='p-3' style={{ maxHeight: '500px', overflowY: 'auto' }}>
                                 {order && order!.items.map((item: OrderItem) => (
                                     <React.Fragment key={item.id}>
-                                        <CartPageItem option={item}></CartPageItem>
+                                        <CartPageItem canEditQuantity={false} canDelete={false} option={item}></CartPageItem>
                                     </React.Fragment>
                                 ))}
                             </div>

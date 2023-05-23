@@ -43,15 +43,15 @@ const Navbar: React.FC = () => {
 
             <div id="navbarBasicExample" className="navbar-menu">
                 <div className="navbar-end">
-                    <a className="navbar-item has-text-weight-semibold">
+                    <a className="navbar-item has-text-weight-semibold" href='/'>
                         {t("Home")}
                     </a>
 
-                    <a className="navbar-item has-text-weight-semibold">
+                    <a className="navbar-item has-text-weight-semibold" href="/all-items/drink">
                         {t("Drinks")}
                     </a>
 
-                    <a className="navbar-item has-text-weight-semibold">
+                    <a className="navbar-item has-text-weight-semibold" href="/all-items/breakfast">
                         {t("Foods & Snacks")}
                     </a>
 

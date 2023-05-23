@@ -25,7 +25,7 @@ const App: React.FC = () => {
             <Route path="/customize-order/:optionId/:isEditing?" element={<CustomizeOrderPage />}>
             </Route>
             <Route path='/track-order/:orderId' element={<TrackOrderPage />}></Route>
-            <Route path="/all-items/" element={<SelectionPage />}>
+            <Route path="/all-items/:filter?" element={<SelectionPage />}>
             </Route>
             <Route path="/cart/" element={<CartPage />}>
             </Route>

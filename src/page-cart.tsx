@@ -147,7 +147,7 @@ const CartPage: React.FC = () => {
                             <div className='p-3' style={{ maxHeight: '500px', overflowY: 'auto' }}>
                                 {items.map((option: OrderItem) => (
                                     <React.Fragment key={option.id}>
-                                        <CartPageItem option={option}></CartPageItem>
+                                        <CartPageItem canEditQuantity={true} canDelete={true} option={option}></CartPageItem>
                                     </React.Fragment>
                                 ))}
                             </div>

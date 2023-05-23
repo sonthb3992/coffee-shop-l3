@@ -8,9 +8,11 @@ import QuantitySelector from './quanlity-selector';
 
 interface MenuOptionProps {
     option: OrderItem;
+    canEditQuantity: boolean;
+    canDelete: boolean;
 }
 
-const CartPageItem: React.FC<MenuOptionProps> = ({ option: item }) => {
+const CartPageItem: React.FC<MenuOptionProps> = ({ option: item, canEditQuantity = true, canDelete = true }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -51,13 +53,15 @@ const CartPageItem: React.FC<MenuOptionProps> = ({ option: item }) => {
                 </div>
                 <nav className="level">
                     <div className="level-left">
-                        <QuantitySelector min={1} max={99} current={item.quantity} onQuantityChanged={(value) => handleOnQuantityChanged(value)}></QuantitySelector>
+                        <QuantitySelector min={1} max={99} disabled={!canEditQuantity} current={item.quantity} onQuantityChanged={(value) => handleOnQuantityChanged(value)}></QuantitySelector>
                     </div>
                 </nav>
             </div>
-            <div className="media-right">
-                <button className="delete" onClick={handleDelete}></button>
-            </div>
+            {canDelete &&
+                <div className="media-right">
+                    <button className="delete" onClick={handleDelete}></button>
+                </div>
+            }
         </article >
     );
 };

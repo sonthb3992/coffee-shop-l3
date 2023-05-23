@@ -1,20 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { MenuOption } from './domain/menu_option';
-import QuantitySelector from './view/quanlity-selector';
-import { StyleOption } from './domain/option_stype';
-import { SizeOption } from './domain/option_size';
-import { OrderItem } from './domain/selected_item';
-import { ToppingOption } from './domain/option_topping';
 import { MenuItemTypeOption } from './domain/menu_option_type';
 import Menu from './view/menu';
+import { useParams } from 'react-router-dom';
 
 
 const SelectionPage: React.FC = () => {
+    const { filter } = useParams();
     const [menuOptionTypes, setMenuOptionsTypes] = useState<MenuItemTypeOption[]>([]);
-
     const [selectedMenuOptionType, setSelectedMenuOptionType] = useState<MenuItemTypeOption | null>(null);
-
     const selectedMenuOptionTypeChanged = (selected: MenuItemTypeOption | null) => {
         setSelectedMenuOptionType(selected);
     }
@@ -23,9 +16,15 @@ const SelectionPage: React.FC = () => {
         const fetchMenuOptionTypes = async () => {
             const result = await MenuItemTypeOption.getAll();
             setMenuOptionsTypes(result);
+            if (filter != null) {
+                var filtered = result.find((type) => type.nameEn.toLowerCase() == filter.toLowerCase()) || null;
+                if (filtered) {
+                    setSelectedMenuOptionType(filtered);
+                }
+            }
         };
         fetchMenuOptionTypes();
-    }, []);
+    }, [filter]);
 
     return (
         <section className='section'>
