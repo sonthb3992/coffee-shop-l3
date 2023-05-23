@@ -66,7 +66,7 @@ const CartPage: React.FC = () => {
         order.receiver = customerName;
         order.phoneNumber = phone;
         order.items = items;
-        order.status = 1;
+        order.status = 0;
         order.price = calculateTotal(items);
         order.id = uuidv4().toLowerCase();
         order.placeTime = new Date(Date.now());
