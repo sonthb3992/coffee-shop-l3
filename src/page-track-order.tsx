@@ -35,8 +35,9 @@ const TrackOrderPage: React.FC = () => {
     }, []);
 
 
-    function cancelOrder(): void {
-        console.log(order);
+    const cancelOrder = async () => {
+        if (!order) return;
+        await Order.cancelOrder(order);
     }
 
     return (
@@ -117,6 +118,14 @@ const TrackOrderPage: React.FC = () => {
                                 </span>
                                 <span className={order?.status! >= 4 ? 'has-text-primary' : ''}>Completed</span>
                             </span>
+                            {order?.status == -1 &&
+                                <span className="icon-text pb-2">
+                                    <span className="icon">
+                                        <i className="fa-solid fa-check has-text-danger"></i>
+                                    </span>
+                                    <span className={order?.status! >= 4 ? 'has-text-primary' : ''}>Order cancelled</span>
+                                </span>
+                            }
                         </div>
                     </div>
 
@@ -168,9 +177,11 @@ const TrackOrderPage: React.FC = () => {
                                 </div>
                             }
 
-                            <button className="button is-fullwidth is-danger" onClick={() => cancelOrder()}>
-                                Cancel order
-                            </button>
+                            {order &&
+                                <button className={`button is-fullwidth ${order.status > 1 || order.status < 0 ? 'is-static' : 'is-danger'}`} onClick={() => cancelOrder()}>
+                                    Cancel order
+                                </button>
+                            }
                         </div>
                     </div>
                 </div>

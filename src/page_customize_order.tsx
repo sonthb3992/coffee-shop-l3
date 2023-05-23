@@ -86,6 +86,22 @@ const CustomizeOrderPage: React.FC = () => {
     }
 
     const addToCartC = () => {
+        if (!menuOption)
+            return;
+
+        if (menuOption.availableSizes !== undefined && menuOption.availableSizes.length > 0) {
+            if (!selectedSize) {
+                alert("Please select a specified size.");
+                return;
+            }
+        }
+
+        if (menuOption.availableStyles !== undefined && menuOption.availableStyles.length > 0) {
+            if (!selectedSize) {
+                alert("Please select a specified style.");
+                return;
+            }
+        }
         // create an order object based on your current state
         const newOrder = new OrderItem(
             uuidv4().toLowerCase(),

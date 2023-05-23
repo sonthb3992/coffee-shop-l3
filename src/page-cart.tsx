@@ -70,6 +70,9 @@ const CartPage: React.FC = () => {
         order.price = calculateTotal(items);
         order.id = uuidv4().toLowerCase();
         order.placeTime = new Date(Date.now());
+        order.itemcount = 0;
+        order.items.forEach((i) => order.itemcount += i.quantity!);
+
         var s = await Order.pushToFirebase(order);
         if (s === 'success') {
             dispatch(clearCart());

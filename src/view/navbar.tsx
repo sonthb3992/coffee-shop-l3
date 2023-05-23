@@ -54,7 +54,9 @@ const Navbar: React.FC = () => {
                     <a className="navbar-item has-text-weight-semibold" href="/all-items/breakfast">
                         {t("Foods & Snacks")}
                     </a>
-
+                    <a className="navbar-item has-text-weight-semibold" href="/track-order">
+                        {t("My orders")}
+                    </a>
                     <div className="navbar-item">
                         <div className="buttons">
                             <a className="button is-primary" href="/cart">

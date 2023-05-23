@@ -19,6 +19,8 @@ class Order {
     confirmTime: Date = new Date(0, 0, 0);
     processTime: Date = new Date(0, 0, 0);
     completeTime: Date = new Date(0, 0, 0);
+    cancelTime: Date = new Date(0, 0, 0);
+    itemcount: number = 0;
 
     constructor() {
     }
@@ -95,31 +97,77 @@ class Order {
         }
     }
 
-
-    static async getAllOrdersByPhone(phoneNumber: string): Promise<Order[]> {
+    static async updateToFirebase(order: Order): Promise<string> {
         try {
             const db = getFirestore(app);
-            const menuOptionRef = collection(db, "orders");
+            const docRef = doc(db, "orders", order.id);
+            await setDoc(docRef, Order.toFirestore(order));
+            return "success";
+        } catch (e) {
+            return 'Error adding Menu option to Firestore: ' + e;
+        }
+    }
 
 
-            // Create a query against the collection.
-            const _query = query(menuOptionRef, where("phone", "==", phoneNumber));
-            const querySnapshot = await getDocs(_query);
-            if (querySnapshot.empty) {
-                return [];
-            }
+    static async getAllOrders(callback: (value: any) => void): Promise<{ orders: Order[], unsub: any } | null> {
+        try {
+            const db = getFirestore(app);
+            const ref = collection(db, "orders");
+            const q = query(ref, where("status", ">=", 0), where("status", "<", 4));
+            const querySnapshot = await getDocs(q);
 
-            querySnapshot.forEach((doc) => {
-                // doc.data() is never undefined for query doc snapshots
-                console.log(doc.id, " => ", doc.get("id"));
+            const orders = querySnapshot.docs.map((doc) => Order.fromFirestore(doc, undefined));
+
+            const unsubscribe = onSnapshot(q, (querySnapshot) => {
+                const orders = querySnapshot.docs.map((doc) => Order.fromFirestore(doc, undefined));
+                callback(orders);
             });
 
 
-            return [];
-
+            return {
+                orders: orders,
+                unsub: unsubscribe
+            }
         } catch (e) {
-            return [];
+            console.log(e);
+            return null;
         }
+    }
+
+
+    static async getOrdersOfCustomer(customerName: string, phoneNumber: string, callback: (value: any) => void): Promise<{ orders: Order[], unsub: any } | null> {
+        try {
+            const db = getFirestore(app);
+            const ref = collection(db, "orders");
+            const _query = query(ref, where("phone", "==", phoneNumber), where("customerName", "==", customerName));
+
+            const querySnapshot = await getDocs(_query);
+            const orders = querySnapshot.docs.map((doc) => Order.fromFirestore(doc, undefined));
+
+            const unsubscribe = onSnapshot(_query, (querySnapshot) => {
+                const orders = querySnapshot.docs.map((doc) => Order.fromFirestore(doc, undefined));
+                callback(orders);
+            });
+
+            return {
+                orders: orders,
+                unsub: unsubscribe
+            }
+        } catch (e) {
+            console.log(e);
+            return null;
+        }
+    }
+
+    static sentToNextStep(item: Order): Promise<string> {
+        item.status += 1;
+        return Order.updateToFirebase(item);
+    }
+
+    static cancelOrder(item: Order): Promise<string> {
+        item.status = -1;
+        item.cancelTime = new Date(Date.now());
+        return Order.updateToFirebase(item);
     }
 
     // static async getAll(): Promise<MenuOption[]> {

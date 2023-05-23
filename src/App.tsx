@@ -12,6 +12,8 @@ import { Provider } from 'react-redux';
 import { store } from './reducer/store';
 import CartPage from './page-cart';
 import TrackOrderPage from './page-track-order';
+import StaffPage from './page-staff';
+import CustomerTrackPage from './page-customer_track';
 
 const App: React.FC = () => {
   return (
@@ -22,9 +24,11 @@ const App: React.FC = () => {
         </div>
         <Router>
           <Routes>
+            <Route path='/staff' element={<StaffPage />}></Route>
             <Route path="/customize-order/:optionId/:isEditing?" element={<CustomizeOrderPage />}>
             </Route>
             <Route path='/track-order/:orderId' element={<TrackOrderPage />}></Route>
+            <Route path='/track-order' element={<CustomerTrackPage />}></Route>
             <Route path="/all-items/:filter?" element={<SelectionPage />}>
             </Route>
             <Route path="/cart/" element={<CartPage />}>
@@ -39,8 +43,8 @@ const App: React.FC = () => {
             </Route>
           </Routes>
         </Router >
-      </div>
-    </Provider>
+      </div >
+    </Provider >
   );
 };
 
