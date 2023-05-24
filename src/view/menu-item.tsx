@@ -1,12 +1,19 @@
 import React from 'react';
 import { MenuOption } from '../domain/menu_option';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '../reducer/store';
+import { useTranslation } from 'react-i18next';
 
 interface MenuOptionProps {
     option: MenuOption;
 }
 
 const MenuOptionComponent: React.FC<MenuOptionProps> = ({ option }) => {
+
+    const language = useSelector((state: RootState) => state.cart.language);
+    const { t } = useTranslation();
+
     // Render your component here. This is just a basic example.
     return (
         <Link to={`/customize-order/${option.nameEn}`} className='no-decoration-link menu-title'>
@@ -15,8 +22,8 @@ const MenuOptionComponent: React.FC<MenuOptionProps> = ({ option }) => {
                     <img src={option.imageUrl} width="270"></img>
                 </figure>
             </div>
-            <p className='is-size-5 has-text-weight-semibold'>{option.nameVi}</p>
-            <p className='is-size-6'>Price: ${option.getBasePrice()}</p>
+            <p className='is-size-5-tablet is-size-6 has-text-weight-semibold'>{language === "en" ? option.nameEn : option.nameVi}</p>
+            <p className='is-size-6'>{t('BasePrice')}: ${option.getBasePrice()}</p>
         </Link>
     );
 };

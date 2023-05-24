@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import AddressModal from './view/modals/address-modal';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from './reducer/store';
-import MenuOptionComponent from './view/menu-item';
 import CartPageItem from './view/cart-item';
 import { OrderItem, calculatePrice } from './domain/selected_item';
 import { clearCart, setAddress, setCustomerName, setPhone } from './reducer/cartSlice';
 import { Order } from './domain/order';
-import { or } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 
 const CartPage: React.FC = () => {
+
+    const language = useSelector((state: RootState) => state.cart.language);
+    const { t } = useTranslation();
 
     const address = useSelector((state: RootState) => state.cart.address);
     const phone = useSelector((state: RootState) => state.cart.phone);
@@ -92,10 +93,10 @@ const CartPage: React.FC = () => {
         <section className='section'>
             <div className='container'>
                 <div className='columns is-desktop'>
-                    <div className='column is-half p-3'>
-                        <p className='title is-4 pt-5'>Delivery</p>
+                    <div className='column is-half-desktop p-3'>
+                        <p className='title is-4 pt-5'>{t('Delivery')}</p>
                         <div className="field">
-                            <label className="label">Name</label>
+                            <label className="label">{t('ReceiverName')}</label>
                             <div className="control has-icons-left has-icons-right">
                                 <input className={`input ${customerName ? 'is-success' : 'is-danger'}`}
                                     type="text" value={customerName}
@@ -106,11 +107,10 @@ const CartPage: React.FC = () => {
                                 </span>
                             </div>
                             {(!customerName &&
-                                <p className="help is-danger">Please enter a valid name</p>)}
+                                <p className="help is-danger">{t('ReceiverName_invalid')}</p>)}
                         </div>
-
                         <div className="field">
-                            <label className="label">Phone number</label>
+                            <label className="label">{t('Phone number')}</label>
                             <div className="control has-icons-left has-icons-right">
                                 <input className={`input ${phone ? 'is-success' : 'is-danger'}`}
                                     type="text" value={phone}
@@ -121,11 +121,10 @@ const CartPage: React.FC = () => {
                                 </span>
                             </div>
                             {(!phone &&
-                                <p className="help is-danger">Please enter a valid phone number. Our staff may call you to confirm the order.</p>)}
+                                <p className="help is-danger">{t('Phone number invalid')}</p>)}
                         </div>
-
                         <div className="field">
-                            <label className="label">Address</label>
+                            <label className="label">{t('Address')}</label>
                             <div className="control has-icons-left has-icons-right">
                                 <input className={`input ${address ? 'is-success' : 'is-danger'}`} type="email" value={address} onChange={(event) => handleAddressChange(event.target.value)} placeholder="enter delivery address"></input>
                                 <span className="icon is-small is-left">
@@ -133,55 +132,61 @@ const CartPage: React.FC = () => {
                                 </span>
                             </div>
                             {(!address &&
-                                <p className="help is-danger">Please enter a valid delivery address</p>)}
+                                <p className="help is-danger">{t('Address invalid')}</p>)}
                         </div>
+
+                        <div className='level mt-6'>
+                            <div className="level-left">
+                                <p className='title is-4'>{t('Total')}</p>
+                            </div>
+                            <div className="level-right">
+                                <p className='title is-4 has-text-primary'>${calculateTotal(items).toFixed(2)}</p>
+                            </div>
+                        </div>
+                        <div className='level mb-0'>
+                            <div className="level-left">
+                                <p className='has-size-6'>{t('Subtotal')}</p>
+                            </div>
+                            <div className="level-right">
+                                <strong className='has-text-primary'>${calculateSubTotal(items).toFixed(2)}</strong>
+                            </div>
+                        </div>
+                        <div className='level'>
+                            <div className="level-left">
+                                <p className='has-size-6'>{t('Tax')} (7.25%)</p>
+                            </div>
+                            <div className="level-right">
+                                <strong className='has-text-primary'>${calculateTax(calculateSubTotal(items)).toFixed(2)}</strong>
+                            </div>
+                        </div>
+
+                        <button className={`button  is-fullwidth-desktop ${inputValid ? 'is-primary' : 'is-static'}`} onClick={() => placeOrder()}>
+                            {t('Place order')}
+                        </button>
                     </div>
 
-                    <div className='column is-half p-3'>
+                    <div className='column is-half-desktop p-3'>
                         <div className='card p-5' >
                             <div className='level'>
                                 <div className="level-left">
-                                    <p className='title is-4'>Selected Items</p>
+                                    <p className='title is-4'>{t('Selected Items')}</p>
                                 </div>
                                 <div className='level-right'>
-                                    <a href="/all-items/" className='button is-primary'>Add</a>
+                                    <a href="/all-items/" className='button is-primary'>{t('Add')}</a>
                                 </div>
                             </div>
-                            <div className='p-3' style={{ maxHeight: '500px', overflowY: 'auto' }}>
-                                {items.map((option: OrderItem) => (
-                                    <React.Fragment key={option.id}>
-                                        <CartPageItem canEditQuantity={true} canDelete={true} option={option}></CartPageItem>
-                                    </React.Fragment>
-                                ))}
-                            </div>
-                            <div className='level'>
-                                <div className="level-left">
-                                    <p className='title is-4'>Total</p>
+                            {items.length > 0 &&
+                                <div className='p-3'>
+                                    {items.map((option: OrderItem) => (
+                                        <React.Fragment key={option.id}>
+                                            <CartPageItem canEditQuantity={true} canDelete={true} option={option}></CartPageItem>
+                                        </React.Fragment>
+                                    ))}
                                 </div>
-                                <div className="level-right">
-                                    <p className='title is-4 has-text-primary'>${calculateTotal(items).toFixed(2)}</p>
-                                </div>
-                            </div>
-                            <div className='level mb-0'>
-                                <div className="level-left">
-                                    <p className='has-size-6'>Subtotal</p>
-                                </div>
-                                <div className="level-right">
-                                    <strong className='has-text-primary'>${calculateSubTotal(items).toFixed(2)}</strong>
-                                </div>
-                            </div>
-                            <div className='level'>
-                                <div className="level-left">
-                                    <p className='has-size-6'>Tax (7.25%)</p>
-                                </div>
-                                <div className="level-right">
-                                    <strong className='has-text-primary'>${calculateTax(calculateSubTotal(items)).toFixed(2)}</strong>
-                                </div>
-                            </div>
-
-                            <button className={`button  is-fullwidth ${inputValid ? 'is-primary' : 'is-static'}`} onClick={() => placeOrder()}>
-                                Place order
-                            </button>
+                            }
+                            {items.length == 0 &&
+                                <div>{t('No items selected')}</div>
+                            }
                         </div>
                     </div>
                 </div>

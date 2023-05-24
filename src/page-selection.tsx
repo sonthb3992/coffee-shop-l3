@@ -2,10 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { MenuItemTypeOption } from './domain/menu_option_type';
 import Menu from './view/menu';
 import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import { RootState } from './reducer/store';
 
 
 const SelectionPage: React.FC = () => {
     const { filter } = useParams();
+    const language = useSelector((state: RootState) => state.cart.language);
+    const { t } = useTranslation();
+
     const [menuOptionTypes, setMenuOptionsTypes] = useState<MenuItemTypeOption[]>([]);
     const [selectedMenuOptionType, setSelectedMenuOptionType] = useState<MenuItemTypeOption | null>(null);
     const selectedMenuOptionTypeChanged = (selected: MenuItemTypeOption | null) => {
@@ -29,36 +35,18 @@ const SelectionPage: React.FC = () => {
     return (
         <section className='section'>
             <div className='container'>
-                <nav className="breadcrumb" aria-label="breadcrumbs">
+                <div className="tabs is-toggle is-fullwidth">
                     <ul>
-                        <li><a href="#" className='has-text-weight-semibold'>Menu</a></li>
-                        <li><a href="#" className='has-text-weight-semibold is-active'>{selectedMenuOptionType?.nameEn ?? "All items"}</a></li>
-                        {/* <li className="is-active has-text-weight-semibold"><a href="#" aria-current="page">{menuOption?.nameEn}</a></li> */}
+                        <li className={selectedMenuOptionType === null ? 'is-active' : ''}><a onClick={() => selectedMenuOptionTypeChanged(null)}>{t('All items')}</a></li>
+                        {menuOptionTypes?.length! > 0 && menuOptionTypes?.map((e) =>
+                            <li key={e.nameEn} className={e.nameEn === selectedMenuOptionType?.nameEn ? 'is-active is-primary' : ''}>
+                                <a onClick={() => selectedMenuOptionTypeChanged(e)}>{language === "en" ? e.nameEn : e.nameVi}</a>
+                            </li>
+                        )}
                     </ul>
-                </nav>
-
-                <div className='columns is-desktop'>
-                    <div className='column is-one-quarter'>
-                        <aside className="menu">
-                            <ul className="menu-list">
-                                <li className='block'>
-                                    <button className={`m-3 is-fullwidth is-white button ${!selectedMenuOptionType ? 'is-primary' : ''}`} onClick={() => selectedMenuOptionTypeChanged(null)}>All items</button>
-                                </li>
-                                {(menuOptionTypes?.length! > 0) && (
-                                    <li className='block'>
-                                        {menuOptionTypes?.map((e) =>
-                                            <button key={e.nameEn} className={`m-3 is-fullwidth is-white button ${e.nameEn === selectedMenuOptionType?.nameEn ? 'is-primary' : ''}`} onClick={() => selectedMenuOptionTypeChanged(e)}>{e.nameEn}</button>
-                                        )}
-                                    </li>
-                                )}
-                            </ul>
-                        </aside>
-                    </div>
-                    <div className='column is-three-quarter ml-6 mt-3'>
-                        <Menu chunkSize={3} typeFilter={selectedMenuOptionType?.nameEn ?? ''}></Menu>
-                    </div>
                 </div>
-            </div>
+                <Menu chunkSize={4} typeFilter={selectedMenuOptionType?.nameEn ?? ''} />
+            </div >
         </section >
     );
 };

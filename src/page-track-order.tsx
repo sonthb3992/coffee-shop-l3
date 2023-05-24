@@ -1,22 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { MenuOption } from './domain/menu_option';
-import QuantitySelector from './view/quanlity-selector';
-import { StyleOption } from './domain/option_stype';
-import { SizeOption } from './domain/option_size';
-import { OrderItem, buildOrder } from './domain/selected_item';
-import { ToppingOption } from './domain/option_topping';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
-import { addToCart } from './reducer/cartSlice';
+import { OrderItem } from './domain/selected_item';
+import { useSelector } from 'react-redux';
 import { RootState } from './reducer/store';
 import { Order } from './domain/order';
 import CartPageItem from './view/cart-item';
+import { useTranslation } from 'react-i18next';
 
 
 const TrackOrderPage: React.FC = () => {
     const { orderId } = useParams();
+
+    const language = useSelector((state: RootState) => state.cart.language);
+    const { t } = useTranslation();
 
     const [order, setOrder] = useState<Order | null>();
 
@@ -45,9 +41,9 @@ const TrackOrderPage: React.FC = () => {
             <div className='container'>
                 <div className='columns is-desktop'>
                     <div className='column is-half p-3'>
-                        <p className='title is-4 pt-5'>Delivery</p>
+                        <p className='title is-4 pt-5'>{t('Delivery')}</p>
                         <div className="field">
-                            <label className="label">Name</label>
+                            <label className="label">{t("ReceiverName")}</label>
                             <div className="control has-icons-left has-icons-right">
                                 <input readOnly className={`input is-static ${order?.receiver ? 'is-success' : 'is-danger'}`}
                                     type="text" value={order?.receiver}></input>
@@ -58,7 +54,7 @@ const TrackOrderPage: React.FC = () => {
                         </div>
 
                         <div className="field">
-                            <label className="label">Phone number</label>
+                            <label className="label">{t('Phone number')}</label>
                             <div className="control has-icons-left has-icons-right">
                                 <input readOnly className={`input is-static ${order?.phoneNumber ? 'is-success' : 'is-danger'}`}
                                     type="text" value={order?.phoneNumber}
@@ -72,7 +68,7 @@ const TrackOrderPage: React.FC = () => {
                         </div>
 
                         <div className="field">
-                            <label className="label">Address</label>
+                            <label className="label">{t('Address')}</label>
                             <div className="control has-icons-left has-icons-right">
                                 <input readOnly className={`input is-static ${order?.address ? 'is-success' : 'is-danger'}`}
                                     type="email" value={order?.address} placeholder="enter delivery address"></input>
@@ -84,7 +80,8 @@ const TrackOrderPage: React.FC = () => {
                                 <p className="help is-danger">Please enter a valid delivery address</p>)} */}
                         </div>
 
-                        <p className='title is-4 pt-5'>Order status</p>
+                        <p className='title is-4 pt-5'>{t('Order status')}</p>
+
                         <div className='is-flex is-flex-direction-column'>
                             <span className="icon-text pb-2">
                                 <span className="icon">
@@ -92,7 +89,7 @@ const TrackOrderPage: React.FC = () => {
                                         ? <i className="fa-solid fa-check has-text-primary"></i>
                                         : <i className="fa-regular fa-circle"></i>}
                                 </span>
-                                <span className={order?.status! >= 1 ? 'has-text-primary' : ''}>Order confirmation</span>
+                                <span className={order?.status! >= 1 ? 'has-text-primary' : ''}>{t('Order confirmation')}</span>
                             </span>
                             <span className="icon-text pb-2">
                                 <span className="icon">
@@ -100,7 +97,7 @@ const TrackOrderPage: React.FC = () => {
                                         ? <i className="fa-solid fa-check has-text-primary"></i>
                                         : <i className="fa-regular fa-circle"></i>}
                                 </span>
-                                <span className={order?.status! >= 2 ? 'has-text-primary' : ''}>Order processing</span>
+                                <span className={order?.status! >= 2 ? 'has-text-primary' : ''}>{t('Order processing')}</span>
                             </span>
                             <span className="icon-text pb-2">
                                 <span className="icon">
@@ -108,7 +105,7 @@ const TrackOrderPage: React.FC = () => {
                                         ? <i className="fa-solid fa-check has-text-primary"></i>
                                         : <i className="fa-regular fa-circle"></i>}
                                 </span>
-                                <span className={order?.status! >= 3 ? 'has-text-primary' : ''}>Delivering</span>
+                                <span className={order?.status! >= 3 ? 'has-text-primary' : ''}>{t('Delivering')}</span>
                             </span>
                             <span className="icon-text pb-2">
                                 <span className="icon">
@@ -116,14 +113,14 @@ const TrackOrderPage: React.FC = () => {
                                         ? <i className="fa-solid fa-check has-text-primary"></i>
                                         : <i className="fa-regular fa-circle"></i>}
                                 </span>
-                                <span className={order?.status! >= 4 ? 'has-text-primary' : ''}>Completed</span>
+                                <span className={order?.status! >= 4 ? 'has-text-primary' : ''}>{t('Completed')}</span>
                             </span>
                             {order?.status == -1 &&
                                 <span className="icon-text pb-2">
                                     <span className="icon">
                                         <i className="fa-solid fa-check has-text-danger"></i>
                                     </span>
-                                    <span className={order?.status! >= 4 ? 'has-text-primary' : ''}>Order cancelled</span>
+                                    <span className={order?.status! >= 4 ? 'has-text-primary' : ''}>{t('Cancelled')}</span>
                                 </span>
                             }
                         </div>
@@ -133,10 +130,7 @@ const TrackOrderPage: React.FC = () => {
                         <div className='card p-5' >
                             <div className='level'>
                                 <div className="level-left">
-                                    <p className='title is-4'>Selected Items</p>
-                                </div>
-                                <div className='level-right'>
-                                    <a href="/all-items/" className='button is-primary'>Add</a>
+                                    <p className='title is-4'>{t('Selected Items')}</p>
                                 </div>
                             </div>
                             <div className='p-3' style={{ maxHeight: '500px', overflowY: 'auto' }}>
@@ -149,7 +143,7 @@ const TrackOrderPage: React.FC = () => {
                             {order &&
                                 <div className='level'>
                                     <div className="level-left">
-                                        <p className='title is-4'>Total</p>
+                                        <p className='title is-4'>{t('Total')}</p>
                                     </div>
                                     <div className="level-right">
                                         <p className='title is-4 has-text-primary'>${Order.calculateTotal(order!.items).toFixed(2)}</p>
@@ -159,7 +153,7 @@ const TrackOrderPage: React.FC = () => {
                             {order &&
                                 <div className='level mb-0'>
                                     <div className="level-left">
-                                        <p className='has-size-6'>Subtotal</p>
+                                        <p className='has-size-6'>{t('Subtotal')}</p>
                                     </div>
                                     <div className="level-right">
                                         <strong className='has-text-primary'>${Order.calculateSubTotal(order!.items).toFixed(2)}</strong>
@@ -169,7 +163,7 @@ const TrackOrderPage: React.FC = () => {
                             {order &&
                                 <div className='level'>
                                     <div className="level-left">
-                                        <p className='has-size-6'>Tax (7.25%)</p>
+                                        <p className='has-size-6'>{t('Tax')} (7.25%)</p>
                                     </div>
                                     <div className="level-right">
                                         <strong className='has-text-primary'>${Order.calculateTax(Order.calculateSubTotal(order!.items)).toFixed(2)}</strong>
@@ -179,7 +173,7 @@ const TrackOrderPage: React.FC = () => {
 
                             {order &&
                                 <button className={`button is-fullwidth ${order.status > 1 || order.status < 0 ? 'is-static' : 'is-danger'}`} onClick={() => cancelOrder()}>
-                                    Cancel order
+                                    {t('Cancel order')}
                                 </button>
                             }
                         </div>

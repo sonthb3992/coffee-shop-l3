@@ -1,10 +1,11 @@
 import React from 'react';
-import { MenuOption } from '../domain/menu_option';
-import { Link, useNavigate } from 'react-router-dom';
-import { OrderItem, calculatePrice, getDescription } from '../domain/selected_item';
-import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { OrderItem, calculatePrice, getDescription, getDescriptionVi } from '../domain/selected_item';
+import { useDispatch, useSelector } from 'react-redux';
 import { deleteFromCart, setItemQuantity } from '../reducer/cartSlice';
 import QuantitySelector from './quanlity-selector';
+import { useTranslation } from 'react-i18next';
+import { RootState } from '../reducer/store';
 
 interface MenuOptionProps {
     option: OrderItem;
@@ -15,6 +16,10 @@ interface MenuOptionProps {
 const CartPageItem: React.FC<MenuOptionProps> = ({ option: item, canEditQuantity = true, canDelete = true }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+
+    const language = useSelector((state: RootState) => state.cart.language);
+    const { t } = useTranslation();
 
     const handleDelete = () => {
         if (item.id)
@@ -42,13 +47,13 @@ const CartPageItem: React.FC<MenuOptionProps> = ({ option: item, canEditQuantity
                     <p>
                         <div className='level m-0'>
                             <div className='level-left'>
-                                <strong>{item.menuOption!.nameEn}</strong>
+                                <strong>{language === "en" ? item.menuOption!.nameEn : item.menuOption!.nameVi}</strong>
                             </div>
                             <div className='level-right'>
                                 <strong className='has-text-primary'>${calculatePrice(item).toFixed(2)}</strong>
                             </div>
                         </div>
-                        <small>{getDescription(item)}</small>
+                        <small>{language === "en" ? getDescription(item) : getDescriptionVi(item)}</small>
                     </p>
                 </div>
                 <nav className="level">

@@ -92,6 +92,28 @@ const getDescription = (item: OrderItem): string => {
     return description;
 }
 
+const getDescriptionVi = (item: OrderItem): string => {
+    let description = "";
+
+    if (item.menuOption) {
+        description += `${item.menuOption.nameVi}, `;
+    }
+
+    if (item.selectedStyle) {
+        description += `${item.selectedStyle.nameVi}, `;
+    }
+
+    if (item.selectedSize) {
+        description += `size ${item.selectedSize.nameVi}, `;
+    }
+
+    if (item.selectedToppings) {
+        const toppingNames = item.selectedToppings.map(topping => topping.nameVi);
+        description += `${toppingNames.join(", ")} `;
+    }
+    return description;
+}
+
 const calculatePrice = (item: OrderItem) => {
     let price = 0;
     if (!item.menuOption) return price;
@@ -115,5 +137,6 @@ const calculatePrice = (item: OrderItem) => {
 
 export { OrderItem as OrderItem }
 export { getDescription }
+export { getDescriptionVi }
 export { calculatePrice }
 export { buildOrder }

@@ -7,26 +7,12 @@ import { RootState } from '../reducer/store';
 import { cartSlice } from '../reducer/cartSlice';
 
 
-interface ILng {
-    code: string;
-    native: string;
-}
-
 const Navbar: React.FC = () => {
     const dispatch = useDispatch();
     const orderCount = useSelector((state: RootState) => state.cart.orderItems.length || 0);
     const [showMenuOnMobile, setShowMenuOnMobile] = useState<boolean>(false);
 
-    const lngs: ILng[] = [
-        { code: "en", native: "En" },
-        { code: "vn", native: "Vi" },
-    ];
-
     const { t, i18n } = useTranslation();
-
-    const handleTrans = (code: string) => {
-        i18n.changeLanguage(code);
-    };
 
     const toggleMenu = () => {
         setShowMenuOnMobile(!showMenuOnMobile);
@@ -58,7 +44,7 @@ const Navbar: React.FC = () => {
                     </a>
 
                     <a className="navbar-item has-text-weight-semibold" href="/all-items/breakfast">
-                        {t("Foods & Snacks")}
+                        {t("Breakfast")}
                     </a>
                     <a className="navbar-item has-text-weight-semibold" href="/track-order">
                         {t("My orders")}
@@ -69,7 +55,7 @@ const Navbar: React.FC = () => {
                                 <span className="icon">
                                     <i className="fa-solid fa-cart-shopping"></i>
                                 </span>
-                                <span>Go to cart ({orderCount ?? 0})</span>
+                                <span>{t('GoToCart', { count: orderCount ?? 0 })}</span>
                             </a>
                         </div>
                     </div>

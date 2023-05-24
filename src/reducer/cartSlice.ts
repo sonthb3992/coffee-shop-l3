@@ -5,6 +5,7 @@ import { Order } from '../domain/order';
 import { v4 as uuidv4 } from 'uuid';
 
 interface OrderState {
+    language: string;
     inputValid: boolean;
     orderItems: OrderItem[],
     editingItem: OrderItem | null,
@@ -25,6 +26,7 @@ const isInputValid = (address: string | null | undefined, phone: string | null |
 }
 
 const initialState: OrderState = {
+    language: localStorage.getItem('language') ? JSON.parse(localStorage.getItem('language')!) : 'en',
     orderItems: localStorage.getItem('orders') ? JSON.parse(localStorage.getItem('orders')!) : [],
     address: localStorage.getItem('address') ? JSON.parse(localStorage.getItem('address')!) : '',
     phone: localStorage.getItem('phone') ? JSON.parse(localStorage.getItem('phone')!) : '',
@@ -46,6 +48,10 @@ export const cartSlice = createSlice({
             state.address = action.payload;
             state.inputValid = isInputValid(action.payload, state.phone, state.customer_name);
             localStorage.setItem('address', JSON.stringify(state.address));
+        },
+        setLanguage: (state, action: PayloadAction<string>) => {
+            state.language = action.payload;
+            localStorage.setItem('language', JSON.stringify(state.language));
         },
         setPhone: (state, action: PayloadAction<string>) => {
             state.phone = action.payload;
@@ -84,5 +90,5 @@ export const cartSlice = createSlice({
 });
 
 // export const { setOrderCount } = cartSlice.actions;
-export const { addToCart, setAddress, setPhone, setCustomerName, deleteFromCart, setItemQuantity, clearCart } = cartSlice.actions;
+export const { addToCart, setAddress, setPhone, setCustomerName, deleteFromCart, setItemQuantity, clearCart, setLanguage } = cartSlice.actions;
 export default cartSlice.reducer;

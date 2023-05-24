@@ -14,36 +14,43 @@ import CartPage from './page-cart';
 import TrackOrderPage from './page-track-order';
 import StaffPage from './page-staff';
 import CustomerTrackPage from './page-customer_track';
+import Footer from './view/footer';
+import i18n from './locale/i18n';
+import { I18nextProvider } from 'react-i18next';
 
 const App: React.FC = () => {
   return (
     <Provider store={store}>
-      <div>
-        <div className='container'>
-          <Navbar></Navbar>
-        </div>
-        <Router>
-          <Routes>
-            <Route path='/staff' element={<StaffPage />}></Route>
-            <Route path="/customize-order/:optionId/:isEditing?" element={<CustomizeOrderPage />}>
-            </Route>
-            <Route path='/track-order/:orderId' element={<TrackOrderPage />}></Route>
-            <Route path='/track-order' element={<CustomerTrackPage />}></Route>
-            <Route path="/all-items/:filter?" element={<SelectionPage />}>
-            </Route>
-            <Route path="/cart/" element={<CartPage />}>
-            </Route>
-            <Route path="/" element={
-              <>
-                <Slider></Slider><section className='section'>
-                  <Menu chunkSize={4} typeFilter='' />
-                </section>
-              </>
-            }>
-            </Route>
-          </Routes>
-        </Router >
-      </div >
+      <I18nextProvider i18n={i18n}>
+        <div>
+          <div className='container'>
+            <Navbar></Navbar>
+          </div>
+          <Router>
+            <Routes>
+              <Route path='/staff' element={<StaffPage />}></Route>
+              <Route path="/customize-order/:optionId/:isEditing?" element={<CustomizeOrderPage />}>
+              </Route>
+              <Route path='/track-order/:orderId' element={<TrackOrderPage />}></Route>
+              <Route path='/track-order' element={<CustomerTrackPage />}></Route>
+              <Route path="/all-items/:filter?" element={<SelectionPage />}>
+              </Route>
+              <Route path="/cart/" element={<CartPage />}>
+              </Route>
+              <Route path="/" element={
+                <>
+                  <Slider></Slider>
+                  <section className='section'>
+                    <Menu chunkSize={4} typeFilter='' />
+                  </section>
+                </>
+              }>
+              </Route>
+            </Routes>
+          </Router >
+          <Footer></Footer>
+        </div >
+      </I18nextProvider>
     </Provider >
   );
 };

@@ -11,12 +11,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { addToCart } from './reducer/cartSlice';
 import { RootState } from './reducer/store';
+import { useTranslation } from 'react-i18next';
 
 
 const CustomizeOrderPage: React.FC = () => {
     const { optionId, isEditing } = useParams();
 
     const [menuOption, setMenuOptions] = useState<MenuOption | null>();
+    const language = useSelector((state: RootState) => state.cart.language);
+    const { t } = useTranslation();
+
+
 
     const [styles, setStyles] = useState<StyleOption[]>();
     const [sizes, setSizes] = useState<SizeOption[]>();
@@ -25,6 +30,10 @@ const CustomizeOrderPage: React.FC = () => {
     const [selectedStyle, setStyle] = useState<StyleOption | null>();
     const [selectedSize, setSize] = useState<SizeOption | null>();
     const [selectedToppings, setSelectedToppings] = useState<ToppingOption[]>([]);
+
+    const [acceptableSizes, setAcceptableSizes] = useState<SizeOption[]>();
+    const [acceptableToppings, setAcceptableToppings] = useState<ToppingOption[]>();
+
 
     const [quantity, setQuantity] = useState<number>();
     const [price, setPrice] = useState<number>();
@@ -37,6 +46,19 @@ const CustomizeOrderPage: React.FC = () => {
         var s = (styles?.find((e) => e.nameEn === style));
         if (s) {
             setStyle(s);
+            if (style == "cold" || style == "blended") {
+                setAcceptableSizes(sizes);
+                setAcceptableToppings(toppings?.filter((e) => e.nameEn !== "chocolate sauce"))
+            } else {
+                setAcceptableToppings(toppings);
+                if (sizes) {
+                    var _newSizes = sizes.filter((e) => e.nameEn == "S" || e.nameEn == "M");
+                    setAcceptableSizes(_newSizes);
+                    if (!_newSizes.find((e) => e.nameEn == selectedSize?.nameEn)) {
+                        setSize(null);
+                    }
+                }
+            }
             calculate(menuOption, s, selectedSize, selectedToppings, quantity);
         }
     };
@@ -123,19 +145,20 @@ const CustomizeOrderPage: React.FC = () => {
             const result = await MenuOption.getOption(optionId);
             setMenuOptions(result);
             calculate(result, selectedStyle, selectedSize, selectedToppings, quantity);
-
         };
         const fetchStyles = async () => {
-            const result = await StyleOption.getAll();
+            var result = await StyleOption.getAll();
             setStyles(result);
         };
         const fetchSizes = async () => {
             const result = await SizeOption.getAll();
             setSizes(result);
+            setAcceptableSizes(result);
         };
         const fetchToppings = async () => {
             const result = await ToppingOption.getAll();
             setToppings(result);
+            setAcceptableToppings(result);
         };
 
         fetchMenuOptions();
@@ -149,14 +172,6 @@ const CustomizeOrderPage: React.FC = () => {
     return (
         <section className='section'>
             <div className='container'>
-                <nav className="breadcrumb" aria-label="breadcrumbs">
-                    <ul>
-                        <li><a href="#" className='has-text-weight-semibold'>Menu</a></li>
-                        <li><a href="#" className='has-text-weight-semibold'>{menuOption?.type}</a></li>
-                        <li className="is-active has-text-weight-semibold"><a href="#" aria-current="page">{menuOption?.nameEn}</a></li>
-                    </ul>
-                </nav>
-
                 <div className='columns is-desktop'>
                     <div className='column'>
                         <figure className='image is-square'>
@@ -167,8 +182,8 @@ const CustomizeOrderPage: React.FC = () => {
                         <div className='block'>
                             <div className='columns'>
                                 <div className='column is-three-fifths'>
-                                    <p className='is-size-3 has-text-weight-semibold'>{menuOption?.nameEn}</p>
-                                    <p className='is-size-4 has-text-weight-semibold has-text-primary'>Price: ${price}</p>
+                                    <p className='is-size-3 has-text-weight-semibold'>{language === "en" ? menuOption?.nameEn : menuOption?.nameVi}</p>
+                                    <p className='is-size-4 has-text-weight-semibold has-text-primary'>{t('BasePrice')}: ${price}</p>
                                 </div>
                                 <div className='column is-two-fifths'>
                                     <div className='is-flex is-flex-direction-row is-justify-content-flex-start-mobile'>
@@ -180,11 +195,11 @@ const CustomizeOrderPage: React.FC = () => {
 
                         {/* STYLE SELECTOR  */}
                         {(menuOption?.availableStyles?.length! > 0) && (<div className='block'>
-                            <p className='is-size-5 has-text-weight-semibold pb-3'>Select serving style (required)</p>
+                            <p className='is-size-5 has-text-weight-semibold pb-3'>{t("Select_style")}</p>
                             <div className="field is-grouped">
-                                {menuOption?.availableStyles?.map((e) =>
-                                    <p className='control' key={e}>
-                                        <button className={`button ${e === selectedStyle?.nameEn ? 'is-primary' : ''}`} onClick={() => selectedStyleChanged(e)}>{e}</button>
+                                {styles?.map((e) =>
+                                    <p className='control' key={e.nameEn}>
+                                        <button className={`button ${e.nameEn === selectedStyle?.nameEn ? 'is-primary' : ''}`} onClick={() => selectedStyleChanged(e.nameEn)}>{language === "en" ? e.nameEn : e.nameVi}</button>
                                     </p>
                                 )}
                             </div>
@@ -192,11 +207,11 @@ const CustomizeOrderPage: React.FC = () => {
 
                         {/* SIZE SELECTOR */}
                         {(menuOption?.availableSizes?.length! > 0) && (<div className='block'>
-                            <p className='is-size-5 has-text-weight-semibold pb-3'>Select size (required)</p>
+                            <p className='is-size-5 has-text-weight-semibold pb-3'>{t("Select_size")}</p>
                             <div className="field is-grouped">
-                                {menuOption?.availableSizes?.map((e) =>
-                                    <p className='control' key={e}>
-                                        <button className={`button ${e === selectedSize?.nameEn ? 'is-primary' : ''}`} onClick={() => selectedSizeChanged(e)}>{e}</button>
+                                {acceptableSizes?.sort((s1, s2) => s1.displayOrder - s2.displayOrder).map((e) =>
+                                    <p className='control' key={e.nameEn}>
+                                        <button className={`button ${e.nameEn === selectedSize?.nameEn ? 'is-primary' : ''}`} onClick={() => selectedSizeChanged(e.nameEn)}>{language === "en" ? e.nameEn : e.nameVi}</button>
                                     </p>
                                 )}
                             </div>
@@ -206,15 +221,18 @@ const CustomizeOrderPage: React.FC = () => {
                         {(menuOption?.availableToppings?.length! > 0) && (<div className='block'>
                             <p className='is-size-5 has-text-weight-semibold pb-3'>Toppings</p>
                             <div className="field is-grouped is-grouped-multiline">
-                                {menuOption?.availableToppings?.map((e) =>
-                                    <p className='control' key={e} >
-                                        <button className={`button ${selectedToppings.find((t) => t.nameEn === e) != undefined ? 'is-primary' : ''}`} onClick={() => toggleTopping(e)}>{e}</button>
+                                {acceptableToppings && acceptableToppings?.map((e) =>
+                                    <p className='control' key={e.nameEn} >
+                                        <button className={`button ${selectedToppings.find((t) => t.nameEn === e.nameEn) != undefined ? 'is-primary' : ''}`}
+                                            onClick={() => toggleTopping(e.nameEn)}>
+                                            {language === "en" ? e.nameEn : e.nameVi}
+                                        </button>
                                     </p>
                                 )}
                             </div>
                         </div>)}
 
-                        <button className='button is-primary is-fullwidth mt-6' onClick={addToCartC}>Add to cart</button>
+                        <button className='button is-primary is-fullwidth mt-6' onClick={addToCartC}>{t('AddToCart')}</button>
                     </div>
                 </div>
             </div>

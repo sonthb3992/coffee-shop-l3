@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { Order } from './domain/order';
-import SingleOrderDisplay from './view/order-item';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from './reducer/store';
-import { setAddress, setCustomerName, setPhone } from './reducer/cartSlice';
+import { setCustomerName, setPhone } from './reducer/cartSlice';
 import SingleOrderDisplayCustomerView from './view/order-item-customer';
+import { useTranslation } from 'react-i18next';
 
 
 const CustomerTrackPage: React.FC = () => {
     const phone = useSelector((state: RootState) => state.cart.phone);
     const customerName = useSelector((state: RootState) => state.cart.customer_name);
     const dispatch = useDispatch();
+
+    const language = useSelector((state: RootState) => state.cart.language);
+    const { t } = useTranslation();
+
 
     const [all_orders, setAllOrders] = useState<Order[]>();
 
@@ -23,15 +27,6 @@ const CustomerTrackPage: React.FC = () => {
     };
 
     useEffect(() => {
-        // const fetchAllOrder = async () => {
-        //     var result = await Order.getAllOrders((result) => {
-        //         setAllOrders(result);
-        //     });
-        //     if (result !== null)
-        //         setAllOrders(result.orders)
-        // }
-
-        // fetchAllOrder();
     }, []);
 
 
@@ -56,9 +51,9 @@ const CustomerTrackPage: React.FC = () => {
             <div className='container'>
                 <div className='columns is-desktop'>
                     <div className={`column ${all_orders && all_orders.length > 0 ? '' : 'is-half is-offset-one-quarter'}`}>
-                        <p className='title is-4 pt-5'>Find your order</p>
+                        <p className='title is-4 pt-5'>{t('Find your order')}</p>
                         <div className="field">
-                            <label className="label">Name</label>
+                            <label className="label">{t('ReceiverName')}</label>
                             <div className="control has-icons-left has-icons-right">
                                 <input className={`input ${customerName ? 'is-success' : 'is-danger'}`}
                                     type="text" value={customerName}
@@ -69,11 +64,11 @@ const CustomerTrackPage: React.FC = () => {
                                 </span>
                             </div>
                             {(!customerName &&
-                                <p className="help is-danger">Please enter a valid name</p>)}
+                                <p className="help is-danger">{t('ReceiverName_invalid')}</p>)}
                         </div>
 
                         <div className="field">
-                            <label className="label">Phone number</label>
+                            <label className="label">{t('Phone number')}</label>
                             <div className="control has-icons-left has-icons-right">
                                 <input className={`input ${phone ? 'is-success' : 'is-danger'}`}
                                     type="text" value={phone}
@@ -85,7 +80,7 @@ const CustomerTrackPage: React.FC = () => {
                             </div>
                         </div>
                         <button className='button is-primary' onClick={() => findOrder()}>
-                            Find my order
+                            {t('Find')}
                         </button>
                     </div>
 
@@ -95,7 +90,7 @@ const CustomerTrackPage: React.FC = () => {
                         <div className='column'>
                             <article className="message is-info" >
                                 <div className="message-header">
-                                    Your orders
+                                    {t('Your orders')}
                                 </div>
                                 <div className="message-body" style={{ maxHeight: '500px', overflowY: 'auto' }} >
                                     {all_orders!.map((o) =>
