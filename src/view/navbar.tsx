@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import shopName from '../assets/images/shop-name.png'; // change this to the path of your image
 import logo from '../assets/images/logo.png'; // change this to the path of your image
@@ -15,6 +15,8 @@ interface ILng {
 const Navbar: React.FC = () => {
     const dispatch = useDispatch();
     const orderCount = useSelector((state: RootState) => state.cart.orderItems.length || 0);
+    const [showMenuOnMobile, setShowMenuOnMobile] = useState<boolean>(false);
+
     const lngs: ILng[] = [
         { code: "en", native: "En" },
         { code: "vn", native: "Vi" },
@@ -26,6 +28,10 @@ const Navbar: React.FC = () => {
         i18n.changeLanguage(code);
     };
 
+    const toggleMenu = () => {
+        setShowMenuOnMobile(!showMenuOnMobile);
+    }
+
     return (
         <nav className="navbar" role="navigation" aria-label="main navigation">
             <div className="navbar-brand">
@@ -34,14 +40,14 @@ const Navbar: React.FC = () => {
                     <img src={shopName} alt="Logo" width="112" height="28" />
                 </a>
 
-                <a role="button" className="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                <a role="button" className={`navbar-burger ${showMenuOnMobile ? 'is-active' : ''}`} onClick={() => toggleMenu()} aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
                 </a>
             </div>
 
-            <div id="navbarBasicExample" className="navbar-menu">
+            <div id="navbarBasicExample" className={`navbar-menu ${showMenuOnMobile ? 'is-active' : ''}`}>
                 <div className="navbar-end">
                     <a className="navbar-item has-text-weight-semibold" href='/'>
                         {t("Home")}
