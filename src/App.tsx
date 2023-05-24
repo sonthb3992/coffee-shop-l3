@@ -22,9 +22,9 @@ const App: React.FC = () => {
   return (
     <Provider store={store}>
       <I18nextProvider i18n={i18n}>
-        <div className='container'>
-          <Navbar></Navbar>
-        </div>
+        {/* <div className='container'> */}
+        <Navbar></Navbar>
+        {/* </div> */}
         <Router>
           <Routes>
             <Route path='/staff' element={<StaffPage />}></Route>

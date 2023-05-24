@@ -143,8 +143,10 @@ const CustomizeOrderPage: React.FC = () => {
     useEffect(() => {
         const fetchMenuOptions = async () => {
             const result = await MenuOption.getOption(optionId);
+            if (result === null) return;
             setMenuOptions(result);
             calculate(result, selectedStyle, selectedSize, selectedToppings, quantity);
+            await fetchToppings(result);
         };
         const fetchStyles = async () => {
             var result = await StyleOption.getAll();
@@ -155,16 +157,23 @@ const CustomizeOrderPage: React.FC = () => {
             setSizes(result);
             setAcceptableSizes(result);
         };
-        const fetchToppings = async () => {
+        const fetchToppings = async (value: MenuOption) => {
             const result = await ToppingOption.getAll();
-            setToppings(result);
-            setAcceptableToppings(result);
+            var topp: ToppingOption[] = [];
+            result.forEach(t => {
+                var found = value.availableToppings?.find(t2 => t.nameEn == t2);
+                if (found != undefined) {
+                    console.log(t);
+                    topp.push(t);
+                }
+            });
+            setToppings(topp);
+            setAcceptableToppings(topp);
         };
 
         fetchMenuOptions();
         fetchStyles();
         fetchSizes();
-        fetchToppings();
 
     }, [optionId, isEditing]);
 
