@@ -15,8 +15,8 @@ const resources = {
 
 i18n.use(initReactI18next).init({
     resources,
-    lng: 'vi',
-    fallbackLng: 'en',
+    lng: 'en',
+    fallbackLng: 'vi',
     interpolation: {
         escapeValue: false
     }

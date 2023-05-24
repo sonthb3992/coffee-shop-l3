@@ -36,3 +36,28 @@
     transform: rotate(360deg);
   }
 } */
+
+body {
+  margin: 0;
+  font-family: 'SF Pro Text', sans-serif !important;
+  font-size: 16px;
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
+
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex-grow: 1;
+}
+
+footer {
+  flex-shrink: 0;
+}

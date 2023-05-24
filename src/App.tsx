@@ -22,34 +22,32 @@ const App: React.FC = () => {
   return (
     <Provider store={store}>
       <I18nextProvider i18n={i18n}>
-        <div>
-          <div className='container'>
-            <Navbar></Navbar>
-          </div>
-          <Router>
-            <Routes>
-              <Route path='/staff' element={<StaffPage />}></Route>
-              <Route path="/customize-order/:optionId/:isEditing?" element={<CustomizeOrderPage />}>
-              </Route>
-              <Route path='/track-order/:orderId' element={<TrackOrderPage />}></Route>
-              <Route path='/track-order' element={<CustomerTrackPage />}></Route>
-              <Route path="/all-items/:filter?" element={<SelectionPage />}>
-              </Route>
-              <Route path="/cart/" element={<CartPage />}>
-              </Route>
-              <Route path="/" element={
-                <>
-                  <Slider></Slider>
-                  <section className='section'>
-                    <Menu chunkSize={4} typeFilter='' />
-                  </section>
-                </>
-              }>
-              </Route>
-            </Routes>
-          </Router >
-          <Footer></Footer>
-        </div >
+        <div className='container'>
+          <Navbar></Navbar>
+        </div>
+        <Router>
+          <Routes>
+            <Route path='/staff' element={<StaffPage />}></Route>
+            <Route path="/customize-order/:optionId/:isEditing?" element={<CustomizeOrderPage />}>
+            </Route>
+            <Route path='/track-order/:orderId' element={<TrackOrderPage />}></Route>
+            <Route path='/track-order' element={<CustomerTrackPage />}></Route>
+            <Route path="/all-items/:filter?" element={<SelectionPage />}>
+            </Route>
+            <Route path="/cart/" element={<CartPage />}>
+            </Route>
+            <Route path="/" element={
+              <>
+                <Slider></Slider>
+                <section className='section'>
+                  <Menu chunkSize={4} typeFilter='' />
+                </section>
+              </>
+            }>
+            </Route>
+          </Routes>
+        </Router >
+        <Footer></Footer>
       </I18nextProvider>
     </Provider >
   );

@@ -22,12 +22,11 @@ const Footer = () => {
                 <div className="level">
                     <div className="level-left">
                         <p>
-                            <strong>Uncle & Aunt Coffee shop</strong> by team 7. The source code can be found
-                            <a href="https://github.com/sonthb3992/coffee-shop-l3">here</a>.
+                            <strong>Uncle & Aunt Coffee shop</strong> by <strong>team 7</strong>. The source code can be found <a href="https://github.com/sonthb3992/coffee-shop-l3">here</a>.
                         </p>
                     </div>
                     <div className="level-right">
-                        <span className="icon-text is-flex ">
+                        <span className="icon-text is-flex is-align-content-center	is-align-items-center">
                             <span className="icon">
                                 <i className="fa-solid fa-globe"></i>
                             </span>
