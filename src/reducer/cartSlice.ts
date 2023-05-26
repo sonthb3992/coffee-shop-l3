@@ -1,8 +1,6 @@
 // cartSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { OrderItem } from '../domain/selected_item';
-import { Order } from '../domain/order';
-import { v4 as uuidv4 } from 'uuid';
 
 interface OrderState {
     language: string;
@@ -14,31 +12,24 @@ interface OrderState {
     customer_name: string
 }
 
-const isInputValid = (address: string | null | undefined, phone: string | null | undefined, customer: string | null | undefined): boolean => {
-    if (address === null || address === undefined || address == '')
-        return false;
-    if (phone === null || phone === undefined || phone == '')
-        return false;
-    if (customer === null || customer === undefined || customer == '')
-        return false;
-
-    return true;
-}
-
+const getLocalStorageValue = (key: string, defaultValue: any) => {
+    const storedValue = localStorage.getItem(key);
+    return storedValue ? JSON.parse(storedValue) : defaultValue;
+  };
+  
 const initialState: OrderState = {
-    language: localStorage.getItem('language') ? JSON.parse(localStorage.getItem('language')!) : 'en',
-    orderItems: localStorage.getItem('orders') ? JSON.parse(localStorage.getItem('orders')!) : [],
-    address: localStorage.getItem('address') ? JSON.parse(localStorage.getItem('address')!) : '',
-    phone: localStorage.getItem('phone') ? JSON.parse(localStorage.getItem('phone')!) : '',
-    customer_name: localStorage.getItem('customer_name') ? JSON.parse(localStorage.getItem('customer_name')!) : '',
-    editingItem: localStorage.getItem('editingItem') ? JSON.parse(localStorage.getItem('editingItem')!) : null,
-    inputValid: isInputValid(
-        localStorage.getItem('address') ? JSON.parse(localStorage.getItem('address')!) : '',
-        localStorage.getItem('phone') ? JSON.parse(localStorage.getItem('phone')!) : '',
-        localStorage.getItem('customer_name') ? JSON.parse(localStorage.getItem('customer_name')!) : '',
-    ),
+    language: getLocalStorageValue('language', 'en'),
+    orderItems: getLocalStorageValue('orders', []),
+    address: getLocalStorageValue('address', ''),
+    phone: getLocalStorageValue('phone', ''),
+    customer_name: getLocalStorageValue('customer_name', ''),
+    editingItem: getLocalStorageValue('editingItem', null),
+    inputValid: false,
 };
 
+const isInputValid = (address: string, phone: string, customer: string): boolean => {
+return address !== '' && phone !== '' && customer !== '';
+};
 
 export const cartSlice = createSlice({
     name: 'cart',
@@ -89,6 +80,5 @@ export const cartSlice = createSlice({
     },
 });
 
-// export const { setOrderCount } = cartSlice.actions;
 export const { addToCart, setAddress, setPhone, setCustomerName, deleteFromCart, setItemQuantity, clearCart, setLanguage } = cartSlice.actions;
 export default cartSlice.reducer;
