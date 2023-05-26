@@ -5,12 +5,8 @@ import { setLanguage } from "../reducer/cartSlice";
 
 const Footer = () => {
     const language = useSelector((state: RootState) => state.cart.language);
-    const { t, i18n } = useTranslation();
+    const { i18n } = useTranslation();
     const dispatch = useDispatch();
-    const lngs = [
-        { code: "en", native: "En" },
-        { code: "vn", native: "Vi" },
-    ];
     const handleTrans = (code: string) => {
         i18n.changeLanguage(code);
         dispatch(setLanguage(code));

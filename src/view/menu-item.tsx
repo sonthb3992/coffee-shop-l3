@@ -14,7 +14,6 @@ const MenuOptionComponent: React.FC<MenuOptionProps> = ({ option }) => {
     const language = useSelector((state: RootState) => state.cart.language);
     const { t } = useTranslation();
 
-    // Render your component here. This is just a basic example.
     return (
         <Link to={`/customize-order/${option.nameEn}`} className='no-decoration-link menu-title'>
             <div className='box p-0'>
