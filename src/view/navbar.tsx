@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import shopName from '../assets/images/shop-name.png'; // change this to the path of your image
 import logo from '../assets/images/logo.png'; // change this to the path of your image
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from '../reducer/store';
-import { cartSlice } from '../reducer/cartSlice';
 
 
 const Navbar: React.FC = () => {
-    const dispatch = useDispatch();
     const orderCount = useSelector((state: RootState) => state.cart.orderItems.length || 0);
     const [showMenuOnMobile, setShowMenuOnMobile] = useState<boolean>(false);
 
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
 
     const toggleMenu = () => {
         setShowMenuOnMobile(!showMenuOnMobile);

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { MenuOption } from '../domain/menu_option';
 import MenuOptionComponent from './menu-item';
-import { useTranslation } from "react-i18next";
 
 interface MenuProps {
     chunkSize: number;
@@ -11,7 +10,6 @@ interface MenuProps {
 
 const Menu: React.FC<MenuProps> = ({ chunkSize, typeFilter: filter }) => {
     const [menuOptions, setMenuOptions] = useState<MenuOption[]>([]);
-    const { t, i18n } = useTranslation();
 
     useEffect(() => {
         const fetchMenuOptions = async () => {
@@ -27,12 +25,12 @@ const Menu: React.FC<MenuProps> = ({ chunkSize, typeFilter: filter }) => {
     return (
         <div className='container'>
             <div className='columns is-mobile is-multiline'>
-                {chunkSize == 4 && menuOptions.map((option, index) => (
+                {chunkSize === 4 && menuOptions.map((option) => (
                     <div className='column is-half-mobile  is-one-thirds-tablet is-one-quarter-desktop'>
                         <MenuOptionComponent option={option} />
                     </div>
                 ))}
-                {chunkSize == 3 && menuOptions.map((option, index) => (
+                {chunkSize === 3 && menuOptions.map((option) => (
                     <div className='column is-half-mobile  is-one-thirds-tablet'>
                         <MenuOptionComponent option={option} />
                     </div>

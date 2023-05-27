@@ -1,9 +1,4 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { calculatePrice, getDescription } from '../domain/selected_item';
-import { useDispatch } from 'react-redux';
-import { deleteFromCart, setItemQuantity } from '../reducer/cartSlice';
-import QuantitySelector from './quanlity-selector';
 import { Order } from '../domain/order';
 
 interface SingleOrderDisplayProps {
@@ -38,22 +33,22 @@ const SingleOrderDisplay: React.FC<SingleOrderDisplayProps> = ({ order: item }) 
             </span>
             <div className="field is-grouped is-flex is-justify-content-flex-end">
                 <p className="control">
-                    {item.status == 0 &&
+                    {item.status === 0 &&
                         <button className="button is-small is-info" onClick={() => nextStepClick()}>
                             Confirm
                         </button>
                     }
-                    {item.status == 1 &&
+                    {item.status === 1 &&
                         <button className="button is-link is-small" onClick={() => nextStepClick()}>
                             Process
                         </button>
                     }
-                    {item.status == 2 &&
+                    {item.status === 2 &&
                         <button className="button is-primary is-small" onClick={() => nextStepClick()}>
                             Delivery
                         </button>
                     }
-                    {item.status == 3 &&
+                    {item.status === 3 &&
                         <button className="button is-warning is-small" onClick={() => nextStepClick()}>
                             Complete
                         </button>
