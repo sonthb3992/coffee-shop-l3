@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { OrderItem } from './domain/selected_item';
+import { OrderItem } from '../domain/selected_item';
 import { useSelector } from 'react-redux';
-import { RootState } from './reducer/store';
-import { Order } from './domain/order';
-import CartPageItem from './view/cart-item';
+import { RootState } from '../reducer/store';
+import { Order } from '../domain/order';
+import CartPageItem from '../view/cart-item';
 import { useTranslation } from 'react-i18next';
 
 

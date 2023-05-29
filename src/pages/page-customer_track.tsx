@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Order } from './domain/order';
+import { Order } from '../domain/order';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from './reducer/store';
-import { setCustomerName, setPhone } from './reducer/cartSlice';
-import SingleOrderDisplayCustomerView from './view/order-item-customer';
+import { RootState } from '../reducer/store';
+import { setCustomerName, setPhone } from '../reducer/cartSlice';
+import SingleOrderDisplayCustomerView from '../view/order-item-customer';
 import { useTranslation } from 'react-i18next';
 
 

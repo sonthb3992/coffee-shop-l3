@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { MenuItemTypeOption } from './domain/menu_option_type';
-import Menu from './view/menu';
+import { MenuItemTypeOption } from '../domain/menu_option_type';
+import Menu from '../view/menu';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { RootState } from './reducer/store';
+import { RootState } from '../reducer/store';
 
 
 const SelectionPage: React.FC = () => {

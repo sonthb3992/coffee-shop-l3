@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from './reducer/store';
-import CartPageItem from './view/cart-item';
-import { OrderItem, calculatePrice } from './domain/selected_item';
-import { clearCart, setAddress, setCustomerName, setPhone } from './reducer/cartSlice';
-import { Order } from './domain/order';
+import { RootState } from '../reducer/store';
+import CartPageItem from '../view/cart-item';
+import { OrderItem, calculatePrice } from '../domain/selected_item';
+import { clearCart, setAddress, setCustomerName, setPhone } from '../reducer/cartSlice';
+import { Order } from '../domain/order';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';

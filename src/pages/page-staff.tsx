@@ -1,19 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { MenuOption } from './domain/menu_option';
-import QuantitySelector from './view/quanlity-selector';
-import { StyleOption } from './domain/option_stype';
-import { SizeOption } from './domain/option_size';
-import { OrderItem, buildOrder } from './domain/selected_item';
-import { ToppingOption } from './domain/option_topping';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
-import { addToCart } from './reducer/cartSlice';
-import { RootState } from './reducer/store';
-import { Order } from './domain/order';
-import CartPageItem from './view/cart-item';
-import SingleOrderDisplay from './view/order-item';
+import { Order } from '../domain/order';
+import SingleOrderDisplay from '../view/order-item';
 
 
 const StaffPage: React.FC = () => {
