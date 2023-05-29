@@ -34,7 +34,8 @@ const App: React.FC = () => {
     <Provider store={store}>
       <I18nextProvider i18n={i18n}>
         <Router>
-          {shouldDisplayNavbar() && <Navbar />}
+          {/* {shouldDisplayNavbar() && <Navbar />} */}
+          <Navbar></Navbar>
           <Routes>
             <Route path="/login" element={<LoginPage formType={FormType.SignIn} />} />
             <Route path="/sign-up" element={<LoginPage formType={FormType.SignUp} />} />
@@ -47,7 +48,7 @@ const App: React.FC = () => {
             <Route path="/" element={<PageHome />} />
             {shouldDisplayNavbar() && <Route path="*" element={<PageNotFound />} />} {/* Optional: Render a "PageNotFound" component for undefined routes */}
           </Routes>
-          {shouldDisplayNavbar() && <Footer />}
+          {/* {shouldDisplayNavbar() && <Footer />} */}
         </Router>
       </I18nextProvider>
     </Provider>

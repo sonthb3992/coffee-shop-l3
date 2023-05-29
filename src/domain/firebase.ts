@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getAnalytics } from "firebase/analytics";
+import { browserLocalPersistence, getAuth, onAuthStateChanged, setPersistence } from 'firebase/auth';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../reducer/cartSlice';
 // TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
     apiKey: "AIzaSyBvxL6FLhbF74FHr5CV-gEc_Resc63PKhg",
@@ -15,6 +16,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 // Initialize Firebase Authentication and get a reference to the service
 const auth = getAuth(app);
-
+setPersistence(auth, browserLocalPersistence);
 
 export { app, auth }

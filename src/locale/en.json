@@ -55,6 +55,7 @@
     "login.signUp": "Sign Up",
     "login.forgotPassword": "Forgot Password",
     "login.needHelp": "Need Help",
+    "login.error": "Please enter your email and password",
     "signup": {
         "title": "Sign Up",
         "subtitle": "Create your account",
@@ -63,6 +64,7 @@
         "confirmPasswordPlaceholder": "Confirm Password",
         "signupButton": "Sign Up",
         "loginLink": "Already have an account? Login here.",
-        "namePlaceholder": "Your name"
+        "namePlaceholder": "Your name",
+        "error": "Please input all the fields"
     }
 }

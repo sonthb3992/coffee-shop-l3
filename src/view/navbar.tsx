@@ -8,6 +8,8 @@ import { RootState } from '../reducer/store';
 
 const Navbar: React.FC = () => {
     const orderCount = useSelector((state: RootState) => state.cart.orderItems.length || 0);
+    const user = useSelector((state: RootState) => state.cart.user);
+
     const [showMenuOnMobile, setShowMenuOnMobile] = useState<boolean>(false);
 
     const { t } = useTranslation();
@@ -32,7 +34,7 @@ const Navbar: React.FC = () => {
             </div>
 
             <div id="navbarBasicExample" className={`navbar-menu ${showMenuOnMobile ? 'is-active' : ''}`}>
-                <div className="navbar-end">
+                <div className="navbar-start">
                     <a className="navbar-item has-text-weight-semibold" href='/'>
                         {t("Home")}
                     </a>
@@ -57,6 +59,11 @@ const Navbar: React.FC = () => {
                             </a>
                         </div>
                     </div>
+                </div>
+                <div className='navbar-end'>
+                    <a className="navbar-item has-text-weight-semibold" href='/'>
+                        {user && user.email}
+                    </a>
                 </div>
             </div>
         </nav>

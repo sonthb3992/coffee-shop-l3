@@ -3,6 +3,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { OrderItem } from '../domain/selected_item';
 import { Order } from '../domain/order';
 import { v4 as uuidv4 } from 'uuid';
+import { onAuthStateChanged, User, UserCredential } from 'firebase/auth';
+import { auth } from '../domain/firebase';
 
 interface OrderState {
     language: string;
@@ -11,7 +13,8 @@ interface OrderState {
     editingItem: OrderItem | null,
     address: string,
     phone: string,
-    customer_name: string
+    customer_name: string,
+    user: User | null
 }
 
 const isInputValid = (address: string | null | undefined, phone: string | null | undefined, customer: string | null | undefined): boolean => {
@@ -25,6 +28,15 @@ const isInputValid = (address: string | null | undefined, phone: string | null |
     return true;
 }
 
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        setUser(user);
+    } else {
+        setUser(null);
+    }
+});
+
+
 const initialState: OrderState = {
     language: localStorage.getItem('language') ? JSON.parse(localStorage.getItem('language')!) : 'en',
     orderItems: localStorage.getItem('orders') ? JSON.parse(localStorage.getItem('orders')!) : [],
@@ -37,6 +49,7 @@ const initialState: OrderState = {
         localStorage.getItem('phone') ? JSON.parse(localStorage.getItem('phone')!) : '',
         localStorage.getItem('customer_name') ? JSON.parse(localStorage.getItem('customer_name')!) : '',
     ),
+    user: null
 };
 
 
@@ -44,6 +57,9 @@ export const cartSlice = createSlice({
     name: 'cart',
     initialState,
     reducers: {
+        setUser: (state, action: PayloadAction<User | null>) => {
+            state.user = action.payload;
+        },
         setAddress: (state, action: PayloadAction<string>) => {
             state.address = action.payload;
             state.inputValid = isInputValid(action.payload, state.phone, state.customer_name);
@@ -90,5 +106,5 @@ export const cartSlice = createSlice({
 });
 
 // export const { setOrderCount } = cartSlice.actions;
-export const { addToCart, setAddress, setPhone, setCustomerName, deleteFromCart, setItemQuantity, clearCart, setLanguage } = cartSlice.actions;
+export const { addToCart, setAddress, setPhone, setCustomerName, deleteFromCart, setItemQuantity, clearCart, setLanguage, setUser } = cartSlice.actions;
 export default cartSlice.reducer;

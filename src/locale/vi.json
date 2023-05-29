@@ -55,6 +55,7 @@
     "login.signUp": "Đăng ký",
     "login.forgotPassword": "Quên mật khẩu",
     "login.needHelp": "Cần trợ giúp",
+    "login.error": "Vui lòng nhập email và mật khẩu",
     "signup": {
         "title": "Đăng ký",
         "subtitle": "Tạo tài khoản của bạn",
@@ -63,6 +64,7 @@
         "confirmPasswordPlaceholder": "Xác nhận mật khẩu",
         "signupButton": "Đăng ký",
         "loginLink": "Đã có tài khoản? Đăng nhập tại đây.",
-        "namePlaceholder": "Tên của bạn"
+        "namePlaceholder": "Tên của bạn",
+        "error": "Vui lòng nhập đầy đủ thông tin"
     }
 }
