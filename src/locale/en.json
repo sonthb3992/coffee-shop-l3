@@ -45,5 +45,24 @@
     "Find your order": "Find your order",
     "Find": "Find",
     "Your orders": "Your orders",
-    "View detail": "View detail"
+    "View detail": "View detail",
+    "login.title": "Login",
+    "login.subtitle": "Please login to proceed.",
+    "login.emailPlaceholder": "Your Email",
+    "login.passwordPlaceholder": "Your Password",
+    "login.rememberMe": "Remember me",
+    "login.loginButton": "Login",
+    "login.signUp": "Sign Up",
+    "login.forgotPassword": "Forgot Password",
+    "login.needHelp": "Need Help",
+    "signup": {
+        "title": "Sign Up",
+        "subtitle": "Create your account",
+        "emailPlaceholder": "Your Email",
+        "passwordPlaceholder": "Your Password",
+        "confirmPasswordPlaceholder": "Confirm Password",
+        "signupButton": "Sign Up",
+        "loginLink": "Already have an account? Login here.",
+        "namePlaceholder": "Your name"
+    }
 }

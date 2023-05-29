@@ -45,5 +45,24 @@
     "Find your order": "Tra cứu đơn đặt hàng",
     "Find": "Tra cứu",
     "Your orders": "Đơn hàng của bạn",
-    "View detail": "Xem chi tiết"
+    "View detail": "Xem chi tiết",
+    "login.title": "Đăng nhập",
+    "login.subtitle": "Vui lòng đăng nhập để tiếp tục.",
+    "login.emailPlaceholder": "Email của bạn",
+    "login.passwordPlaceholder": "Mật khẩu của bạn",
+    "login.rememberMe": "Ghi nhớ",
+    "login.loginButton": "Đăng nhập",
+    "login.signUp": "Đăng ký",
+    "login.forgotPassword": "Quên mật khẩu",
+    "login.needHelp": "Cần trợ giúp",
+    "signup": {
+        "title": "Đăng ký",
+        "subtitle": "Tạo tài khoản của bạn",
+        "emailPlaceholder": "Email của bạn",
+        "passwordPlaceholder": "Mật khẩu của bạn",
+        "confirmPasswordPlaceholder": "Xác nhận mật khẩu",
+        "signupButton": "Đăng ký",
+        "loginLink": "Đã có tài khoản? Đăng nhập tại đây.",
+        "namePlaceholder": "Tên của bạn"
+    }
 }

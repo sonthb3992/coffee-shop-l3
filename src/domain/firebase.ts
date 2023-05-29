@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 import { getAnalytics } from "firebase/analytics";
 // TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
@@ -12,5 +13,8 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+// Initialize Firebase Authentication and get a reference to the service
+const auth = getAuth(app);
 
-export { app }
+
+export { app, auth }
