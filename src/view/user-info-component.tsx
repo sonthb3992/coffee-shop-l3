@@ -1,5 +1,5 @@
 import { User } from 'firebase/auth';
-import React, { useState } from 'react';
+import React from 'react';
 import defaultAvatar from '../assets/images/default-avatar.png'
 import { useNavigate } from 'react-router-dom';
 
@@ -18,7 +18,7 @@ const UserInfoComponent: React.FC<UserInfoProps> = ({ user }) => {
         <div className='user-info'>
             <figure className='navbar-item is-rounded' onClick={handleAvatarClick}>
                 <p className="image is-48x48">
-                    {user.photoURL && <img src={user.photoURL} alt="User Avatar" />}
+                    {user.photoURL && <img src={user.photoURL} alt="User Avatar" className='navbar-avatar is-rounded has-background-link-light' />}
                     {!user.photoURL && <img src={defaultAvatar} alt="User Avatar" className='navbar-avatar is-rounded has-background-link-light' />}
                 </p>
             </figure>

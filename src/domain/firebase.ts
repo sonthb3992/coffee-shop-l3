@@ -15,13 +15,23 @@ const firebaseConfig = {
     measurementId: "G-3L8FEXV404"
 };
 
+
+const firebaseConfigExample = {
+    apiKey: "",
+    authDomain: "",
+    projectId: "",
+    storageBucket: "",
+    messagingSenderId: "",
+    appId: "",
+    measurementId: ""
+};
 const app = initializeApp(firebaseConfig);
+
 // Initialize Firebase Authentication and get a reference to the service
 const auth = getAuth(app);
 setPersistence(auth, browserLocalPersistence);
 
 // Initialize Cloud Storage and get a reference to the service
 const storage = getStorage(app);
-
 
 export { app, auth }

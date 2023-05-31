@@ -25,10 +25,7 @@ const AddressModal: React.FC<AddressModalProps> = ({ initialAddress, updateAddre
                         value={newAddress}
                         onChange={(e) => setNewAddress(e.target.value)}
                     />
-                    <button
-                        className="button is-primary mt-2"
-                        onClick={handleUpdateAddress}
-                    >
+                    <button className="button is-primary mt-2" onClick={handleUpdateAddress}>
                         Update Address
                     </button>
                 </div>

@@ -29,7 +29,6 @@ const SignUpForm: React.FC = () => {
                 }).then(() => {
                     dispatch(setUser(userCredential.user));
                 }).catch((error) => {
-
                 });
                 navigate("/");
             })

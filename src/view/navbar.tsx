@@ -7,7 +7,7 @@ import { RootState } from '../reducer/store';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../domain/firebase';
 import { setUser } from '../reducer/cartSlice';
-import UserInfoComponent from './user-display';
+import UserInfoComponent from './user-info-component';
 
 
 const Navbar: React.FC = () => {
@@ -44,7 +44,7 @@ const Navbar: React.FC = () => {
     }
 
     return (
-        <nav className="navbar is-spaced" role="navigation" aria-label="main navigation">
+        <nav className="navbar is-spaced is-light" role="navigation" aria-label="main navigation">
             <div className="navbar-brand">
                 <a className="navbar-item" href="/">
                     <img src={logo} alt='Logo'></img>
