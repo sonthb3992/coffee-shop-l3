@@ -8,22 +8,25 @@ import { Order } from '../domain/order';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import AvatarUploader from '../view/avatar-uploader';
+import { User, getAuth, updateProfile } from 'firebase/auth';
+import { collection, doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
+import { app } from '../domain/firebase';
 
 
 const UserProfilePage: React.FC = () => {
 
     const { t } = useTranslation();
 
-    const address = useSelector((state: RootState) => state.cart.address);
-    const phone = useSelector((state: RootState) => state.cart.phone);
-    const customerName = useSelector((state: RootState) => state.cart.customer_name);
-    const inputValid = useSelector((state: RootState) => state.cart.inputValid);
     const user = useSelector((state: RootState) => state.cart.user);
+    const address = useSelector((state: RootState) => state.cart.address);
+    const name = useSelector((state: RootState) => state.cart.customer_name);
+    const phone = useSelector((state: RootState) => state.cart.phone);
+    const [userImageUrl, setUserImageUrl] = useState<string>('');
+
     const navigate = useNavigate();
 
-    const items = useSelector((state: RootState) => state.cart.orderItems);
     const dispatch = useDispatch();
-    const taxRate = 0.0725;
 
     const handleAddressChange = (newAddress: string) => {
         dispatch(setAddress(newAddress));
@@ -37,57 +40,52 @@ const UserProfilePage: React.FC = () => {
         dispatch(setCustomerName(newName));
     };
 
-    const calculateSubTotal = (items: OrderItem[]) => {
-        var total = 0;
-        items.forEach((i) => total += calculatePrice(i));
-        return total;
+    const saveData = async (user: User, name: string, address: string, phone: string) => {
+        const db = getFirestore(app);
+        const userRef = doc(collection(db, 'users'), user.uid);
+        await setDoc(userRef, { address, name, phone }, { merge: true });
     }
 
-    const calculateTax = (subtotal: number) => {
-        return subtotal * taxRate;
-    }
-
-    const calculateTotal = (items: OrderItem[]) => {
-        var total = calculateSubTotal(items);
-        total += calculateTax(total);
-        return total;
-    }
-
-
-    const placeOrder = async () => {
-
-        if (!user) {
-            navigate("/login");
-            return;
-        }
-
-        var order = new Order();
-        order.address = address;
-        order.receiver = customerName;
-        order.phoneNumber = phone;
-        order.items = items;
-        order.status = 0;
-        order.price = calculateTotal(items);
-        order.id = uuidv4().toLowerCase();
-        order.placeTime = new Date(Date.now());
-        order.itemcount = 0;
-        order.items.forEach((i) => order.itemcount += i.quantity!);
-        order.useruid = user.uid;
-
-        var s = await Order.pushToFirebase(order);
-        if (s === 'success') {
-            dispatch(clearCart());
-            navigate(`/track-order/${order.id}`);
-        }
-        else {
-            alert(s);
+    const saveUserData = () => {
+        if (user) {
+            saveData(user, name, address, phone);
+            if (userImageUrl) {
+                const auth = getAuth();
+                if (auth.currentUser)
+                    updateProfile(auth.currentUser, {
+                        displayName: name, photoURL: userImageUrl
+                    }).then(() => {
+                    }).catch((error) => {
+                        console.log(error);
+                    });
+            }
         }
     }
 
+    const fetchUserData = async (uid: string) => {
+        const db = getFirestore(app);
+        const userRef = doc(collection(db, 'users'), uid);
+        const userSnapshot = await getDoc(userRef);
+
+        if (userSnapshot.exists()) {
+            const userData = userSnapshot.data();
+            const _address = userData.address;
+            const _name = userData.name;
+            const _phone = userData.phone;
+            dispatch(setAddress(_address));
+            dispatch(setCustomerName(_name));
+            dispatch(setPhone(_phone));
+        } else {
+            console.log('User document does not exist.');
+        }
+    }
 
     useEffect(() => {
+        if (user)
+            fetchUserData(user?.uid);
+    }, [user]);
 
-    }, []);
+
 
     return (
         <section className='section'>
@@ -96,17 +94,30 @@ const UserProfilePage: React.FC = () => {
                     <div className='column is-half-desktop p-3'>
                         <p className='title is-4 pt-5'>{t('Change user information')}</p>
                         <div className="field">
+                            <label className="label">{t('Email')}</label>
+                            <div className="control has-icons-left has-icons-right">
+                                <input className={`input is-success`} readOnly
+                                    type="text" value={user?.email ?? ''}
+                                ></input>
+                                <span className="icon is-small is-left">
+                                    <i className="fa-regular fa-envelope"></i>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="field">
                             <label className="label">{t('ReceiverName')}</label>
                             <div className="control has-icons-left has-icons-right">
-                                <input className={`input ${customerName ? 'is-success' : 'is-danger'}`}
-                                    type="text" value={customerName}
+                                <input className={`input ${name ? 'is-success' : 'is-danger'}`}
+                                    type="text"
+                                    value={name}
                                     onChange={(event) => handleCustomerNameChange(event.target.value)}
                                     placeholder="enter your name"></input>
                                 <span className="icon is-small is-left">
                                     <i className="fas fa-user"></i>
                                 </span>
                             </div>
-                            {(!customerName &&
+                            {(!name &&
                                 <p className="help is-danger">{t('ReceiverName_invalid')}</p>)}
                         </div>
                         <div className="field">
@@ -134,7 +145,7 @@ const UserProfilePage: React.FC = () => {
                             {(!address &&
                                 <p className="help is-danger">{t('Address invalid')}</p>)}
                         </div>
-                        <button className={`button  is-fullwidth-desktop ${inputValid ? 'is-primary' : 'is-static'}`} onClick={() => placeOrder()}>
+                        <button className={`button  is-fullwidth-desktop is-primary`} onClick={() => saveUserData()}>
                             {t('Save changes')}
                         </button>
                     </div>
@@ -143,24 +154,10 @@ const UserProfilePage: React.FC = () => {
                         <div className='card p-5' >
                             <div className='level'>
                                 <div className="level-left">
-                                    <p className='title is-4'>{t('Selected Items')}</p>
-                                </div>
-                                <div className='level-right'>
-                                    <a href="/all-items/" className='button is-primary'>{t('Add')}</a>
+                                    <p className='title is-4'>{t('Avatar')}</p>
                                 </div>
                             </div>
-                            {items.length > 0 &&
-                                <div className='p-3'>
-                                    {items.map((option: OrderItem) => (
-                                        <React.Fragment key={option.id}>
-                                            <CartPageItem canEditQuantity={true} canDelete={true} option={option}></CartPageItem>
-                                        </React.Fragment>
-                                    ))}
-                                </div>
-                            }
-                            {items.length == 0 &&
-                                <div>{t('No items selected')}</div>
-                            }
+                            <AvatarUploader onImageUrlChanged={(newUrl) => setUserImageUrl(newUrl)}></AvatarUploader>
                         </div>
                     </div>
                 </div>

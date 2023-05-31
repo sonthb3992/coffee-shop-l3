@@ -21,8 +21,6 @@ const CustomizeOrderPage: React.FC = () => {
     const language = useSelector((state: RootState) => state.cart.language);
     const { t } = useTranslation();
 
-
-
     const [styles, setStyles] = useState<StyleOption[]>();
     const [sizes, setSizes] = useState<SizeOption[]>();
     const [toppings, setToppings] = useState<ToppingOption[]>();

@@ -2,7 +2,9 @@ import { initializeApp } from 'firebase/app';
 import { browserLocalPersistence, getAuth, onAuthStateChanged, setPersistence } from 'firebase/auth';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../reducer/cartSlice';
-// TODO: Replace the following with your app's Firebase project configuration
+import { getStorage } from "firebase/storage";
+
+
 const firebaseConfig = {
     apiKey: "AIzaSyBvxL6FLhbF74FHr5CV-gEc_Resc63PKhg",
     authDomain: "gemo-lab3.firebaseapp.com",
@@ -17,5 +19,9 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firebase Authentication and get a reference to the service
 const auth = getAuth(app);
 setPersistence(auth, browserLocalPersistence);
+
+// Initialize Cloud Storage and get a reference to the service
+const storage = getStorage(app);
+
 
 export { app, auth }
