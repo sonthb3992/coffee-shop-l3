@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { MenuOption } from './domain/menu_option';
@@ -24,19 +24,24 @@ import CustomerOrderHistory from './pages/page-order-history';
 
 const App: React.FC = () => {
 
+  const [showNavbar, setShownNavbar] = useState<boolean>(false);
+
   const shouldDisplayNavbar = (): boolean => {
     var result = !window.location.pathname.startsWith('/login');
     result &&= !window.location.pathname.startsWith('/sign-up');
     return result;
   };
 
+  useEffect(() => {
+    setShownNavbar(shouldDisplayNavbar());
+  }, []);
 
   return (
     <Provider store={store}>
       <I18nextProvider i18n={i18n}>
         <Router>
-          {/* {shouldDisplayNavbar() && <Navbar />} */}
-          <Navbar></Navbar>
+          {showNavbar && <Navbar />}
+           {/* <Navbar></Navbar> */}
           <Routes>
             <Route path="/login" element={<LoginPage formType={FormType.SignIn} />} />
             <Route path="/sign-up" element={<LoginPage formType={FormType.SignUp} />} />
@@ -48,9 +53,9 @@ const App: React.FC = () => {
             <Route path="/all-items/:filter?" element={<SelectionPage />} />
             <Route path="/cart/" element={<CartPage />} />
             <Route path="/" element={<PageHome />} />
-            {shouldDisplayNavbar() && <Route path="*" element={<PageNotFound />} />} {/* Optional: Render a "PageNotFound" component for undefined routes */}
+            {showNavbar && <Route path="*" element={<PageNotFound />} />} {/* Optional: Render a "PageNotFound" component for undefined routes */}
           </Routes>
-          {/* {shouldDisplayNavbar() && <Footer />} */}
+          {showNavbar && <Footer />}
         </Router>
       </I18nextProvider>
     </Provider>

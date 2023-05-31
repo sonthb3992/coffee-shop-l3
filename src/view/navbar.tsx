@@ -7,7 +7,7 @@ import { RootState } from '../reducer/store';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../domain/firebase';
 import { setUser } from '../reducer/cartSlice';
-import UserInfo from './user-display';
+import UserInfoComponent from './user-display';
 
 
 const Navbar: React.FC = () => {
@@ -73,7 +73,8 @@ const Navbar: React.FC = () => {
                     </a>
                     <a className="navbar-item has-text-weight-semibold" href="/order-history">
                         {t("My orders")}
-                    </a>
+                    </a>                </div>
+                <div className='navbar-end'>
                     <div className="navbar-item">
                         <div className="buttons">
                             <a className="button is-primary" href={user ? '/cart' : '/login'}>
@@ -84,11 +85,13 @@ const Navbar: React.FC = () => {
                             </a>
                         </div>
                     </div>
-                </div>
-                <div className='navbar-end'>
-                    {/* <a className="navbar-item has-text-weight-semibold" href='/'> */}
-                    {user && <UserInfo user={user}></UserInfo>}
-                    {!user && (<p>null</p>)}
+                    {user && <UserInfoComponent user={user}></UserInfoComponent>}
+                    {!user && (
+                        <div className="buttons">
+                            <a href="/login" className="button is-success is-inverted">Login</a>
+                            <a href="/sign-up" className="button is-info is-inverted">Sign up</a>
+                        </div>
+                    )}
                     {/* </a> */}
                 </div>
             </div>
