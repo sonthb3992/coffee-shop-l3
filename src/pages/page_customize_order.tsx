@@ -9,7 +9,7 @@ import { ToppingOption } from '../domain/option_topping';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import { addToCart } from '../reducer/cartSlice';
+import { addItemToCart } from '../reducer/cartSlice';
 import { RootState } from '../reducer/store';
 import { useTranslation } from 'react-i18next';
 
@@ -134,7 +134,7 @@ const CustomizeOrderPage: React.FC = () => {
             quantity,
             price
         );
-        dispatch(addToCart(newOrder));
+        dispatch(addItemToCart(newOrder));
         // dispatch(setOrderCount()); // Update the Redux state
 
         navigate("/all-items/");
