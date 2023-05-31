@@ -5,6 +5,8 @@ import { Order } from '../domain/order';
 import { v4 as uuidv4 } from 'uuid';
 import { onAuthStateChanged, User, UserCredential } from 'firebase/auth';
 import { auth } from '../domain/firebase';
+import { useDispatch } from 'react-redux';
+import { act } from 'react-dom/test-utils';
 
 interface OrderState {
     language: string;
@@ -14,7 +16,7 @@ interface OrderState {
     address: string,
     phone: string,
     customer_name: string,
-    user: User | null
+    user: User | null,
 }
 
 const isInputValid = (address: string | null | undefined, phone: string | null | undefined, customer: string | null | undefined): boolean => {
@@ -28,30 +30,26 @@ const isInputValid = (address: string | null | undefined, phone: string | null |
     return true;
 }
 
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        setUser(user);
-    } else {
-        setUser(null);
-    }
-});
 
+const getLocalStorageValue = (key: string, defaultValue: any) => {
+    const storedValue = localStorage.getItem(key);
+    return storedValue ? JSON.parse(storedValue) : defaultValue;
+};
 
 const initialState: OrderState = {
-    language: localStorage.getItem('language') ? JSON.parse(localStorage.getItem('language')!) : 'en',
-    orderItems: localStorage.getItem('orders') ? JSON.parse(localStorage.getItem('orders')!) : [],
-    address: localStorage.getItem('address') ? JSON.parse(localStorage.getItem('address')!) : '',
-    phone: localStorage.getItem('phone') ? JSON.parse(localStorage.getItem('phone')!) : '',
-    customer_name: localStorage.getItem('customer_name') ? JSON.parse(localStorage.getItem('customer_name')!) : '',
+    language: getLocalStorageValue('language', 'en'),
+    orderItems: getLocalStorageValue('orders', []),
+    address: getLocalStorageValue('address', ''),
+    phone: getLocalStorageValue('phone', null) ?? auth.currentUser?.phoneNumber,
+    customer_name: getLocalStorageValue('customer_name', null) ?? auth.currentUser?.displayName,
     editingItem: localStorage.getItem('editingItem') ? JSON.parse(localStorage.getItem('editingItem')!) : null,
     inputValid: isInputValid(
         localStorage.getItem('address') ? JSON.parse(localStorage.getItem('address')!) : '',
         localStorage.getItem('phone') ? JSON.parse(localStorage.getItem('phone')!) : '',
         localStorage.getItem('customer_name') ? JSON.parse(localStorage.getItem('customer_name')!) : '',
     ),
-    user: null
+    user: auth.currentUser,
 };
-
 
 export const cartSlice = createSlice({
     name: 'cart',
@@ -59,6 +57,12 @@ export const cartSlice = createSlice({
     reducers: {
         setUser: (state, action: PayloadAction<User | null>) => {
             state.user = action.payload;
+            if (action.payload) {
+                if (action.payload.displayName)
+                    setCustomerName(action.payload.displayName);
+                if (action.payload.phoneNumber)
+                    setPhone(action.payload.phoneNumber);
+            }
         },
         setAddress: (state, action: PayloadAction<string>) => {
             state.address = action.payload;
@@ -106,5 +110,6 @@ export const cartSlice = createSlice({
 });
 
 // export const { setOrderCount } = cartSlice.actions;
-export const { addToCart, setAddress, setPhone, setCustomerName, deleteFromCart, setItemQuantity, clearCart, setLanguage, setUser } = cartSlice.actions;
+export const { addToCart, setAddress, setPhone, setCustomerName,
+    deleteFromCart, setItemQuantity, clearCart, setLanguage, setUser } = cartSlice.actions;
 export default cartSlice.reducer;

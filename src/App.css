@@ -61,3 +61,7 @@ main {
 footer {
   flex-shrink: 0;
 }
+
+.navbar-avatar {
+  max-height: 64px !important;
+}

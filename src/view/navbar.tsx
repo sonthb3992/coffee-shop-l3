@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import shopName from '../assets/images/shop-name.png'; // change this to the path of your image
 import logo from '../assets/images/logo.png'; // change this to the path of your image
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../reducer/store';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../domain/firebase';
+import { setUser } from '../reducer/cartSlice';
+import UserInfo from './user-display';
 
 
 const Navbar: React.FC = () => {
@@ -13,6 +17,27 @@ const Navbar: React.FC = () => {
     const [showMenuOnMobile, setShowMenuOnMobile] = useState<boolean>(false);
 
     const { t } = useTranslation();
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+
+        const user = auth.currentUser;
+        console.log(user);
+        dispatch(setUser(user));
+
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                dispatch(setUser(user));
+            } else {
+                dispatch(setUser(null));
+            }
+        });
+
+        return () => {
+            unsubscribe();
+        };
+    }, [dispatch]);
 
     const toggleMenu = () => {
         setShowMenuOnMobile(!showMenuOnMobile);
@@ -46,12 +71,12 @@ const Navbar: React.FC = () => {
                     <a className="navbar-item has-text-weight-semibold" href="/all-items/breakfast">
                         {t("Breakfast")}
                     </a>
-                    <a className="navbar-item has-text-weight-semibold" href="/track-order">
+                    <a className="navbar-item has-text-weight-semibold" href="/order-history">
                         {t("My orders")}
                     </a>
                     <div className="navbar-item">
                         <div className="buttons">
-                            <a className="button is-primary" href="/cart">
+                            <a className="button is-primary" href={user ? '/cart' : '/login'}>
                                 <span className="icon">
                                     <i className="fa-solid fa-cart-shopping"></i>
                                 </span>
@@ -61,9 +86,10 @@ const Navbar: React.FC = () => {
                     </div>
                 </div>
                 <div className='navbar-end'>
-                    <a className="navbar-item has-text-weight-semibold" href='/'>
-                        {user && user.email}
-                    </a>
+                    {/* <a className="navbar-item has-text-weight-semibold" href='/'> */}
+                    {user && <UserInfo user={user}></UserInfo>}
+                    {!user && (<p>null</p>)}
+                    {/* </a> */}
                 </div>
             </div>
         </nav>

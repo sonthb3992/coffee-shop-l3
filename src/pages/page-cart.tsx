@@ -19,12 +19,12 @@ const CartPage: React.FC = () => {
     const phone = useSelector((state: RootState) => state.cart.phone);
     const customerName = useSelector((state: RootState) => state.cart.customer_name);
     const inputValid = useSelector((state: RootState) => state.cart.inputValid);
+    const user = useSelector((state: RootState) => state.cart.user);
     const navigate = useNavigate();
 
     const items = useSelector((state: RootState) => state.cart.orderItems);
     const dispatch = useDispatch();
     const taxRate = 0.0725;
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleAddressChange = (newAddress: string) => {
         dispatch(setAddress(newAddress));
@@ -36,10 +36,6 @@ const CartPage: React.FC = () => {
 
     const handleCustomerNameChange = (newName: string) => {
         dispatch(setCustomerName(newName));
-    };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
     };
 
     const calculateSubTotal = (items: OrderItem[]) => {
@@ -58,10 +54,14 @@ const CartPage: React.FC = () => {
         return total;
     }
 
-    // if (id === '')
-    //     dispatch(setId(uuidv4().toLowerCase()));
 
     const placeOrder = async () => {
+
+        if (!user) {
+            navigate("/login");
+            return;
+        }
+
         var order = new Order();
         order.address = address;
         order.receiver = customerName;
@@ -73,6 +73,7 @@ const CartPage: React.FC = () => {
         order.placeTime = new Date(Date.now());
         order.itemcount = 0;
         order.items.forEach((i) => order.itemcount += i.quantity!);
+        order.useruid = user.uid;
 
         var s = await Order.pushToFirebase(order);
         if (s === 'success') {

@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../reducer/cartSlice';
 
 const SignUpForm: React.FC = () => {
     const auth = getAuth();
     const navigate = useNavigate();
     const { t } = useTranslation();
+    const dispatch = useDispatch();
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -21,6 +24,13 @@ const SignUpForm: React.FC = () => {
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
+                updateProfile(user, {
+                    displayName: name,
+                }).then(() => {
+                    dispatch(setUser(userCredential.user));
+                }).catch((error) => {
+
+                });
                 navigate("/");
             })
             .catch((error) => {

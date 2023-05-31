@@ -21,6 +21,7 @@ class Order {
     completeTime: Date = new Date(0, 0, 0);
     cancelTime: Date = new Date(0, 0, 0);
     itemcount: number = 0;
+    useruid: string = ''
 
     constructor() {
     }
@@ -38,6 +39,7 @@ class Order {
         order.receiver = data['customerName'];
         order.status = data['status'];
         order.price = data['price'];
+        order.useruid = data['useruid'];
         return order;
     }
 
@@ -70,7 +72,8 @@ class Order {
             placeTime: order.placeTime,
             confirmTime: order.confirmTime,
             processTime: order.processTime,
-            completeTime: order.completeTime
+            completeTime: order.completeTime,
+            useruid: order.useruid
         };
     }
 
@@ -122,8 +125,6 @@ class Order {
                 const orders = querySnapshot.docs.map((doc) => Order.fromFirestore(doc, undefined));
                 callback(orders);
             });
-
-
             return {
                 orders: orders,
                 unsub: unsubscribe
@@ -140,6 +141,30 @@ class Order {
             const db = getFirestore(app);
             const ref = collection(db, "orders");
             const _query = query(ref, where("phone", "==", phoneNumber), where("customerName", "==", customerName));
+
+            const querySnapshot = await getDocs(_query);
+            const orders = querySnapshot.docs.map((doc) => Order.fromFirestore(doc, undefined));
+
+            const unsubscribe = onSnapshot(_query, (querySnapshot) => {
+                const orders = querySnapshot.docs.map((doc) => Order.fromFirestore(doc, undefined));
+                callback(orders);
+            });
+
+            return {
+                orders: orders,
+                unsub: unsubscribe
+            }
+        } catch (e) {
+            console.log(e);
+            return null;
+        }
+    }
+
+    static async getOrdersByCustomerUid(uid: string, callback: (value: any) => void): Promise<{ orders: Order[], unsub: any } | null> {
+        try {
+            const db = getFirestore(app);
+            const ref = collection(db, "orders");
+            const _query = query(ref, where("useruid", "==", uid));
 
             const querySnapshot = await getDocs(_query);
             const orders = querySnapshot.docs.map((doc) => Order.fromFirestore(doc, undefined));
@@ -192,7 +217,7 @@ class Order {
     //     }
     // }
 
-    static async getOrderById(optionId: string | undefined, listenToChanged: boolean, callback: (value: any) => void): Promise<{ order: Order | null, unsub: any | null } | null> {
+    static async getOrderById(optionId: string | undefined, listenToChanged: boolean, callback: (onOrderChanged: any) => void): Promise<{ order: Order | null, unsub: any | null } | null> {
         if (optionId == undefined) { return null; }
 
         try {

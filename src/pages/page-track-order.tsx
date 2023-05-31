@@ -6,6 +6,8 @@ import { RootState } from '../reducer/store';
 import { Order } from '../domain/order';
 import CartPageItem from '../view/cart-item';
 import { useTranslation } from 'react-i18next';
+import OrderStatusComponent from '../view/order-status';
+import { or } from 'firebase/firestore';
 
 
 const TrackOrderPage: React.FC = () => {
@@ -30,11 +32,6 @@ const TrackOrderPage: React.FC = () => {
         fetchMenuOptions()
     }, []);
 
-
-    const cancelOrder = async () => {
-        if (!order) return;
-        await Order.cancelOrder(order);
-    }
 
     return (
         <section className='section'>
@@ -81,49 +78,9 @@ const TrackOrderPage: React.FC = () => {
                         </div>
 
                         <p className='title is-4 pt-5'>{t('Order status')}</p>
-
-                        <div className='is-flex is-flex-direction-column'>
-                            <span className="icon-text pb-2">
-                                <span className="icon">
-                                    {order?.status! >= 1
-                                        ? <i className="fa-solid fa-check has-text-primary"></i>
-                                        : <i className="fa-regular fa-circle"></i>}
-                                </span>
-                                <span className={order?.status! >= 1 ? 'has-text-primary' : ''}>{t('Order confirmation')}</span>
-                            </span>
-                            <span className="icon-text pb-2">
-                                <span className="icon">
-                                    {order?.status! >= 2
-                                        ? <i className="fa-solid fa-check has-text-primary"></i>
-                                        : <i className="fa-regular fa-circle"></i>}
-                                </span>
-                                <span className={order?.status! >= 2 ? 'has-text-primary' : ''}>{t('Order processing')}</span>
-                            </span>
-                            <span className="icon-text pb-2">
-                                <span className="icon">
-                                    {order?.status! >= 3
-                                        ? <i className="fa-solid fa-check has-text-primary"></i>
-                                        : <i className="fa-regular fa-circle"></i>}
-                                </span>
-                                <span className={order?.status! >= 3 ? 'has-text-primary' : ''}>{t('Delivering')}</span>
-                            </span>
-                            <span className="icon-text pb-2">
-                                <span className="icon">
-                                    {order?.status! >= 4
-                                        ? <i className="fa-solid fa-check has-text-primary"></i>
-                                        : <i className="fa-regular fa-circle"></i>}
-                                </span>
-                                <span className={order?.status! >= 4 ? 'has-text-primary' : ''}>{t('Completed')}</span>
-                            </span>
-                            {order?.status == -1 &&
-                                <span className="icon-text pb-2">
-                                    <span className="icon">
-                                        <i className="fa-solid fa-check has-text-danger"></i>
-                                    </span>
-                                    <span className={order?.status! >= 4 ? 'has-text-primary' : ''}>{t('Cancelled')}</span>
-                                </span>
-                            }
-                        </div>
+                        {order &&
+                            <OrderStatusComponent order={order}></OrderStatusComponent>
+                        }
                     </div>
 
                     <div className='column is-half p-3'>
@@ -172,7 +129,7 @@ const TrackOrderPage: React.FC = () => {
                             }
 
                             {order &&
-                                <button className={`button is-fullwidth ${order.status > 1 || order.status < 0 ? 'is-static' : 'is-danger'}`} onClick={() => cancelOrder()}>
+                                <button className={`button is-fullwidth ${order.status > 1 || order.status < 0 ? 'is-static' : 'is-danger'}`} onClick={() => Order.cancelOrder(order)}>
                                     {t('Cancel order')}
                                 </button>
                             }
