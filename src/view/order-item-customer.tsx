@@ -7,18 +7,13 @@ import { RootState } from '../reducer/store';
 
 interface SingleOrderDisplayProps {
     order: Order;
+    onViewDetail : (orderId: string) => void
 }
 
-const SingleOrderDisplayCustomerView: React.FC<SingleOrderDisplayProps> = ({ order: item }) => {
-
-    const navigate = useNavigate();
+const SingleOrderDisplayCustomerView: React.FC<SingleOrderDisplayProps> = ({ order: item, onViewDetail }) => {
 
     const language = useSelector((state: RootState) => state.cart.language);
     const { t } = useTranslation();
-
-    const viewDetail = () => {
-        navigate(`/track-order/${item.id.toLowerCase()}`)
-    }
 
     const getTagContent = (): string => {
         switch (item.status) {
@@ -110,7 +105,7 @@ const SingleOrderDisplayCustomerView: React.FC<SingleOrderDisplayProps> = ({ ord
                 <div className='level-right'>
                     <div className='level-item is-flex is-flex-direction-column  is-align-content-space-between is-align-items-end'>
                         <p className='title is-5 mb-2'>${item.price.toFixed(2)}</p>
-                        <button className="button is-primary is-small" onClick={() => viewDetail()}>
+                        <button className="button is-primary is-small" onClick={() => onViewDetail(item.id)}>
                             {t('View detail')}
                         </button>
                     </div>

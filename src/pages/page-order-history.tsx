@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Order } from '../domain/order';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../reducer/store';
-import { setCustomerName, setPhone } from '../reducer/cartSlice';
+import { addItemsToCart, setCustomerName, setPhone } from '../reducer/cartSlice';
 import SingleOrderDisplayCustomerView from '../view/order-item-customer';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -20,6 +20,7 @@ const CustomerOrderHistory: React.FC = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const language = useSelector((state: RootState) => state.cart.language);
+    const currentItems = useSelector((state: RootState) => state.cart.orderItems);
     const { t } = useTranslation();
 
 
@@ -30,7 +31,14 @@ const CustomerOrderHistory: React.FC = () => {
         findOrders();
     }, [user]);
 
+    const handleViewDetail = (orderId: string) => {
+        fetchOrderDetail(orderId);
+    }
 
+    const handleReorder = (order: Order) => {
+        dispatch(addItemsToCart(order.items));
+        navigate("/cart");
+    }
 
     const findOrders = async () => {
         if (user) {
@@ -64,9 +72,9 @@ const CustomerOrderHistory: React.FC = () => {
                                 <div className="message-header">
                                     {t('Your orders')}
                                 </div>
-                                <div className="message-body" style={{ maxHeight: '500px', overflowY: 'auto' }} >
+                                <div className="message-body" style={{ overflowY: 'auto' }} >
                                     {all_orders!.map((o) =>
-                                        <SingleOrderDisplayCustomerView order={o}></SingleOrderDisplayCustomerView>
+                                        <SingleOrderDisplayCustomerView order={o} onViewDetail={(id) => handleViewDetail(id)}></SingleOrderDisplayCustomerView>
                                     )}
                                 </div>
                             </article>
@@ -85,7 +93,7 @@ const CustomerOrderHistory: React.FC = () => {
                                     }
 
                                     {order &&
-                                        <div className='level mb-0'>
+                                        <div className='level mb-1'>
                                             <div className="level-left">
                                                 <p className='title is-4'>{t('Total')}</p>
                                             </div>
@@ -95,7 +103,7 @@ const CustomerOrderHistory: React.FC = () => {
                                         </div>
                                     }
                                     {order &&
-                                        <div className='level mb-0'>
+                                        <div className='level mb-1'>
                                             <div className="level-left">
                                                 <p className='has-size-6'>{t('Subtotal')}</p>
                                             </div>
@@ -105,7 +113,7 @@ const CustomerOrderHistory: React.FC = () => {
                                         </div>
                                     }
                                     {order &&
-                                        <div className='level'>
+                                        <div className='level mb-1'>
                                             <div className="level-left">
                                                 <p className='has-size-6'>{t('Tax')} (7.25%)</p>
                                             </div>
@@ -123,14 +131,12 @@ const CustomerOrderHistory: React.FC = () => {
                                                 </button>
                                             </p>
                                             <p className='control'>
-                                                <button className={`button ${order.status > 1 || order.status < 0 ? 'is-static' : 'is-danger'}`} onClick={() => Order.cancelOrder(order)}>
-                                                    {t('Add to current order')}
+                                                <button className='button is-success' onClick={() => handleReorder(order)}>
+                                                    {(currentItems && currentItems.length > 0) ? t('Add to current order') : t('Re-order')}
                                                 </button>
                                             </p>
                                         </div>
                                     }
-
-                                    <hr></hr>
 
                                     <p className='title is-4 mt-5'>{t('Selected Items')}</p>
                                     {order && order!.items.map((item: OrderItem) => (

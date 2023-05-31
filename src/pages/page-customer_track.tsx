@@ -5,6 +5,7 @@ import { RootState } from '../reducer/store';
 import { setCustomerName, setPhone } from '../reducer/cartSlice';
 import SingleOrderDisplayCustomerView from '../view/order-item-customer';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 
 const CustomerTrackPage: React.FC = () => {
@@ -14,7 +15,7 @@ const CustomerTrackPage: React.FC = () => {
 
     const language = useSelector((state: RootState) => state.cart.language);
     const { t } = useTranslation();
-
+    const navigate = useNavigate();
 
     const [all_orders, setAllOrders] = useState<Order[]>();
 
@@ -25,6 +26,12 @@ const CustomerTrackPage: React.FC = () => {
     const handlePhoneChange = (newPhone: string) => {
         dispatch(setPhone(newPhone));
     };
+
+    const handleViewDetail = (orderId: string) => {
+        navigate(`/track-order/${orderId.toLowerCase()}`)        
+    }
+
+
 
     useEffect(() => {
     }, []);
@@ -94,7 +101,7 @@ const CustomerTrackPage: React.FC = () => {
                                 </div>
                                 <div className="message-body" style={{ maxHeight: '500px', overflowY: 'auto' }} >
                                     {all_orders!.map((o) =>
-                                        <SingleOrderDisplayCustomerView order={o}></SingleOrderDisplayCustomerView>
+                                        <SingleOrderDisplayCustomerView order={o} onViewDetail={(id) => handleViewDetail(id)}></SingleOrderDisplayCustomerView>
                                     )}
                                 </div>
                             </article>

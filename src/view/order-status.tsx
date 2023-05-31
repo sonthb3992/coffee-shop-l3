@@ -16,38 +16,47 @@ const OrderStatusComponent: React.FC<OrderStatusProps> = ({ order }) => {
 
     return (
         <div className='is-flex is-flex-direction-column'>
-            <span className="icon-text pb-2">
-                <span className="icon">
-                    {order?.status! >= 1
-                        ? <i className="fa-solid fa-check has-text-primary"></i>
-                        : <i className="fa-regular fa-circle"></i>}
+            {order?.status > -1 &&
+                <span className="icon-text pb-2">
+                    <span className="icon">
+                        {order?.status! >= 1
+                            ? <i className="fa-solid fa-check has-text-primary"></i>
+                            : <i className="fa-regular fa-circle"></i>}
+                    </span>
+                    <span className={order?.status! >= 1 ? 'has-text-primary' : ''}>{t('Order confirmation')}</span>
                 </span>
-                <span className={order?.status! >= 1 ? 'has-text-primary' : ''}>{t('Order confirmation')}</span>
-            </span>
-            <span className="icon-text pb-2">
-                <span className="icon">
-                    {order?.status! >= 2
-                        ? <i className="fa-solid fa-check has-text-primary"></i>
-                        : <i className="fa-regular fa-circle"></i>}
+            }
+            {order?.status > -1 &&
+
+                <span className="icon-text pb-2">
+                    <span className="icon">
+                        {order?.status! >= 2
+                            ? <i className="fa-solid fa-check has-text-primary"></i>
+                            : <i className="fa-regular fa-circle"></i>}
+                    </span>
+                    <span className={order?.status! >= 2 ? 'has-text-primary' : ''}>{t('Order processing')}</span>
                 </span>
-                <span className={order?.status! >= 2 ? 'has-text-primary' : ''}>{t('Order processing')}</span>
-            </span>
-            <span className="icon-text pb-2">
-                <span className="icon">
-                    {order?.status! >= 3
-                        ? <i className="fa-solid fa-check has-text-primary"></i>
-                        : <i className="fa-regular fa-circle"></i>}
+            }
+            {order?.status > -1 &&
+                <span className="icon-text pb-2">
+                    <span className="icon">
+                        {order?.status! >= 3
+                            ? <i className="fa-solid fa-check has-text-primary"></i>
+                            : <i className="fa-regular fa-circle"></i>}
+                    </span>
+                    <span className={order?.status! >= 3 ? 'has-text-primary' : ''}>{t('Delivering')}</span>
                 </span>
-                <span className={order?.status! >= 3 ? 'has-text-primary' : ''}>{t('Delivering')}</span>
-            </span>
-            <span className="icon-text pb-2">
-                <span className="icon">
-                    {order?.status! >= 4
-                        ? <i className="fa-solid fa-check has-text-primary"></i>
-                        : <i className="fa-regular fa-circle"></i>}
+            }
+            {order?.status > -1 &&
+                <span className="icon-text pb-2">
+                    <span className="icon">
+                        {order?.status! >= 4
+                            ? <i className="fa-solid fa-check has-text-primary"></i>
+                            : <i className="fa-regular fa-circle"></i>}
+                    </span>
+                    <span className={order?.status! >= 4 ? 'has-text-primary' : ''}>{t('Completed')}</span>
                 </span>
-                <span className={order?.status! >= 4 ? 'has-text-primary' : ''}>{t('Completed')}</span>
-            </span>
+            }
             {order?.status == -1 &&
                 <span className="icon-text pb-2">
                     <span className="icon">

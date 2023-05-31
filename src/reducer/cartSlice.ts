@@ -83,10 +83,15 @@ export const cartSlice = createSlice({
             state.inputValid = isInputValid(action.payload, state.phone, state.address);
             localStorage.setItem('customer_name', JSON.stringify(state.customer_name));
         },
-        addToCart: (state, action: PayloadAction<OrderItem>) => {
+        addItemToCart: (state, action: PayloadAction<OrderItem>) => {
             state.orderItems.push(action.payload);
             localStorage.setItem('orders', JSON.stringify(state.orderItems));
         },
+        addItemsToCart: (state, action: PayloadAction<OrderItem[]>) => {
+            state.orderItems.push(...action.payload);
+            localStorage.setItem('orders', JSON.stringify(state.orderItems));
+        }
+        ,
         clearCart: (state) => {
             state.orderItems = [];
             localStorage.setItem('orders', JSON.stringify(state.orderItems));
@@ -110,6 +115,6 @@ export const cartSlice = createSlice({
 });
 
 // export const { setOrderCount } = cartSlice.actions;
-export const { addToCart, setAddress, setPhone, setCustomerName,
+export const { addItemToCart, addItemsToCart, setAddress, setPhone, setCustomerName,
     deleteFromCart, setItemQuantity, clearCart, setLanguage, setUser } = cartSlice.actions;
 export default cartSlice.reducer;

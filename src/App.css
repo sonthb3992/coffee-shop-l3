@@ -63,5 +63,7 @@ footer {
 }
 
 .navbar-avatar {
+  padding: 2px;
   max-height: 64px !important;
+  border: 2px solid olivedrab;
 }
