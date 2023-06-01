@@ -141,7 +141,8 @@ const CustomerOrderHistory: React.FC = () => {
                                     <p className='title is-4 mt-5'>{t('Selected Items')}</p>
                                     {order && order!.items.map((item: OrderItem) => (
                                         <React.Fragment key={item.id}>
-                                            <CartPageItem canEditQuantity={false} canDelete={false} option={item}></CartPageItem>
+                                            <CartPageItem canEditQuantity={false} canReview={true}
+                                                canDelete={false} option={item}></CartPageItem>
                                         </React.Fragment>
                                     ))}
 

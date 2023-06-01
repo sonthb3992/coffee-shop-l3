@@ -180,7 +180,8 @@ const CartPage: React.FC = () => {
                                 <div className='p-3'>
                                     {items.map((option: OrderItem) => (
                                         <React.Fragment key={option.id}>
-                                            <CartPageItem canEditQuantity={true} canDelete={true} option={option}></CartPageItem>
+                                            <CartPageItem canEditQuantity={true} canDelete={true}
+                                                canReview={false} option={option}></CartPageItem>
                                         </React.Fragment>
                                     ))}
                                 </div>

@@ -11,12 +11,12 @@ interface MenuOptionProps {
     option: OrderItem;
     canEditQuantity: boolean;
     canDelete: boolean;
+    canReview: boolean;
 }
 
-const CartPageItem: React.FC<MenuOptionProps> = ({ option: item, canEditQuantity = true, canDelete = true }) => {
+const CartPageItem: React.FC<MenuOptionProps> = ({ option: item, canEditQuantity = true, canDelete = true, canReview = false }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
 
     const language = useSelector((state: RootState) => state.cart.language);
     const { t } = useTranslation();
@@ -26,10 +26,6 @@ const CartPageItem: React.FC<MenuOptionProps> = ({ option: item, canEditQuantity
             dispatch(deleteFromCart(item.id));
     }
 
-    const handleEdit = () => {
-        //dispatch(setEditingItem(option));
-        navigate(`/customize-order/${item.menuOption?.nameEn}/true`);
-    }
 
     const handleOnQuantityChanged = (value: number) => {
         dispatch(setItemQuantity({ id: item.id!, quantity: value }));
@@ -53,15 +49,33 @@ const CartPageItem: React.FC<MenuOptionProps> = ({ option: item, canEditQuantity
                                 <strong className='has-text-primary'>${calculatePrice(item).toFixed(2)}</strong>
                             </div>
                         </div>
-                        <small>{language === "en" ? getDescription(item) : getDescriptionVi(item)}</small>
+                        <small className='has-text-weight-normal'>{language === "en" ? getDescription(item) : getDescriptionVi(item)}</small>
                     </p>
                 </div>
                 <nav className="level">
                     <div className="level-left">
-                        <QuantitySelector min={1} max={99} disabled={!canEditQuantity} current={item.quantity} onQuantityChanged={(value) => handleOnQuantityChanged(value)}></QuantitySelector>
+                        {
+                            canEditQuantity &&
+                            <QuantitySelector min={1} max={99} disabled={!canEditQuantity} current={item.quantity} onQuantityChanged={(value) => handleOnQuantityChanged(value)}></QuantitySelector>
+                        }
+                        {
+                            canReview && <nav className="level is-mobile">
+                                <div className="level-left">
+                                    <a className="level-item has-text-decoration-none" href='#' title='Reorder'>
+                                        <span className="icon is-small"><i className="fa-solid fa-rotate-right"></i></span>
+                                    </a>
+                                    <a className="level-item has-text-decoration-none has-text-info" title='Like'>
+                                        <span className="icon is-small"><i className="fa-solid fa-thumbs-up"></i></span>
+                                    </a>
+                                    <a className="level-item has-text-decoration-none has-text-danger-dark" title='Dislike'>
+                                        <span className="icon is-small"><i className="fa-solid fa-thumbs-down"></i></span>
+                                    </a>
+                                </div>
+                            </nav>
+                        }
                     </div>
                 </nav>
-            </div>
+            </div >
             {canDelete &&
                 <div className="media-right">
                     <button className="delete" onClick={handleDelete}></button>

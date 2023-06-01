@@ -30,7 +30,6 @@ const isInputValid = (address: string | null | undefined, phone: string | null |
     return true;
 }
 
-
 const getLocalStorageValue = (key: string, defaultValue: any) => {
     const storedValue = localStorage.getItem(key);
     return storedValue ? JSON.parse(storedValue) : defaultValue;

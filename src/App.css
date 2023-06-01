@@ -67,3 +67,7 @@ footer {
   max-height: 64px !important;
   border: 2px solid olivedrab;
 }
+
+.has-text-decoration-none {
+  text-decoration: none !important;
+}
