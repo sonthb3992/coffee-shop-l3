@@ -1,29 +1,29 @@
-import { ItemBase } from "./base_order_item";
-import { MenuOption } from "./menu_option";
+import { ItemBase } from './base_order_item';
+import { MenuOption } from './menu_option';
 
 abstract class OrderDecorator implements ItemBase {
-    decoratedOrder: ItemBase;
-    basePrice: number = 0;
+  decoratedOrder: ItemBase;
+  basePrice: number = 0;
 
-    constructor(decoratedOrder: ItemBase) {
-        this.decoratedOrder = decoratedOrder;
-    }
+  constructor(decoratedOrder: ItemBase) {
+    this.decoratedOrder = decoratedOrder;
+  }
 
-    getDescription(): string {
-        return this.decoratedOrder.getDescription();
-    }
+  getDescription(): string {
+    return this.decoratedOrder.getDescription();
+  }
 
-    getPrice(): number {
-        return this.decoratedOrder.getPrice() + this.basePrice;
-    }
+  getPrice(): number {
+    return this.decoratedOrder.getPrice() + this.basePrice;
+  }
 
-    getType(): string {
-        return this.decoratedOrder.getType();
-    }
+  getType(): string {
+    return this.decoratedOrder.getType();
+  }
 
-    getBaseItem(): MenuOption {
-        return this.decoratedOrder.getBaseItem();
-    }
+  getBaseItem(): MenuOption {
+    return this.decoratedOrder.getBaseItem();
+  }
 }
 
-export { OrderDecorator }
+export { OrderDecorator };

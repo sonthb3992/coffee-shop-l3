@@ -1,23 +1,25 @@
-import { OrderDecorator } from "./base_decorator";
-import { ItemBase } from "./base_order_item";
-import { StyleOption } from "./option_stype";
+import { OrderDecorator } from './base_decorator';
+import { ItemBase } from './base_order_item';
+import { StyleOption } from './option_stype';
 
 class StyleDecorator extends OrderDecorator {
-    private style: StyleOption;
+  private style: StyleOption;
 
-    constructor(orderBase: ItemBase, style: StyleOption) {
-        super(orderBase);
-        this.style = style;
-    }
+  constructor(orderBase: ItemBase, style: StyleOption) {
+    super(orderBase);
+    this.style = style;
+  }
 
-    getDescription(): string {
-        //const en = Get.locale?.countryCode === 'en';
-        return `${this.decoratedOrder.getDescription()}, ${true ? this.style.nameEn : this.style.nameVi}`;
-    }
+  getDescription(): string {
+    //const en = Get.locale?.countryCode === 'en';
+    return `${this.decoratedOrder.getDescription()}, ${
+      true ? this.style.nameEn : this.style.nameVi
+    }`;
+  }
 
-    getPrice(): number {
-        return this.decoratedOrder.getPrice() + this.style.basePrice;
-    }
+  getPrice(): number {
+    return this.decoratedOrder.getPrice() + this.style.basePrice;
+  }
 }
 
-export { StyleDecorator }
+export { StyleDecorator };

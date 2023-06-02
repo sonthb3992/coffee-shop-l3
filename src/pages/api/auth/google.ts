@@ -1,4 +1,4 @@
-import { GoogleAuthProvider } from "firebase/auth";
+import { GoogleAuthProvider } from 'firebase/auth';
 
 const provider = new GoogleAuthProvider();
 provider.addScope('profile');

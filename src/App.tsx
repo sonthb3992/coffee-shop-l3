@@ -20,7 +20,6 @@ import CustomerOrderHistory from './pages/page-order-history';
 import UserProfilePage from './pages/page_user_profile';
 
 const App: React.FC = () => {
-
   const [showNavbar, setShownNavbar] = useState<boolean>(false);
 
   const shouldDisplayNavbar = (): boolean => {
@@ -38,26 +37,39 @@ const App: React.FC = () => {
       <I18nextProvider i18n={i18n}>
         <Router>
           {showNavbar && <Navbar />}
-           {/* <Navbar></Navbar> */}
+          {/* <Navbar></Navbar> */}
           <Routes>
-            <Route path="/login" element={<LoginPage formType={FormType.SignIn} />} />
-            <Route path="/sign-up" element={<LoginPage formType={FormType.SignUp} />} />
+            <Route
+              path="/login"
+              element={<LoginPage formType={FormType.SignIn} />}
+            />
+            <Route
+              path="/sign-up"
+              element={<LoginPage formType={FormType.SignUp} />}
+            />
             <Route path="/staff" element={<StaffPage />} />
-            <Route path="/customize-order/:optionId/:isEditing?" element={<CustomizeOrderPage />} />
+            <Route
+              path="/customize-order/:optionId/:isEditing?"
+              element={<CustomizeOrderPage />}
+            />
             <Route path="/track-order/:orderId" element={<TrackOrderPage />} />
-            <Route path='/order-history' element={<CustomerOrderHistory />}></Route>
+            <Route
+              path="/order-history"
+              element={<CustomerOrderHistory />}
+            ></Route>
             <Route path="/track-order" element={<CustomerTrackPage />} />
             <Route path="/all-items/:filter?" element={<SelectionPage />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/user-profile" element={<UserProfilePage />} />
             <Route path="/" element={<PageHome />} />
-            {showNavbar && <Route path="*" element={<PageNotFound />} />} {/* Optional: Render a "PageNotFound" component for undefined routes */}
+            {showNavbar && <Route path="*" element={<PageNotFound />} />}{' '}
+            {/* Optional: Render a "PageNotFound" component for undefined routes */}
           </Routes>
           {showNavbar && <Footer />}
         </Router>
       </I18nextProvider>
     </Provider>
   );
-}
+};
 
 export default App;
