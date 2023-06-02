@@ -43,10 +43,12 @@ export function ReviewToFirestore(review: Review): any {
  export async function PushReviewToFirebase(review: Review): Promise<string> {
     try {
       const db = getFirestore(app);
-      const reviewRef = collection(db, 'reviews');
-        await setDoc(doc(db, 'reviews'), ReviewToFirestore(review));
+      const reviewsCollectionRef = collection(db, 'reviews');
+      const newReviewDocRef = doc(reviewsCollectionRef); 
+      await setDoc(newReviewDocRef, ReviewToFirestore(review));
       return 'success';
     } catch (e) {
+      console.log(e);
       return 'Error adding review to Firestore: ' + e;
     }
   }
