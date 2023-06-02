@@ -66,5 +66,8 @@
     "loginLink": "Đã có tài khoản? Đăng nhập tại đây.",
     "namePlaceholder": "Tên của bạn",
     "error": "Vui lòng nhập đầy đủ thông tin"
+  },
+  "reviewForm" : {
+    "title": "Đánh giá đơn hàng"
   }
 }

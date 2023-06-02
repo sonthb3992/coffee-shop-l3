@@ -66,5 +66,8 @@
     "loginLink": "Already have an account? Login here.",
     "namePlaceholder": "Your name",
     "error": "Please input all the fields"
+  },
+  "reviewForm" : {
+    "title": "Review Order"
   }
 }

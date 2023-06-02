@@ -70,3 +70,7 @@ footer {
 .has-text-decoration-none {
   text-decoration: none !important;
 }
+
+.has-cursor-hand {
+  cursor: pointer;
+}

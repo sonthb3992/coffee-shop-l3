@@ -1,9 +1,6 @@
 import {
-  CollectionReference,
   DocumentSnapshot,
-  SnapshotOptions,
   getFirestore,
-  addDoc,
   getDocs,
   collection,
   query,
@@ -11,7 +8,6 @@ import {
   setDoc,
   doc,
 } from 'firebase/firestore';
-import { OptionBase } from './base_option';
 import { app } from './firebase';
 
 interface User {

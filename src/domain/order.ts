@@ -30,6 +30,7 @@ class Order {
   cancelTime: Date = new Date(0, 0, 0);
   itemcount: number = 0;
   useruid: string = '';
+  isReviewed : boolean = false;
 
   static fromFirestore(
     snapshot: DocumentSnapshot<any>,

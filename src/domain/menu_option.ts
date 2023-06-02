@@ -23,6 +23,8 @@ class MenuOption extends OptionBase {
   availableStyles?: string[];
   availableSizes?: string[];
   availableToppings?: string[];
+  likeCount: number = 0;
+  dislikeCount: number = 0;
 
   constructor({
     nameEn = '',
@@ -76,7 +78,7 @@ class MenuOption extends OptionBase {
       toppings = availableToppings.map((e) => e.toString());
     }
 
-    return new MenuOption({
+    const option = new MenuOption({
       nameEn: data?.nameEn,
       nameVi: data?.nameVi,
       basePrice: parseFloat(data!.basePrice.toString()),
@@ -86,6 +88,16 @@ class MenuOption extends OptionBase {
       availableSizes: sizes,
       availableToppings: toppings,
     });
+
+    if (data?.likeCount) {
+      option.likeCount = parseInt(data?.likeCount.toString());
+    }
+
+    if (data?.dislikeCount) {
+      option.dislikeCount = parseInt(data?.likeCount.toString());
+    }
+
+    return option;
   }
 
   static toFirestore(option: MenuOption): any {
@@ -98,6 +110,8 @@ class MenuOption extends OptionBase {
       availableStyles: option.availableStyles,
       availableSizes: option.availableSizes,
       availableToppings: option.availableToppings,
+      likeCount: option.likeCount,
+      dislikeCount: option.dislikeCount
     };
   }
 
@@ -121,6 +135,25 @@ class MenuOption extends OptionBase {
       return 'Error adding Menu option to Firestore: ' + e;
     }
   }
+
+  static async updateToFirebase(option: MenuOption | null): Promise<string> {
+    try {
+      const db = getFirestore(app);
+      const menuOptionRef = collection(db, 'menu_options');
+
+      // Create a query against the collection.
+      const q = query(menuOptionRef, where('nameEn', '==', option?.nameEn));
+      const querySnapshot = await getDocs(q);
+
+      if (option == null) return 'Null menu option.';
+
+      await setDoc(doc(db, 'menu_options'), MenuOption.toFirestore(option));
+      return 'success';
+    } catch (e) {
+      return 'Error adding Menu option to Firestore: ' + e;
+    }
+  }
+
 
   static async getAll(): Promise<MenuOption[]> {
     try {

@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import OrderStatusComponent from '../view/order-status';
 import { OrderItem } from '../domain/selected_item';
 import CartPageItem from '../view/cart-item';
+import ReviewForm from '../view/review-form';
 
 const CustomerOrderHistory: React.FC = () => {
   const user = useSelector((state: RootState) => state.cart.user);
@@ -20,6 +21,7 @@ const CustomerOrderHistory: React.FC = () => {
 
   const [all_orders, setAllOrders] = useState<Order[]>();
   const [order, setViewDetailOder] = useState<Order | null>();
+  const [showReviewModal, setShowReviewModal] = useState<boolean>(false);
 
   useEffect(() => {
     const findOrders = async () => {
@@ -49,6 +51,11 @@ const CustomerOrderHistory: React.FC = () => {
     navigate('/cart');
   };
 
+  const handleReview = () => {
+    if (showReviewModal === false)
+      setShowReviewModal(true);
+  }
+
   const fetchOrderDetail = async (orderId: string) => {
     var a = await Order.getOrderById(orderId, true, (orderChanged) => {
       setViewDetailOder(orderChanged);
@@ -62,6 +69,7 @@ const CustomerOrderHistory: React.FC = () => {
   return (
     <section className="section">
       <div className="container">
+        <ReviewForm isActived={showReviewModal} order={order!} onClose={() => setShowReviewModal(false)}></ReviewForm>
         {all_orders && all_orders.length > 0 && (
           <div className="columns is-desktop">
             <div className="column">
@@ -134,11 +142,10 @@ const CustomerOrderHistory: React.FC = () => {
                     <div className="field is-grouped">
                       <p className="control">
                         <button
-                          className={`button ${
-                            order.status > 1 || order.status < 0
-                              ? 'is-static'
-                              : 'is-danger'
-                          }`}
+                          className={`button ${order.status > 1 || order.status < 0
+                            ? 'is-static'
+                            : 'is-danger'
+                            }`}
                           onClick={() => Order.cancelOrder(order)}
                         >
                           {t('Cancel order')}
@@ -154,6 +161,17 @@ const CustomerOrderHistory: React.FC = () => {
                             : t('Re-order')}
                         </button>
                       </p>
+                      {
+                        order.status === 4 &&
+                        <p className="control">
+                          <button
+                            className="button is-success"
+                            onClick={() => handleReview()}
+                          >
+                            Review
+                          </button>
+                        </p>
+                      }
                     </div>
                   )}
 
