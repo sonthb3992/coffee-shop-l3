@@ -15,7 +15,7 @@
     "@types/react-i18next": "^8.1.0",
     "bulma": "^0.9.4",
     "firebase": "^9.22.0",
-    "firebase-admin": "^11.8.0",
+    "firebase-admin": "^11.9.0",
     "firebaseui": "^6.0.2",
     "i18next": "^22.5.0",
     "next-auth": "^4.22.1",

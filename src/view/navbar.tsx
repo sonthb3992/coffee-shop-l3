@@ -8,23 +8,35 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../domain/firebase';
 import { setUser } from '../reducer/cartSlice';
 import UserInfoComponent from './user-info-component';
+import { useLocation } from 'react-router-dom';
+import { currentRole } from '../domain/user';
 
 const Navbar: React.FC = () => {
   const orderCount = useSelector(
     (state: RootState) => state.cart.orderItems.length || 0
   );
   const user = useSelector((state: RootState) => state.cart.user);
+  const userRole = useSelector((state: RootState) => state.cart.userRole);
 
   const [showMenuOnMobile, setShowMenuOnMobile] = useState<boolean>(false);
+  const [showNavbar, setShownNavbar] = useState<boolean>(false);
+  const location = useLocation();
 
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
 
+  const shouldDisplayNavbar = (): boolean => {
+    var result = !location.pathname.startsWith('/login');
+    result &&= !location.pathname.startsWith('/sign-up');
+    return result;
+  };
+
   useEffect(() => {
     const user = auth.currentUser;
     console.log(user);
     dispatch(setUser(user));
+    setShownNavbar(shouldDisplayNavbar());
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -37,13 +49,15 @@ const Navbar: React.FC = () => {
     return () => {
       unsubscribe();
     };
-  }, [dispatch]);
+  }, [dispatch, location, userRole]);
 
   const toggleMenu = () => {
     setShowMenuOnMobile(!showMenuOnMobile);
   };
 
-  return (
+  return showNavbar === false ? (
+    <div></div>
+  ) : (
     <nav
       className="navbar is-spaced is-light"
       role="navigation"
@@ -93,7 +107,18 @@ const Navbar: React.FC = () => {
             href="/order-history"
           >
             {t('My orders')}
-          </a>{' '}
+          </a>
+          {'barista' && (
+            <a className="navbar-item has-text-weight-semibold" href="/barista">
+              {t('Barista')}
+            </a>
+          )}
+          <a
+            className="navbar-item has-text-weight-semibold"
+            href="/testimonials"
+          >
+            {t('Testimonials')}
+          </a>
         </div>
         <div className="navbar-end">
           <div className="navbar-item">

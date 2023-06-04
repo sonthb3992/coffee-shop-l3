@@ -52,9 +52,8 @@ const CustomerOrderHistory: React.FC = () => {
   };
 
   const handleReview = () => {
-    if (showReviewModal === false)
-      setShowReviewModal(true);
-  }
+    if (showReviewModal === false) setShowReviewModal(true);
+  };
 
   const fetchOrderDetail = async (orderId: string) => {
     var a = await Order.getOrderById(orderId, true, (orderChanged) => {
@@ -69,7 +68,11 @@ const CustomerOrderHistory: React.FC = () => {
   return (
     <section className="section">
       <div className="container">
-        <ReviewForm isActived={showReviewModal} order={order!} onClose={() => setShowReviewModal(false)}></ReviewForm>
+        <ReviewForm
+          isActived={showReviewModal}
+          order={order!}
+          onClose={() => setShowReviewModal(false)}
+        ></ReviewForm>
         {all_orders && all_orders.length > 0 && (
           <div className="columns is-desktop">
             <div className="column">
@@ -142,10 +145,11 @@ const CustomerOrderHistory: React.FC = () => {
                     <div className="field is-grouped">
                       <p className="control">
                         <button
-                          className={`button ${order.status > 1 || order.status < 0
-                            ? 'is-static'
-                            : 'is-danger'
-                            }`}
+                          className={`button ${
+                            order.status > 1 || order.status < 0
+                              ? 'is-static'
+                              : 'is-danger'
+                          }`}
                           onClick={() => Order.cancelOrder(order)}
                         >
                           {t('Cancel order')}
@@ -161,17 +165,16 @@ const CustomerOrderHistory: React.FC = () => {
                             : t('Re-order')}
                         </button>
                       </p>
-                      {
-                        order.status === 4 &&
+                      {!order.isReviewed && order.status === 4 && (
                         <p className="control">
                           <button
-                            className="button is-success"
+                            className="button is-info"
                             onClick={() => handleReview()}
                           >
-                            Review
+                            {t('Review')}
                           </button>
                         </p>
-                      }
+                      )}
                     </div>
                   )}
 

@@ -1,20 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './rating.css';
 
 interface RatingProps {
   disabled?: boolean;
-  onRatingChanged: (newRating: number) => void;
+  fixedRating?: number;
+  onRatingChanged?: (newRating: number) => void;
 }
 
-const Rating: React.FC<RatingProps> = ({ disabled, onRatingChanged }) => {
+const Rating: React.FC<RatingProps> = ({
+  disabled,
+  fixedRating,
+  onRatingChanged,
+}) => {
   const [rating, setRating] = useState<number | null>(null);
   const [tempRating, setTempRating] = useState<number | null>(null);
+
+  useEffect(() => {}, [fixedRating]);
 
   const rate = (_newRating: number) => {
     if (!disabled) {
       setRating(_newRating);
       setTempRating(_newRating);
-      onRatingChanged(_newRating);
+      if (onRatingChanged) onRatingChanged(_newRating);
     }
   };
 
@@ -37,6 +44,10 @@ const Rating: React.FC<RatingProps> = ({ disabled, onRatingChanged }) => {
     let klass = 'star-rating__star';
 
     if (!disabled && rating !== null && rating >= i) {
+      klass += ' is-selected';
+    }
+
+    if (disabled && fixedRating && fixedRating >= i) {
       klass += ' is-selected';
     }
 

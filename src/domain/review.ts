@@ -1,5 +1,6 @@
-import { DocumentSnapshot, collection, doc, getFirestore, query, setDoc, where } from "firebase/firestore";
+import { DocumentSnapshot, Timestamp, collection, doc, getDocs, getFirestore, limit, orderBy, query, setDoc, where } from "firebase/firestore";
 import { app } from "./firebase";
+import { Order } from "./order";
 
 export interface Review {
     uid: string;
@@ -9,6 +10,9 @@ export interface Review {
     rating: number;
     comment: string;
     isPublic: boolean;
+    reviewerName: string;
+    reviewerImageUrl: string;
+    reviewDateTime: Date
 }
 
 export function ReviewFromFirestore(snapshot: DocumentSnapshot<any>): Review {
@@ -22,14 +26,18 @@ export function ReviewFromFirestore(snapshot: DocumentSnapshot<any>): Review {
         rating: data.rating,
         comment: data.comment,
         isPublic: data.isPublic,
+        reviewerName: data.reviewerName,
+        reviewerImageUrl: data.reviewerImageUrl,
+        reviewDateTime: data.timestamp.toDate()
     };
 
     return review;
 }
 
 export function ReviewToFirestore(review: Review): any {
-    const { parentId, userUid, orderId, rating, comment, isPublic } = review;
-  
+    const { parentId, userUid, orderId, rating, comment, isPublic,reviewerName, reviewerImageUrl, reviewDateTime } = review;
+    const timestamp = Timestamp.fromDate(reviewDateTime);
+
     return {
       parentId,
       userUid,
@@ -37,6 +45,9 @@ export function ReviewToFirestore(review: Review): any {
       rating,
       comment,
       isPublic,
+      reviewerName,
+      reviewerImageUrl,
+      timestamp
     };
   }
 
@@ -46,6 +57,7 @@ export function ReviewToFirestore(review: Review): any {
       const reviewsCollectionRef = collection(db, 'reviews');
       const newReviewDocRef = doc(reviewsCollectionRef); 
       await setDoc(newReviewDocRef, ReviewToFirestore(review));
+      await Order.updateReviewedToFirebase(review.orderId);
       return 'success';
     } catch (e) {
       console.log(e);
@@ -54,4 +66,23 @@ export function ReviewToFirestore(review: Review): any {
   }
   
   
+export async function GetRecentReviews(): Promise<Review[]> {
+  try {
+    const db = getFirestore(app);
+    const reviewsRef = collection(db, 'reviews');
+
+    const querySnapshot = await getDocs(query(reviewsRef, orderBy("timestamp", "desc"), limit(20)));
+
+    if (querySnapshot.empty) {
+      return [];
+    }
+
+    const result = querySnapshot.docs.map((doc) => ReviewFromFirestore(doc));
+
+    return result;
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
+}
 

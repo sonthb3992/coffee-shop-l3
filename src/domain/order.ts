@@ -10,6 +10,7 @@ import {
   where,
   setDoc,
   doc,
+  updateDoc,
 } from 'firebase/firestore';
 import { app } from './firebase';
 import { taxRate } from './settings';
@@ -46,6 +47,7 @@ class Order {
     order.status = data['status'];
     order.price = data['price'];
     order.useruid = data['useruid'];
+    order.isReviewed = data['isReviewed'] ?? false;
     return order;
   }
 
@@ -79,6 +81,7 @@ class Order {
       processTime: order.processTime,
       completeTime: order.completeTime,
       useruid: order.useruid,
+      isReviewed: order.isReviewed
     };
   }
 
@@ -114,6 +117,21 @@ class Order {
       return 'Error adding Menu option to Firestore: ' + e;
     }
   }
+
+  static async updateReviewedToFirebase(orderId: string): Promise<string> {
+    try {
+      const db = getFirestore(app);
+      const docRef = doc(db, 'orders', orderId);
+      await updateDoc(docRef, {
+        isReviewed: true
+      });
+      return 'success';
+    } catch (e) {
+      return 'Error adding Menu option to Firestore: ' + e;
+    }
+  }
+
+
 
   static async getAllOrders(
     callback: (value: any) => void

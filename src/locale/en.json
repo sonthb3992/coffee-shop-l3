@@ -57,6 +57,9 @@
   "login.needHelp": "Need Help",
   "login.error": "Please enter your email and password",
   "sent": "Sent",
+  "Testimonials": "Testimonials",
+  "Review": "Review",
+  "Logout": "Logout",
   "signup": {
     "title": "Sign Up",
     "subtitle": "Create your account",

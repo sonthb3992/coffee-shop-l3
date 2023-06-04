@@ -22,13 +22,21 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   const [commentLabel, setCommentLabel] = useState<string>('');
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState<string>('');
-  const [isPublic, setIsPublic] = useState<boolean>(false);
+  const [isPublic, setIsPublic] = useState<boolean>(true);
   const [isSending, setIsSending] = useState<boolean>(false);
   const user = useSelector((state: RootState) => state.cart.user);
 
   const { t } = useTranslation();
 
   const handleCancel = () => {
+    //Reset the form
+    setRating(0);
+    setCommentLabel('');
+    setComment('');
+    setIsPublic(true);
+    setIsSending(false);
+
+    //Close the form
     setActived(false);
     onClose();
   };
@@ -43,6 +51,11 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     setComment(comment);
   };
 
+  const handlePublicChanged = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(ev.target.value);
+    setIsPublic(ev.target.value === 'public');
+  };
+
   const sendReview = async () => {
     if (user) {
       const review: Review = {
@@ -52,7 +65,10 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
         userUid: user?.uid,
         comment: comment,
         uid: '',
-        isPublic: false,
+        isPublic: isPublic,
+        reviewerName: user.displayName ?? 'Anonymous user',
+        reviewerImageUrl: user.photoURL ?? '',
+        reviewDateTime: new Date(Date.now()),
       };
       setIsSending(true);
       const result = await PushReviewToFirebase(review);
@@ -61,6 +77,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
         handleCancel();
         return;
       }
+      setIsSending(false);
       alert(result);
     }
   };
@@ -104,6 +121,31 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
                 className="textarea is-primary has-fixed-size"
                 placeholder={t('reviewForm.commentPlaceholder').toString()}
               ></textarea>
+            </div>
+          )}
+          {rating >= 1 && (
+            <div className="block">
+              <div className="control">
+                <label className="radio">
+                  <input
+                    type="radio"
+                    name="answer"
+                    value="public"
+                    onChange={handlePublicChanged}
+                    defaultChecked
+                  ></input>
+                  {' Public my review'}
+                </label>
+                <label className="radio ml-3">
+                  <input
+                    type="radio"
+                    name="answer"
+                    value="private"
+                    onChange={handlePublicChanged}
+                  ></input>
+                  {' Do not public my review'}
+                </label>
+              </div>
             </div>
           )}
         </section>

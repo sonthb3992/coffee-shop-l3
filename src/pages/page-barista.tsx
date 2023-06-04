@@ -4,10 +4,10 @@ import SingleOrderDisplay from '../view/order-item';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../reducer/store';
 import { useNavigate } from 'react-router-dom';
-import { GetUserRole } from '../domain/user';
+import { GetUserRole, currentRole } from '../domain/user';
 import { setUserRole } from '../reducer/cartSlice';
 
-const StaffPage: React.FC = () => {
+const BaristaPage: React.FC = () => {
   const [all_orders, setAllOrders] = useState<Order[]>();
   const user = useSelector((state: RootState) => state.cart.user);
   const userRole = useSelector((state: RootState) => state.cart.userRole);
@@ -24,7 +24,7 @@ const StaffPage: React.FC = () => {
     const fetchUserRole = async () => {
       if (user && userRole == '') {
         const result = await GetUserRole(user?.uid);
-        if (result === null || result !== 'staff') {
+        if (result === null || result !== 'barista') {
           return;
         }
         dispatch(setUserRole(result));
@@ -33,11 +33,9 @@ const StaffPage: React.FC = () => {
 
     fetchUserRole();
     fetchAllOrder();
-  }, [userRole, user]);
+  }, [userRole, user, currentRole]);
 
-  return userRole !== 'staff' ? (
-    <div></div>
-  ) : (
+  return (
     <section className="section">
       {all_orders && all_orders?.length! > 0 && (
         <div className="container">
@@ -113,4 +111,4 @@ const StaffPage: React.FC = () => {
   );
 };
 
-export default StaffPage;
+export default BaristaPage;
