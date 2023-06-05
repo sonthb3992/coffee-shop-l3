@@ -9,6 +9,8 @@ import { useNavigate } from 'react-router-dom';
 import OrderStatusComponent from '../view/order-status';
 import { OrderItem } from '../domain/selected_item';
 import CartPageItem from '../view/cart-item';
+import { Review } from '../domain/review';
+import { FaStar } from 'react-icons/fa';
 
 const CustomerOrderHistory: React.FC = () => {
   const user = useSelector((state: RootState) => state.cart.user);
@@ -20,6 +22,31 @@ const CustomerOrderHistory: React.FC = () => {
 
   const [all_orders, setAllOrders] = useState<Order[]>();
   const [order, setViewDetailOder] = useState<Order | null>();
+
+  //Review
+  const [reviewContent, setReviewContent] = useState('');
+  const [currentRatingValue, setCurrentRatingValue] = useState(0);
+
+  const resetForm = () => {
+    setReviewContent('');
+    setCurrentRatingValue(0);
+  };
+
+  const handleReviewSubmit = async (e: any) => {
+    e.preventDefault();
+    const review = new Review();
+    review.orderId = order?.id;
+    review.rating = currentRatingValue;
+    review.comment = reviewContent;
+    review.parentId = '';
+    review.isPublic = true;
+    review.reviewerName = user?.displayName;
+    review.timestamp = new Date();
+    review.userUid = user?.uid;
+
+    await Review.pushtoFirebase(review);
+    
+  };
 
   useEffect(() => {
     const findOrders = async () => {
@@ -169,6 +196,43 @@ const CustomerOrderHistory: React.FC = () => {
                         ></CartPageItem>
                       </React.Fragment>
                     ))}
+
+                  {order && (
+                    <div className="review">
+                      <form onSubmit={handleReviewSubmit}>
+                        <label>
+                          <span>Your review:</span>
+                          <input
+                            type="text"
+                            id="review-content"
+                            onChange={(e) => setReviewContent(e.target.value)}
+                            value={reviewContent}
+                          />
+                        </label>
+                        <label>
+                          <span>Rating:</span>
+                          <input
+                            type="number"
+                            id="rating"
+                            onChange={(e) =>
+                              setCurrentRatingValue(
+                                parseInt(e.target.value, 10)
+                              )
+                            }
+                            value = {currentRatingValue}
+                          />
+                        </label>
+                        <button
+                          className={`button is-success`}
+                          onClick={() => {
+                            resetForm();
+                          }}
+                        >
+                          Submit
+                        </button>
+                      </form>
+                    </div>
+                  )}
                 </div>
               </article>
             </div>
