@@ -47,10 +47,11 @@ const App: React.FC = () => {
               path="/testimonials"
               element={<TestimonialsPage></TestimonialsPage>}
             ></Route>
-            <Route
+            {/* <Route
               path="/customize-order/:optionId/:isEditing?"
               element={<CustomizeOrderPage />}
-            />
+            /> */}
+            <Route path="/customize-order" element={<CustomizeOrderPage />} />
             <Route path="/track-order/:orderId" element={<TrackOrderPage />} />
             <Route
               path="/order-history"
