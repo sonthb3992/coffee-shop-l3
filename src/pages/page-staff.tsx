@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Order } from '../domain/order';
 import SingleOrderDisplay from '../view/order-item';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../reducer/store';
 import { useNavigate } from 'react-router-dom';
-import { GetUserRole } from '../domain/user';
-import { setUserRole } from '../reducer/cartSlice';
+import { useAppDispatch, useAppSelector } from '../reducer/hook';
+import { auth } from '../domain/firebase';
+import { fetchUserData } from '../reducer/user-slice';
+import PermissionAlertComponent from '../view/permission-alert';
 
 const StaffPage: React.FC = () => {
   const [all_orders, setAllOrders] = useState<Order[]>();
-  const user = useSelector((state: RootState) => state.cart.user);
-  const userRole = useSelector((state: RootState) => state.cart.userRole);
+  const userData = useAppSelector((state) => state.user.userData);
+  const user = auth.currentUser;
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const fetchAllOrder = async () => {
@@ -21,22 +21,12 @@ const StaffPage: React.FC = () => {
       });
       if (result !== null) setAllOrders(result.orders);
     };
-    const fetchUserRole = async () => {
-      if (user && userRole == '') {
-        const result = await GetUserRole(user?.uid);
-        if (result === null || result !== 'staff') {
-          return;
-        }
-        dispatch(setUserRole(result));
-      }
-    };
-
-    fetchUserRole();
+    dispatch(fetchUserData());
     fetchAllOrder();
-  }, [userRole, user]);
+  }, [userData, user]);
 
-  return userRole !== 'staff' ? (
-    <div></div>
+  return userData?.role !== 'staff' ? (
+    <PermissionAlertComponent></PermissionAlertComponent>
   ) : (
     <section className="section">
       {all_orders && all_orders?.length! > 0 && (

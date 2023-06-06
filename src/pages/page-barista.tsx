@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { Order } from '../domain/order';
 import SingleOrderDisplay from '../view/order-item';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from '../reducer/store';
 import { useNavigate } from 'react-router-dom';
-import { GetUserRole, currentRole } from '../domain/user';
-import { setUserRole } from '../reducer/cartSlice';
+import { useAppDispatch } from '../reducer/hook';
+import { fetchUserData } from '../reducer/user-slice';
+import { auth } from '../domain/firebase';
+import PermissionAlertComponent from '../view/permission-alert';
 
 const BaristaPage: React.FC = () => {
   const [all_orders, setAllOrders] = useState<Order[]>();
-  const user = useSelector((state: RootState) => state.cart.user);
-  const userRole = useSelector((state: RootState) => state.cart.userRole);
+  const user = auth.currentUser;
+  const userData = useSelector((state: RootState) => state.user.userData);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const fetchAllOrder = async () => {
@@ -21,41 +23,17 @@ const BaristaPage: React.FC = () => {
       });
       if (result !== null) setAllOrders(result.orders);
     };
-    const fetchUserRole = async () => {
-      if (user && userRole == '') {
-        const result = await GetUserRole(user?.uid);
-        if (result === null || result !== 'barista') {
-          return;
-        }
-        dispatch(setUserRole(result));
-      }
-    };
-
-    fetchUserRole();
+    dispatch(fetchUserData());
     fetchAllOrder();
-  }, [userRole, user, currentRole]);
+  }, [userData, user]);
 
-  return (
+  return userData?.role !== 'barista' ? (
+    <PermissionAlertComponent></PermissionAlertComponent>
+  ) : (
     <section className="section">
       {all_orders && all_orders?.length! > 0 && (
         <div className="container">
           <div className="columns is-desktop">
-            <div className="column">
-              <article className="message is-info">
-                <div className="message-header">Unconfirmed</div>
-                <div
-                  className="message-body"
-                  style={{ maxHeight: '500px', overflowY: 'auto' }}
-                >
-                  {all_orders!.map(
-                    (o) =>
-                      o.status === 0 && (
-                        <SingleOrderDisplay order={o}></SingleOrderDisplay>
-                      )
-                  )}
-                </div>
-              </article>
-            </div>
             <div className="column">
               <article className="message is-link">
                 <div className="message-header">Confirmed</div>
@@ -63,12 +41,14 @@ const BaristaPage: React.FC = () => {
                   className="message-body"
                   style={{ maxHeight: '500px', overflowY: 'auto' }}
                 >
-                  {all_orders!.map(
-                    (o) =>
-                      o.status === 1 && (
-                        <SingleOrderDisplay order={o}></SingleOrderDisplay>
-                      )
-                  )}
+                  {all_orders!
+                    .filter((o) => o.status === 1)
+                    .map((o) => (
+                      <SingleOrderDisplay
+                        key={o.id}
+                        order={o}
+                      ></SingleOrderDisplay>
+                    ))}
                 </div>
               </article>
             </div>
@@ -79,12 +59,14 @@ const BaristaPage: React.FC = () => {
                   className="message-body"
                   style={{ maxHeight: '500px', overflowY: 'auto' }}
                 >
-                  {all_orders!.map(
-                    (o) =>
-                      o.status === 2 && (
-                        <SingleOrderDisplay order={o}></SingleOrderDisplay>
-                      )
-                  )}
+                  {all_orders!
+                    .filter((o) => o.status === 2)
+                    .map((o) => (
+                      <SingleOrderDisplay
+                        key={o.id}
+                        order={o}
+                      ></SingleOrderDisplay>
+                    ))}
                 </div>
               </article>
             </div>
