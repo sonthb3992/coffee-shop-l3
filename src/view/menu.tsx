@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { MenuOption } from '../domain/menu_option';
+import React, { useEffect } from 'react';
 import MenuOptionComponent from './menu-item';
+import { useSelector } from 'react-redux';
+import { RootState } from '../reducer/store';
+import { fetchMenuItems } from '../reducer/menu-option-slice';
+import { useAppDispatch } from '../reducer/hook';
 
 interface MenuProps {
   chunkSize: number;
@@ -8,18 +11,15 @@ interface MenuProps {
 }
 
 const Menu: React.FC<MenuProps> = ({ chunkSize, typeFilter: filter }) => {
-  const [menuOptions, setMenuOptions] = useState<MenuOption[]>([]);
+  // const [menuOptions, setMenuOptions] = useState<MenuOption[]>([]);
+  const menuOptions = useSelector(
+    (state: RootState) => state.menuOptions.menuItems
+  );
+
+  const appDispath = useAppDispatch();
 
   useEffect(() => {
-    const fetchMenuOptions = async () => {
-      const result = await MenuOption.getAll();
-      const filteredResult = result.filter(
-        (option) => option.type === filter || filter === ''
-      );
-      setMenuOptions(filteredResult);
-    };
-
-    fetchMenuOptions();
+    appDispath(fetchMenuItems());
   }, [filter]);
 
   return (
@@ -29,7 +29,7 @@ const Menu: React.FC<MenuProps> = ({ chunkSize, typeFilter: filter }) => {
           menuOptions.map((option) => (
             <div
               key={option.nameEn}
-              className="column is-half-mobile  is-one-thirds-tablet is-one-quarter-desktop"
+              className="column is-half-mobile is-one-thirds-tablet is-one-quarter-desktop"
             >
               <MenuOptionComponent option={option} />
             </div>
@@ -38,7 +38,7 @@ const Menu: React.FC<MenuProps> = ({ chunkSize, typeFilter: filter }) => {
           menuOptions.map((option) => (
             <div
               key={option.nameEn}
-              className="column is-half-mobile  is-one-thirds-tablet"
+              className="column is-half-mobile is-one-thirds-tablet"
             >
               <MenuOptionComponent option={option} />
             </div>
