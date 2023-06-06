@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { setUser } from '../reducer/cartSlice';
+import { setUser, setUserRole } from '../reducer/cartSlice';
+import { GetUserRole } from '../domain/user';
 
 const SignInForm: React.FC = () => {
   const { t } = useTranslation();
@@ -13,24 +14,46 @@ const SignInForm: React.FC = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isBusy, setIsBusy] = useState<boolean>(false);
 
-  const handleSignIn = () => {
+  const handleSignIn = async () => {
     if (!email || !password) {
       alert(t('login.error'));
       return;
     }
 
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        dispatch(setUser(user));
-        navigate('/');
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(`${errorCode} : ${errorMessage}`);
-      });
+    setIsBusy(true);
+    try {
+      var userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+      dispatch(setUser(user));
+      const role = await GetUserRole(user.uid);
+      if (role && role !== '') {
+        dispatch(setUserRole(role));
+        switch (role) {
+          case 'customer':
+            navigate('/');
+            break;
+          case 'staff':
+            navigate('/staff');
+            break;
+          case 'barista':
+            navigate('/barista');
+            break;
+          default:
+            navigate('/');
+            break;
+        }
+      }
+      navigate('/');
+    } catch (error) {
+      console.log(error);
+    }
+    setIsBusy(false);
   };
 
   return (
@@ -65,7 +88,9 @@ const SignInForm: React.FC = () => {
         </label>
       </div>
       <button
-        className="button is-block is-info is-fullwidth"
+        className={`button is-block is-info is-fullwidth ${
+          isBusy ? 'is-loading' : ''
+        }`}
         onClick={() => handleSignIn()}
       >
         {t('login.loginButton')}{' '}

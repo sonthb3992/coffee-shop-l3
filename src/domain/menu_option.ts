@@ -10,6 +10,7 @@ import {
   where,
   setDoc,
   doc,
+  onSnapshot,
 } from 'firebase/firestore';
 import { OptionBase } from './base_option';
 import { app } from './firebase';
@@ -23,6 +24,8 @@ class MenuOption extends OptionBase {
   availableStyles?: string[];
   availableSizes?: string[];
   availableToppings?: string[];
+  likeCount: number = 0;
+  dislikeCount: number = 0;
 
   constructor({
     nameEn = '',
@@ -54,6 +57,8 @@ class MenuOption extends OptionBase {
     this.availableToppings = availableToppings || [];
   }
 
+  static allMenuOptions: MenuOption[];
+
   static fromFirestore(
     snapshot: DocumentSnapshot<any>,
     options: SnapshotOptions | undefined
@@ -76,7 +81,7 @@ class MenuOption extends OptionBase {
       toppings = availableToppings.map((e) => e.toString());
     }
 
-    return new MenuOption({
+    const option = new MenuOption({
       nameEn: data?.nameEn,
       nameVi: data?.nameVi,
       basePrice: parseFloat(data!.basePrice.toString()),
@@ -86,6 +91,16 @@ class MenuOption extends OptionBase {
       availableSizes: sizes,
       availableToppings: toppings,
     });
+
+    if (data?.likeCount) {
+      option.likeCount = parseInt(data?.likeCount.toString());
+    }
+
+    if (data?.dislikeCount) {
+      option.dislikeCount = parseInt(data?.likeCount.toString());
+    }
+
+    return option;
   }
 
   static toFirestore(option: MenuOption): any {
@@ -98,6 +113,8 @@ class MenuOption extends OptionBase {
       availableStyles: option.availableStyles,
       availableSizes: option.availableSizes,
       availableToppings: option.availableToppings,
+      likeCount: option.likeCount,
+      dislikeCount: option.dislikeCount,
     };
   }
 
@@ -122,23 +139,55 @@ class MenuOption extends OptionBase {
     }
   }
 
-  static async getAll(): Promise<MenuOption[]> {
+  static async updateToFirebase(option: MenuOption | null): Promise<string> {
     try {
       const db = getFirestore(app);
       const menuOptionRef = collection(db, 'menu_options');
 
       // Create a query against the collection.
-      const querySnapshot = await getDocs(menuOptionRef);
+      const q = query(menuOptionRef, where('nameEn', '==', option?.nameEn));
+      const querySnapshot = await getDocs(q);
+
+      if (option == null) return 'Null menu option.';
+
+      await setDoc(doc(db, 'menu_options'), MenuOption.toFirestore(option));
+      return 'success';
+    } catch (e) {
+      return 'Error adding Menu option to Firestore: ' + e;
+    }
+  }
+
+  static async getAll(): Promise<MenuOption[]> {
+    try {
+      if (MenuOption.allMenuOptions && MenuOption.allMenuOptions.length > 0) {
+        return MenuOption.allMenuOptions;
+      }
+
+      const db = getFirestore(app);
+      const menuOptionRef = collection(db, 'menu_options');
+      const q = query(menuOptionRef);
+
+      const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
+        console.log('Query snapshot is empty');
         return [];
       }
 
-      var result = querySnapshot.docs.map((m) =>
-        MenuOption.fromFirestore(m, undefined)
+      const menuOptions = querySnapshot.docs.map((doc) =>
+        MenuOption.fromFirestore(doc, undefined)
       );
 
-      return result;
+      const unsubscribe = onSnapshot(q, (updatedSnapshot) => {
+        const updatedMenuOptions = updatedSnapshot.docs.map((doc) =>
+          MenuOption.fromFirestore(doc, undefined)
+        );
+        MenuOption.allMenuOptions = updatedMenuOptions;
+      });
+
+      MenuOption.allMenuOptions = menuOptions;
+
+      return menuOptions;
     } catch (e) {
       console.log(e);
       return [];

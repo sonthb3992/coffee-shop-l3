@@ -4,6 +4,7 @@ import {
   doc,
   getDocs,
   getFirestore,
+  onSnapshot,
   query,
   setDoc,
   where,
@@ -16,9 +17,10 @@ class StyleOption extends OptionBase {
   readonly nameEn: string;
   readonly nameVi: string;
   readonly basePrice: number;
-  readonly availableSizes?: SizeOption[];
+  readonly availableSizes?: string[];
 
-  private static _allOptions: StyleOption[] | null = null;
+  private static _allOptions: StyleOption[] = [];
+  static allStyleOptions: StyleOption[];
 
   constructor({
     nameEn,
@@ -29,7 +31,7 @@ class StyleOption extends OptionBase {
     nameEn: string;
     nameVi: string;
     basePrice: number;
-    availableSizes?: SizeOption[];
+    availableSizes?: string[];
   }) {
     super();
     this.nameEn = nameEn;
@@ -72,6 +74,7 @@ class StyleOption extends OptionBase {
 
       // Create a query against the collection.
       const q = query(menuOptionRef, where('nameEn', '==', option?.nameEn));
+
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
         return 'Another style option with the same name already existed.';
@@ -88,19 +91,38 @@ class StyleOption extends OptionBase {
 
   static async getAll(): Promise<StyleOption[]> {
     try {
+      if (
+        StyleOption.allStyleOptions &&
+        StyleOption.allStyleOptions.length > 0
+      ) {
+        return StyleOption.allStyleOptions;
+      }
+
       const db = getFirestore(app);
       const styleOptionRef = collection(db, 'style_options');
 
-      // Create a query against the collection.
+      console.log('Read style_options from firebase');
       const querySnapshot = await getDocs(styleOptionRef);
 
       if (querySnapshot.empty) {
+        console.log('Query snapshot is empty');
         return [];
       }
 
-      var result = querySnapshot.docs.map((m) => StyleOption.fromFirestore(m));
+      const styleOptions = querySnapshot.docs.map((doc) =>
+        StyleOption.fromFirestore(doc)
+      );
 
-      return result;
+      const unsubscribe = onSnapshot(styleOptionRef, (updatedSnapshot) => {
+        const updatedStyleOptions = updatedSnapshot.docs.map((doc) =>
+          StyleOption.fromFirestore(doc)
+        );
+        StyleOption.allStyleOptions = updatedStyleOptions;
+      });
+
+      StyleOption.allStyleOptions = styleOptions;
+
+      return styleOptions;
     } catch (e) {
       console.log(e);
       return [];

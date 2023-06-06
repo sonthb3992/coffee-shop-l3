@@ -1,30 +1,43 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import shopName from '../assets/images/shop-name.png'; // change this to the path of your image
-import logo from '../assets/images/logo.png'; // change this to the path of your image
-import { useDispatch, useSelector } from 'react-redux';
+import shopName from '../assets/images/shop-name.png';
+import logo from '../assets/images/logo.png';
+import { useSelector } from 'react-redux';
 import { RootState } from '../reducer/store';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../domain/firebase';
 import { setUser } from '../reducer/cartSlice';
 import UserInfoComponent from './user-info-component';
+import { useLocation } from 'react-router-dom';
+import { useAppDispatch } from '../reducer/hook';
+import { fetchUserData } from '../reducer/user-slice';
 
 const Navbar: React.FC = () => {
   const orderCount = useSelector(
     (state: RootState) => state.cart.orderItems.length || 0
   );
   const user = useSelector((state: RootState) => state.cart.user);
+  const userData = useSelector((state: RootState) => state.user.userData);
 
   const [showMenuOnMobile, setShowMenuOnMobile] = useState<boolean>(false);
+  const [showNavbar, setShownNavbar] = useState<boolean>(false);
+  const location = useLocation();
 
   const { t } = useTranslation();
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+
+  const shouldDisplayNavbar = (): boolean => {
+    var result = !location.pathname.startsWith('/login');
+    result &&= !location.pathname.startsWith('/sign-up');
+    return result;
+  };
 
   useEffect(() => {
     const user = auth.currentUser;
-    console.log(user);
     dispatch(setUser(user));
+    dispatch(fetchUserData());
+    setShownNavbar(shouldDisplayNavbar());
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -37,13 +50,15 @@ const Navbar: React.FC = () => {
     return () => {
       unsubscribe();
     };
-  }, [dispatch]);
+  }, [dispatch, location, userData]);
 
   const toggleMenu = () => {
     setShowMenuOnMobile(!showMenuOnMobile);
   };
 
-  return (
+  return showNavbar === false ? (
+    <div></div>
+  ) : (
     <nav
       className="navbar is-spaced is-light"
       role="navigation"
@@ -93,7 +108,23 @@ const Navbar: React.FC = () => {
             href="/order-history"
           >
             {t('My orders')}
-          </a>{' '}
+          </a>
+          {userData && userData.role === 'barista' && (
+            <a className="navbar-item has-text-weight-semibold" href="/barista">
+              {t('Barista')}
+            </a>
+          )}
+          {userData && userData.role === 'staff' && (
+            <a className="navbar-item has-text-weight-semibold" href="/staff">
+              {t('Staff')}
+            </a>
+          )}
+          <a
+            href="/testimonials"
+            className="navbar-item has-text-weight-semibold"
+          >
+            {t('Testimonials')}
+          </a>
         </div>
         <div className="navbar-end">
           <div className="navbar-item">

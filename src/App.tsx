@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import './App.css';
 import Navbar from './view/navbar';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -18,26 +18,15 @@ import LoginPage, { FormType } from './pages/page-login';
 import PageNotFound from './pages/page-not-found';
 import CustomerOrderHistory from './pages/page-order-history';
 import UserProfilePage from './pages/page_user_profile';
+import TestimonialsPage from './pages/page-testimonials';
+import BaristaPage from './pages/page-barista';
 
 const App: React.FC = () => {
-  const [showNavbar, setShownNavbar] = useState<boolean>(false);
-
-  const shouldDisplayNavbar = (): boolean => {
-    var result = !window.location.pathname.startsWith('/login');
-    result &&= !window.location.pathname.startsWith('/sign-up');
-    return result;
-  };
-
-  useEffect(() => {
-    setShownNavbar(shouldDisplayNavbar());
-  }, []);
-
   return (
     <Provider store={store}>
       <I18nextProvider i18n={i18n}>
         <Router>
-          {showNavbar && <Navbar />}
-          {/* <Navbar></Navbar> */}
+          <Navbar />
           <Routes>
             <Route
               path="/login"
@@ -48,10 +37,12 @@ const App: React.FC = () => {
               element={<LoginPage formType={FormType.SignUp} />}
             />
             <Route path="/staff" element={<StaffPage />} />
+            <Route path="/barista" element={<BaristaPage />} />
             <Route
-              path="/customize-order/:optionId/:isEditing?"
-              element={<CustomizeOrderPage />}
-            />
+              path="/testimonials"
+              element={<TestimonialsPage></TestimonialsPage>}
+            ></Route>
+            <Route path="/customize-order" element={<CustomizeOrderPage />} />
             <Route path="/track-order/:orderId" element={<TrackOrderPage />} />
             <Route
               path="/order-history"
@@ -62,10 +53,9 @@ const App: React.FC = () => {
             <Route path="/cart" element={<CartPage />} />
             <Route path="/user-profile" element={<UserProfilePage />} />
             <Route path="/" element={<PageHome />} />
-            {showNavbar && <Route path="*" element={<PageNotFound />} />}{' '}
-            {/* Optional: Render a "PageNotFound" component for undefined routes */}
+            {<Route path="*" element={<PageNotFound />} />}{' '}
           </Routes>
-          {showNavbar && <Footer />}
+          {<Footer />}
         </Router>
       </I18nextProvider>
     </Provider>

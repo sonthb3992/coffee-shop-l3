@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Order } from '../domain/order';
 import SingleOrderDisplay from '../view/order-item';
+import { useSelector } from 'react-redux';
+import { RootState } from '../reducer/store';
 import { useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../reducer/hook';
-import { auth } from '../domain/firebase';
+import { useAppDispatch } from '../reducer/hook';
 import { fetchUserData } from '../reducer/user-slice';
+import { auth } from '../domain/firebase';
 import PermissionAlertComponent from '../view/permission-alert';
 
-const StaffPage: React.FC = () => {
+const BaristaPage: React.FC = () => {
   const [all_orders, setAllOrders] = useState<Order[]>();
-  const userData = useAppSelector((state) => state.user.userData);
   const user = auth.currentUser;
+  const userData = useSelector((state: RootState) => state.user.userData);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -25,7 +27,7 @@ const StaffPage: React.FC = () => {
     fetchAllOrder();
   }, [userData, user]);
 
-  return userData?.role !== 'staff' ? (
+  return userData?.role !== 'barista' ? (
     <PermissionAlertComponent></PermissionAlertComponent>
   ) : (
     <section className="section">
@@ -33,34 +35,20 @@ const StaffPage: React.FC = () => {
         <div className="container">
           <div className="columns is-desktop">
             <div className="column">
-              <article className="message is-info">
-                <div className="message-header">Unconfirmed</div>
-                <div
-                  className="message-body"
-                  style={{ maxHeight: '500px', overflowY: 'auto' }}
-                >
-                  {all_orders!.map(
-                    (o) =>
-                      o.status === 0 && (
-                        <SingleOrderDisplay order={o}></SingleOrderDisplay>
-                      )
-                  )}
-                </div>
-              </article>
-            </div>
-            <div className="column">
               <article className="message is-link">
                 <div className="message-header">Confirmed</div>
                 <div
                   className="message-body"
                   style={{ maxHeight: '500px', overflowY: 'auto' }}
                 >
-                  {all_orders!.map(
-                    (o) =>
-                      o.status === 1 && (
-                        <SingleOrderDisplay order={o}></SingleOrderDisplay>
-                      )
-                  )}
+                  {all_orders!
+                    .filter((o) => o.status === 1)
+                    .map((o) => (
+                      <SingleOrderDisplay
+                        key={o.id}
+                        order={o}
+                      ></SingleOrderDisplay>
+                    ))}
                 </div>
               </article>
             </div>
@@ -71,12 +59,14 @@ const StaffPage: React.FC = () => {
                   className="message-body"
                   style={{ maxHeight: '500px', overflowY: 'auto' }}
                 >
-                  {all_orders!.map(
-                    (o) =>
-                      o.status === 2 && (
-                        <SingleOrderDisplay order={o}></SingleOrderDisplay>
-                      )
-                  )}
+                  {all_orders!
+                    .filter((o) => o.status === 2)
+                    .map((o) => (
+                      <SingleOrderDisplay
+                        key={o.id}
+                        order={o}
+                      ></SingleOrderDisplay>
+                    ))}
                 </div>
               </article>
             </div>
@@ -103,4 +93,4 @@ const StaffPage: React.FC = () => {
   );
 };
 
-export default StaffPage;
+export default BaristaPage;

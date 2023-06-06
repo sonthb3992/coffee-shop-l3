@@ -4,6 +4,7 @@ import {
   doc,
   getDocs,
   getFirestore,
+  onSnapshot,
   query,
   setDoc,
   where,
@@ -17,6 +18,7 @@ class ToppingOption extends OptionBase {
   readonly basePrice: number;
   readonly maxCount: number;
   readonly freeCount: number;
+  readonly acceptStyles?: string[] | null;
 
   constructor({
     nameEn,
@@ -24,12 +26,14 @@ class ToppingOption extends OptionBase {
     basePrice,
     maxCount,
     freeCount,
+    acceptStyles,
   }: {
     nameEn: string;
     nameVi: string;
     basePrice: number;
     maxCount: number;
     freeCount: number;
+    acceptStyles: string[] | null;
   }) {
     super();
     this.nameEn = nameEn;
@@ -37,6 +41,7 @@ class ToppingOption extends OptionBase {
     this.basePrice = basePrice;
     this.maxCount = maxCount;
     this.freeCount = freeCount;
+    this.acceptStyles = acceptStyles;
   }
 
   getName(): string | undefined {
@@ -59,6 +64,7 @@ class ToppingOption extends OptionBase {
       basePrice: parseFloat(data.basePrice.toString()),
       maxCount: parseInt(data.maxCount.toString(), 10),
       freeCount: parseInt(data.freeCount.toString(), 10),
+      acceptStyles: data.acceptStyles,
     });
   }
 
@@ -69,6 +75,7 @@ class ToppingOption extends OptionBase {
       basePrice: 0,
       maxCount: 0,
       freeCount: 0,
+      acceptStyles: null,
     });
   }
 
@@ -79,6 +86,7 @@ class ToppingOption extends OptionBase {
       basePrice: topping.basePrice,
       maxCount: topping.maxCount,
       freeCount: topping.freeCount,
+      accepStyles: topping.acceptStyles,
     };
   }
 
@@ -103,22 +111,41 @@ class ToppingOption extends OptionBase {
     }
   }
 
+  static allToppingOptions: ToppingOption[] | null = null;
+
   static async getAll(): Promise<ToppingOption[]> {
     try {
-      const db = getFirestore(app);
-      const toppingOptionRef = collection(db, 'toppings');
+      if (
+        ToppingOption.allToppingOptions &&
+        ToppingOption.allToppingOptions.length > 0
+      ) {
+        return ToppingOption.allToppingOptions;
+      }
 
-      // Create a query against the collection.
-      const querySnapshot = await getDocs(toppingOptionRef);
+      const db = getFirestore(app);
+      const toppingOptionsRef = collection(db, 'toppings');
+      const _query = query(toppingOptionsRef);
+
+      const querySnapshot = await getDocs(_query);
 
       if (querySnapshot.empty) {
         return [];
       }
 
-      var result = querySnapshot.docs.map((m) =>
-        ToppingOption.fromFirestore(m)
+      const toppingOptions = querySnapshot.docs.map((doc) =>
+        ToppingOption.fromFirestore(doc)
       );
-      return result;
+
+      const unsubscribe = onSnapshot(_query, (updatedSnapshot) => {
+        const updatedToppingOptions = updatedSnapshot.docs.map((doc) =>
+          ToppingOption.fromFirestore(doc)
+        );
+        ToppingOption.allToppingOptions = updatedToppingOptions;
+      });
+
+      ToppingOption.allToppingOptions = toppingOptions;
+
+      return toppingOptions;
     } catch (e) {
       console.log(e);
       return [];

@@ -8,11 +8,11 @@ interface OrderState {
   language: string;
   inputValid: boolean;
   orderItems: OrderItem[];
-  editingItem: OrderItem | null;
   address: string;
   phone: string;
   customer_name: string;
   user: User | null;
+  userRole: string;
 }
 
 const isInputValid = (
@@ -41,9 +41,6 @@ const initialState: OrderState = {
   customer_name:
     getLocalStorageValue('customer_name', null) ??
     auth.currentUser?.displayName,
-  editingItem: localStorage.getItem('editingItem')
-    ? JSON.parse(localStorage.getItem('editingItem')!)
-    : null,
   inputValid: isInputValid(
     localStorage.getItem('address')
       ? JSON.parse(localStorage.getItem('address')!)
@@ -56,6 +53,7 @@ const initialState: OrderState = {
       : ''
   ),
   user: auth.currentUser,
+  userRole: '',
 };
 
 export const cartSlice = createSlice({
@@ -69,6 +67,9 @@ export const cartSlice = createSlice({
           setCustomerName(action.payload.displayName);
         if (action.payload.phoneNumber) setPhone(action.payload.phoneNumber);
       }
+    },
+    setUserRole: (state, action: PayloadAction<string>) => {
+      state.userRole = action.payload;
     },
     setAddress: (state, action: PayloadAction<string>) => {
       state.address = action.payload;
@@ -152,5 +153,6 @@ export const {
   clearCart,
   setLanguage,
   setUser,
+  setUserRole,
 } = cartSlice.actions;
 export default cartSlice.reducer;

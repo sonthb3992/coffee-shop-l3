@@ -56,6 +56,10 @@
   "login.forgotPassword": "Forgot Password",
   "login.needHelp": "Need Help",
   "login.error": "Please enter your email and password",
+  "sent": "Sent",
+  "Testimonials": "Testimonials",
+  "Review": "Review",
+  "Logout": "Logout",
   "signup": {
     "title": "Sign Up",
     "subtitle": "Create your account",
@@ -66,5 +70,15 @@
     "loginLink": "Already have an account? Login here.",
     "namePlaceholder": "Your name",
     "error": "Please input all the fields"
+  },
+  "reviewForm": {
+    "title": "Order Review",
+    "1star": "Please let us know what needs to be changed for us to continue serving you?",
+    "2star": "What made you unsatisfied with us? Please provide feedback to help us improve.",
+    "3star": "Please let us know what else we can improve?",
+    "4star": "Let us know what we can do better to enhance your experience?",
+    "5star": "Thank you for your compliments. What do you like about us?",
+    "commentPlaceholder": "Please share your order experience",
+    "plsRate": "Please rate your ordering experience"
   }
 }

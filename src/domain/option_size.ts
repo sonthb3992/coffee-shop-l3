@@ -7,6 +7,7 @@ import {
   where,
   setDoc,
   doc,
+  onSnapshot,
 } from 'firebase/firestore';
 import { OptionBase } from './base_option';
 import { app } from './firebase';
@@ -16,6 +17,7 @@ class SizeOption extends OptionBase {
   readonly nameVi: string;
   readonly basePrice: number;
   readonly displayOrder: number;
+  static allSizeOptions: SizeOption[];
 
   constructor({
     nameEn,
@@ -85,19 +87,34 @@ class SizeOption extends OptionBase {
 
   static async getAll(): Promise<SizeOption[]> {
     try {
+      if (SizeOption.allSizeOptions && SizeOption.allSizeOptions.length > 0) {
+        return SizeOption.allSizeOptions;
+      }
+
       const db = getFirestore(app);
       const sizeOptionRef = collection(db, 'size_options');
 
-      // Create a query against the collection.
       const querySnapshot = await getDocs(sizeOptionRef);
 
       if (querySnapshot.empty) {
+        console.log('Query snapshot is empty');
         return [];
       }
 
-      var result = querySnapshot.docs.map((m) => SizeOption.fromFirestore(m));
+      const sizeOptions = querySnapshot.docs.map((doc) =>
+        SizeOption.fromFirestore(doc)
+      );
 
-      return result;
+      const unsubscribe = onSnapshot(sizeOptionRef, (updatedSnapshot) => {
+        const updatedSizeOptions = updatedSnapshot.docs.map((doc) =>
+          SizeOption.fromFirestore(doc)
+        );
+        SizeOption.allSizeOptions = updatedSizeOptions;
+      });
+
+      SizeOption.allSizeOptions = sizeOptions;
+
+      return sizeOptions;
     } catch (e) {
       console.log(e);
       return [];
