@@ -9,9 +9,18 @@ import {
   doc,
   updateDoc,
   getDoc,
+  onSnapshot,
 } from 'firebase/firestore';
 import { app, auth } from './firebase';
 import { User, signOut } from 'firebase/auth';
+
+export interface UserData {
+  address: string;
+  name: string;
+  phone: string;
+  role: string;
+  favorites: string[];
+}
 
 export async function CreateUserDataToFirebase(
   user: User,
@@ -22,12 +31,14 @@ export async function CreateUserDataToFirebase(
 ): Promise<string> {
   const db = getFirestore(app);
   const userRef = doc(collection(db, 'users'), user.uid);
-  await setDoc(userRef, {
+  const userData: UserData = {
     address: address ?? '',
     name: name ?? '',
     phone: phone ?? '',
     role: role ?? 'customer',
-  });
+    favorites: [],
+  };
+  await setDoc(userRef, userData);
   return 'success';
 }
 
@@ -54,13 +65,70 @@ export async function UpdateUserDataToFirebase(
   }
 }
 
+export async function ToggleUserFavorite(
+  userUid: string,
+  itemName: string
+): Promise<string> {
+  try {
+    console.log('UserUid', userUid);
+
+    const db = getFirestore(app);
+    const userRef = doc(collection(db, 'users'), userUid);
+    //Get the favorites
+    const userDoc = await getDoc(userRef);
+    let currentFavorites: string[] = [];
+    currentFavorites = userDoc.data()?.favorites ?? [];
+    if (currentFavorites.includes(itemName)) {
+      currentFavorites = currentFavorites.filter((item) => item !== itemName);
+    } else {
+      currentFavorites = [...currentFavorites, itemName];
+    }
+    await updateDoc(userRef, {
+      favorites: currentFavorites ?? [],
+    });
+    return 'success';
+  } catch (error) {
+    console.log(error);
+    return 'Update user information failed.';
+  }
+}
+
+var _userData: UserData | null = null;
+export async function GetUserDataFromFirebase(
+  userUid: string
+): Promise<UserData | null> {
+  try {
+    if (_userData !== null) return _userData;
+
+    const db = getFirestore(app);
+    const userRef = doc(collection(db, 'users'), userUid);
+    const userSnapshot = await getDoc(userRef);
+
+    if (!userSnapshot.exists()) {
+      return null;
+    }
+
+    const unsubscribe = onSnapshot(userRef, (updatedSnapshot) => {
+      const updatedUserdata = updatedSnapshot.data() as UserData;
+      _userData = updatedUserdata;
+    });
+
+    const userData = userSnapshot.data() as UserData;
+    _userData = userData;
+
+    return userData;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
+
 export async function GetUserRole(userId: string): Promise<string | null> {
   try {
     console.log('Getting user role');
     const db = getFirestore(app);
     const userRef = doc(collection(db, 'users'), userId);
     const userDoc = await getDoc(userRef);
-    console.log(userDoc.data());
     currentRole = userDoc.data()?.role;
     return userDoc.data()?.role;
   } catch (error) {
