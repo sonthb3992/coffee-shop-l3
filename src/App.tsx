@@ -1,16 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import './App.css';
 import Navbar from './view/navbar';
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  useLocation,
-} from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import CustomizeOrderPage from './pages/page_customize_order';
 import SelectionPage from './pages/page-selection';
-import { Provider, useSelector } from 'react-redux';
-import { RootState, store } from './reducer/store';
+import { Provider } from 'react-redux';
+import { store } from './reducer/store';
 import CartPage from './pages/page-cart';
 import TrackOrderPage from './pages/page-track-order';
 import StaffPage from './pages/page-staff';
@@ -47,10 +42,6 @@ const App: React.FC = () => {
               path="/testimonials"
               element={<TestimonialsPage></TestimonialsPage>}
             ></Route>
-            {/* <Route
-              path="/customize-order/:optionId/:isEditing?"
-              element={<CustomizeOrderPage />}
-            /> */}
             <Route path="/customize-order" element={<CustomizeOrderPage />} />
             <Route path="/track-order/:orderId" element={<TrackOrderPage />} />
             <Route
