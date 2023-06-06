@@ -20,7 +20,7 @@ const initialState: MenuState = {
 };
 
 const menuItemsSlice = createSlice({
-  name: 'menuOptions',
+  name: 'userSlices',
   initialState,
   reducers: {
     fetchMenuItemsRequest: (state) => {
