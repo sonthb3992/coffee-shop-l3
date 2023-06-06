@@ -31,7 +31,8 @@ class Order {
   cancelTime: Date = new Date(0, 0, 0);
   itemcount: number = 0;
   useruid: string = '';
-  isReviewed : boolean = false;
+  baristaUid: string = '';
+  isReviewed: boolean = false;
 
   static fromFirestore(
     snapshot: DocumentSnapshot<any>,
@@ -48,6 +49,7 @@ class Order {
     order.price = data['price'];
     order.useruid = data['useruid'];
     order.isReviewed = data['isReviewed'] ?? false;
+    order.baristaUid = data['baristaUid'];
     return order;
   }
 
@@ -81,7 +83,8 @@ class Order {
       processTime: order.processTime,
       completeTime: order.completeTime,
       useruid: order.useruid,
-      isReviewed: order.isReviewed
+      isReviewed: order.isReviewed,
+      baristaUid: order.baristaUid,
     };
   }
 
@@ -123,15 +126,13 @@ class Order {
       const db = getFirestore(app);
       const docRef = doc(db, 'orders', orderId);
       await updateDoc(docRef, {
-        isReviewed: true
+        isReviewed: true,
       });
       return 'success';
     } catch (e) {
       return 'Error adding Menu option to Firestore: ' + e;
     }
   }
-
-
 
   static async getAllOrders(
     callback: (value: any) => void
@@ -229,8 +230,18 @@ class Order {
     }
   }
 
-  static sentToNextStep(item: Order): Promise<string> {
+  static sentToNextStep(item: Order, baristaUid?: string): Promise<string> {
     item.status += 1;
+    if (item.status == 1) {
+      item.confirmTime = new Date(Date.now());
+    }
+    if (item.status == 2) {
+      if (baristaUid) item.baristaUid = baristaUid;
+      item.processTime = new Date(Date.now());
+    }
+    if (item.status == 4) {
+      item.completeTime = new Date(Date.now());
+    }
     return Order.updateToFirebase(item);
   }
 
@@ -239,28 +250,6 @@ class Order {
     item.cancelTime = new Date(Date.now());
     return Order.updateToFirebase(item);
   }
-
-  // static async getAll(): Promise<MenuOption[]> {
-  //     try {
-  //         const db = getFirestore(app);
-  //         const menuOptionRef = collection(db, "menu_options");
-
-  //         // Create a query against the collection.
-  //         const querySnapshot = await getDocs(menuOptionRef);
-
-  //         if (querySnapshot.empty) {
-  //             return [];
-  //         }
-
-  //         var result = querySnapshot.docs.map(m => MenuOption.fromFirestore(m, undefined));
-
-  //         return result;
-
-  //     } catch (e) {
-  //         console.log(e);
-  //         return [];
-  //     }
-  // }
 
   static async getOrderById(
     optionId: string | undefined,
