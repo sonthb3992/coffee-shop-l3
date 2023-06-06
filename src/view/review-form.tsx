@@ -29,14 +29,11 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   const { t } = useTranslation();
 
   const handleCancel = () => {
-    //Reset the form
     setRating(0);
     setCommentLabel('');
     setComment('');
     setIsPublic(true);
     setIsSending(false);
-
-    //Close the form
     setActived(false);
     onClose();
   };

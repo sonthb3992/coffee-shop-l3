@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   OrderItem,
   calculatePrice,
   getDescription,
   getDescriptionVi,
 } from '../domain/selected_item';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { deleteFromCart, setItemQuantity } from '../reducer/cartSlice';
 import QuantitySelector from './quanlity-selector';
 import { RootState } from '../reducer/store';
-import { addToCart } from '../reducer/action';
 import { addItemToCart } from '../reducer/cartSlice';
+import { auth } from '../domain/firebase';
+import { ToggleUserFavorite } from '../domain/user';
+import { fetchUserData } from '../reducer/user-slice';
+import { useAppDispatch } from '../reducer/hook';
 
 interface MenuOptionProps {
   option: OrderItem;
@@ -25,11 +28,14 @@ const CartPageItem: React.FC<MenuOptionProps> = ({
   canDelete = true,
   canReview = false,
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const language = useSelector((state: RootState) => state.cart.language);
+  const userUid = useSelector((state: RootState) => state.user.userUid);
+  const userData = useSelector((state: RootState) => state.user.userData);
+
   const [showComment, setShowComment] = useState<boolean>(false);
-  const [liked, setLiked] =useState<boolean>(false);
+  const [liked, setLiked] = useState<boolean>(false);
 
   const handleDelete = () => {
     if (item.id) dispatch(deleteFromCart(item.id));
@@ -44,11 +50,26 @@ const CartPageItem: React.FC<MenuOptionProps> = ({
   };
 
   const handleLikeToggle = async (liked: boolean) => {
-     
-  }
+    const user = auth.currentUser;
+    if (!user) return;
+    if (item.id) {
+      const result = await ToggleUserFavorite(user.uid, item.id);
+      if (result === 'success') {
+        setLiked(!liked);
+      }
+    }
+  };
+
+  useEffect(() => {
+    dispatch(fetchUserData());
+
+    if (item.id && userData) {
+      setLiked(userData?.favorites.includes(item.id));
+    }
+  }, [userUid, userData]);
 
   return (
-    <div className='card p-4 mb-3'>
+    <div className="card p-4 mb-3">
       <article className="media mb-0">
         <figure className="media-left   ">
           <p className="image is-64x64">
@@ -99,7 +120,7 @@ const CartPageItem: React.FC<MenuOptionProps> = ({
                     <div
                       role="button"
                       onClick={() => handleReorder()}
-                      className="level-item has-text-decoration-none has-cursor-hand"
+                      className="level-item has-text-decoration-none has-cursor-hand has-text-info"
                       title="Reorder"
                     >
                       <span className="icon is-small">
@@ -109,11 +130,18 @@ const CartPageItem: React.FC<MenuOptionProps> = ({
                     <div
                       role="button"
                       onClick={() => handleLikeToggle(liked)}
-                      className="level-item has-text-decoration-none has-text-info"
+                      className="level-item has-text-decoration-none"
                       title="Like"
                     >
-                      <span className="icon is-small">
-                        <i className="fa-solid fa-thumbs-up"></i>
+                      <span
+                        className="icon is-small has-cursor-hand"
+                        title="Add to favorite"
+                      >
+                        {liked ? (
+                          <i className="fa-solid fa-heart has-text-danger"></i>
+                        ) : (
+                          <i className="fa-regular fa-heart has-text-info"></i>
+                        )}
                       </span>
                     </div>
                     <div
@@ -122,7 +150,7 @@ const CartPageItem: React.FC<MenuOptionProps> = ({
                       title="Dislike"
                     >
                       <span className="icon is-small">
-                        <i className="fa-solid fa-thumbs-down"></i>
+                        <i className="fa-regular fa-message"></i>
                       </span>
                     </div>
                   </div>
@@ -140,5 +168,4 @@ const CartPageItem: React.FC<MenuOptionProps> = ({
     </div>
   );
 };
-
 export default CartPageItem;

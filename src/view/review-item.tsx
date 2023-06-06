@@ -1,18 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import {
-  OrderItem,
-  calculatePrice,
-  getDescription,
-  getDescriptionVi,
-} from '../domain/selected_item';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteFromCart, setItemQuantity } from '../reducer/cartSlice';
-import QuantitySelector from './quanlity-selector';
 import { RootState } from '../reducer/store';
-import { addItemToCart } from '../reducer/cartSlice';
-import { Review } from '../domain/review';
+import { ReplyToReview, Review } from '../domain/review';
 import defaultPhoto from '../assets/images/default-avatar.png';
 import Rating from './rating';
+import { auth } from '../domain/firebase';
 
 interface ReviewItemProps {
   review: Review;
@@ -24,11 +16,26 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
   level,
 }) => {
   const dispatch = useDispatch();
-
   const language = useSelector((state: RootState) => state.cart.language);
-  const user = useSelector((state: RootState) => state.cart.user);
-  const [showComment, setShowComment] = useState<boolean>(false);
-  const [liked, setLiked] = useState<boolean>(false);
+  const [replying, setReplying] = useState<boolean>(false);
+  const [replyText, setReplyText] = useState<string>('');
+
+  const sendReply = async () => {
+    const user = auth.currentUser;
+    if (user) {
+      const result = await ReplyToReview(currentReview, user, replyText);
+      if (result === 'success') {
+        setReplying(false);
+        setReplyText('');
+      } else {
+        alert('Adding reply failed');
+      }
+    }
+  };
+
+  const onReplyChanged = (comment: string) => {
+    setReplyText(comment);
+  };
 
   useEffect(() => {}, [currentReview]);
 
@@ -72,6 +79,35 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
             <small className="has-text-weight-normal">
               {currentReview.comment}
             </small>
+            <div className="level is-mobile mb-1">
+              <div className="level-left">
+                <a className="is-size-7" onClick={() => setReplying(true)}>
+                  Reply
+                </a>
+              </div>
+            </div>
+            {replying && (
+              <div>
+                <textarea
+                  rows={2}
+                  value={replyText}
+                  maxLength={200}
+                  onChange={(event) => onReplyChanged(event.target.value)}
+                  className="textarea is-primary has-fixed-size"
+                  placeholder="Reply here"
+                ></textarea>
+                <button
+                  onClick={sendReply}
+                  className={`button mt-1 is-small is-primary ${
+                    replyText === '' ? 'is-static' : ''
+                  }`}
+                >
+                  <span className="icon is-small">
+                    <i className="fas fa-paper-plane"></i>
+                  </span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </article>
