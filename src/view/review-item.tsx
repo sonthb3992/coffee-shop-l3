@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from '../reducer/store';
-import { ReplyToReview, Review } from '../domain/review';
+import { GetReplies, ReplyToReview, Review } from '../domain/review';
 import defaultPhoto from '../assets/images/default-avatar.png';
 import Rating from './rating';
 import { auth } from '../domain/firebase';
+import { useAppDispatch, useAppSelector } from '../reducer/hook';
+import { fetchUserData } from '../reducer/user-slice';
+import ReplyItem from './reply-item';
 
 interface ReviewItemProps {
   review: Review;
@@ -15,12 +18,17 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
   review: currentReview,
   level,
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const language = useSelector((state: RootState) => state.cart.language);
+  const userData = useAppSelector((state) => state.user.userData);
   const [replying, setReplying] = useState<boolean>(false);
   const [replyText, setReplyText] = useState<string>('');
+  const [isBusy, setIsBusy] = useState<boolean>(false);
+  const [replies, setReplies] = useState<Review[]>([]);
+  const [showReplies, setShowReplies] = useState<boolean>(false);
 
   const sendReply = async () => {
+    setIsBusy(true);
     const user = auth.currentUser;
     if (user) {
       const result = await ReplyToReview(currentReview, user, replyText);
@@ -31,13 +39,27 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
         alert('Adding reply failed');
       }
     }
+    setIsBusy(false);
   };
 
   const onReplyChanged = (comment: string) => {
     setReplyText(comment);
   };
 
-  useEffect(() => {}, [currentReview]);
+  const cancelReply = () => {
+    setReplyText('');
+    setReplying(false);
+  };
+
+  const loadReplies = async () => {
+    const _replies = await GetReplies(currentReview.uid);
+    setReplies(_replies);
+    setShowReplies(true);
+  };
+
+  useEffect(() => {
+    dispatch(fetchUserData());
+  }, [currentReview, dispatch]);
 
   return (
     <div className="card p-4 mb-3">
@@ -50,7 +72,7 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
                   ? currentReview.reviewerImageUrl
                   : defaultPhoto
               }
-              alt="reviewer image"
+              alt="reviewer avatar"
             ></img>
           </p>
         </figure>
@@ -62,28 +84,49 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
                   <strong className="is-size-6">
                     {currentReview.reviewerName}
                   </strong>
-                  <i className="is-size-6">
-                    {currentReview.reviewDateTime.toLocaleString(`${language}`)}
-                  </i>
-                </div>
-              </div>
-              <div className="level-right">
-                <strong className="has-text-primary">
                   <Rating
                     disabled={true}
                     fixedRating={currentReview.rating}
                   ></Rating>
-                </strong>
+                </div>
+              </div>
+              <div className="level-right">
+                <i className="is-size-7">
+                  {currentReview.reviewDateTime.toLocaleString(`${language}`)}
+                </i>
               </div>
             </div>
-            <small className="has-text-weight-normal">
-              {currentReview.comment}
-            </small>
+            <p className="has-text-weight-normal">{currentReview.comment}</p>
             <div className="level is-mobile mb-1">
-              <div className="level-left">
-                <a className="is-size-7" onClick={() => setReplying(true)}>
-                  Reply
-                </a>
+              <div className="level-left"></div>
+              <div className="level-right">
+                {userData &&
+                  (userData.role === 'barista' ||
+                    userData.role === 'staff') && (
+                    <button
+                      className="button is-small is-primary is-size-7"
+                      onClick={() => setReplying(true)}
+                    >
+                      Reply
+                    </button>
+                  )}
+                {currentReview.hasReply &&
+                  currentReview.hasReply === true &&
+                  (!showReplies ? (
+                    <button
+                      className="button is-small is-info is-size-7 ml-2"
+                      onClick={() => loadReplies()}
+                    >
+                      Show UnA's reply
+                    </button>
+                  ) : (
+                    <button
+                      className="button is-small is-info is-size-7 ml-2"
+                      onClick={() => setShowReplies(false)}
+                    >
+                      Hide UnA's reply
+                    </button>
+                  ))}
               </div>
             </div>
             {replying && (
@@ -96,18 +139,33 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
                   className="textarea is-primary has-fixed-size"
                   placeholder="Reply here"
                 ></textarea>
-                <button
-                  onClick={sendReply}
-                  className={`button mt-1 is-small is-primary ${
-                    replyText === '' ? 'is-static' : ''
-                  }`}
-                >
-                  <span className="icon is-small">
-                    <i className="fas fa-paper-plane"></i>
-                  </span>
-                </button>
+                <div className="buttons">
+                  <button
+                    onClick={sendReply}
+                    className={`button mt-1 is-small is-primary ${
+                      replyText === '' ? 'is-static' : ''
+                    } ${isBusy ? 'is-loading' : ''}`}
+                  >
+                    <span className="icon is-small">
+                      <i className="fas fa-paper-plane"></i>
+                    </span>
+                  </button>
+                  <button
+                    onClick={cancelReply}
+                    className="button mt-1 is-small"
+                  >
+                    <span className="icon is-small">
+                      <i className="fas fa-close"></i>
+                    </span>
+                  </button>
+                </div>
               </div>
             )}
+            {replies.length > 0 &&
+              showReplies &&
+              replies.map((r) => (
+                <ReplyItem review={r} key={r.uid}></ReplyItem>
+              ))}
           </div>
         </div>
       </article>

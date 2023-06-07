@@ -28,6 +28,8 @@ export interface Review {
   reviewerName: string;
   reviewerImageUrl: string;
   reviewDateTime: Date;
+  replies?: Review[];
+  hasReply?: boolean;
 }
 
 export function ReviewFromFirestore(snapshot: DocumentSnapshot<any>): Review {
@@ -44,6 +46,7 @@ export function ReviewFromFirestore(snapshot: DocumentSnapshot<any>): Review {
     reviewerName: data.reviewerName,
     reviewerImageUrl: data.reviewerImageUrl,
     reviewDateTime: data.timestamp.toDate(),
+    hasReply: data.hasReply ?? false,
   };
 
   return review;
@@ -51,7 +54,6 @@ export function ReviewFromFirestore(snapshot: DocumentSnapshot<any>): Review {
 
 export function ReviewToFirestore(review: Review): any {
   const {
-    parentId,
     userUid,
     orderId,
     rating,
@@ -64,7 +66,6 @@ export function ReviewToFirestore(review: Review): any {
   const timestamp = Timestamp.fromDate(reviewDateTime);
 
   return {
-    parentId,
     userUid,
     orderId,
     rating,
@@ -105,15 +106,33 @@ export async function ReplyToReview(
 export async function PushReviewToFirebase(review: Review): Promise<string> {
   try {
     const db = getFirestore(app);
-    const reviewsCollectionRef = collection(db, 'reviews');
+    const isReplying = review.parentId !== '';
+    const reviewsCollectionRef = isReplying
+      ? collection(db, 'reviews', review.parentId, 'replies')
+      : collection(db, 'reviews');
 
     const newReviewDocRef = doc(reviewsCollectionRef);
     await setDoc(newReviewDocRef, ReviewToFirestore(review));
+    console.log('New review document added:', newReviewDocRef.id); // Log the ID of the newly added review document
 
-    await Order.updateReviewedToFirebase(review.orderId);
-    if (review.parentId === '') {
-      await UpdateShopRating(review.rating);
+    if (isReplying) {
+      const parentDocRef = doc(db, 'reviews', review.parentId);
+      await updateDoc(parentDocRef, {
+        hasReply: true,
+      });
+      console.log('Parent review document updated:', review.parentId); // Log the ID of the parent review document
     }
+
+    if (!isReplying) {
+      // Set the order data that it has been reviewed
+      await Order.updateReviewedToFirebase(review.orderId);
+      console.log('Order data updated with reviewed status:', review.orderId); // Log the ID of the reviewed order
+
+      // Only update shop rating if it's the original review from customer
+      await UpdateShopRating(review.rating);
+      console.log('Shop rating updated with:', review.rating); // Log the updated shop rating
+    }
+
     return 'success';
   } catch (e) {
     console.log(e);
@@ -184,7 +203,27 @@ export async function GetRecentReviews(): Promise<Review[]> {
     }
 
     const result = querySnapshot.docs.map((doc) => ReviewFromFirestore(doc));
+    return result;
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
+}
 
+export async function GetReplies(reviewId: string): Promise<Review[]> {
+  try {
+    const db = getFirestore(app);
+    const reviewsRef = collection(db, 'reviews', reviewId, 'replies');
+
+    const querySnapshot = await getDocs(
+      query(reviewsRef, orderBy('timestamp', 'asc'), limit(3))
+    );
+
+    if (querySnapshot.empty) {
+      return [];
+    }
+
+    const result = querySnapshot.docs.map((doc) => ReviewFromFirestore(doc));
     return result;
   } catch (e) {
     console.log(e);

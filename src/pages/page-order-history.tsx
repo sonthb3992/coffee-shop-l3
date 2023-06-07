@@ -184,7 +184,7 @@ const CustomerOrderHistory: React.FC = () => {
                       <React.Fragment key={item.id}>
                         <CartPageItem
                           canEditQuantity={false}
-                          canReview={true}
+                          canReview={order.status === 4 ? true : false}
                           canDelete={false}
                           option={item}
                         ></CartPageItem>

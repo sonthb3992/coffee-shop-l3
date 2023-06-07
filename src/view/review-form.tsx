@@ -5,7 +5,6 @@ import { Order } from '../domain/order';
 import Rating from './rating';
 import { useSelector } from 'react-redux';
 import { RootState } from '../reducer/store';
-//import Rating from 'react-simple-star-rating'
 
 interface ReviewFormProps {
   isActived: boolean;
@@ -39,7 +38,6 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   };
 
   const onRatingChanged = (newRating: number) => {
-    console.log(newRating);
     setRating(newRating);
     setCommentLabel('reviewForm.' + newRating.toString() + 'star');
   };
@@ -54,6 +52,10 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   };
 
   const sendReview = async () => {
+    if (rating === 0) {
+      alert('Please rate your order.');
+      return;
+    }
     if (user) {
       const review: Review = {
         orderId: order.id,

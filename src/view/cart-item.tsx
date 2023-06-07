@@ -19,7 +19,7 @@ interface MenuOptionProps {
   option: OrderItem;
   canEditQuantity: boolean;
   canDelete: boolean;
-  canReview: boolean;
+  canReview?: boolean;
 }
 
 const CartPageItem: React.FC<MenuOptionProps> = ({
@@ -35,7 +35,9 @@ const CartPageItem: React.FC<MenuOptionProps> = ({
   const userData = useSelector((state: RootState) => state.user.userData);
 
   const [showComment, setShowComment] = useState<boolean>(false);
+  const [commentText, setCommentText] = useState<string>('');
   const [liked, setLiked] = useState<boolean>(false);
+  const [isBusy, setIsBusy] = useState<boolean>(false);
 
   const handleDelete = () => {
     if (item.id) dispatch(deleteFromCart(item.id));
@@ -58,6 +60,26 @@ const CartPageItem: React.FC<MenuOptionProps> = ({
         setLiked(!liked);
       }
     }
+  };
+
+  const handleCommentToggle = () => {
+    if (showComment) {
+      setCommentText('');
+    }
+    setShowComment(!showComment);
+  };
+
+  const handleCommentChanged = (value: string) => {
+    setCommentText(value);
+  };
+
+  const handleSendComment = async () => {
+    setIsBusy(true);
+  };
+
+  const handleCancelComment = () => {
+    setCommentText('');
+    setShowComment(false);
   };
 
   useEffect(() => {
@@ -146,8 +168,9 @@ const CartPageItem: React.FC<MenuOptionProps> = ({
                     </div>
                     <div
                       role="button"
+                      onClick={handleCommentToggle}
                       className="level-item has-text-decoration-none has-text-danger-dark"
-                      title="Dislike"
+                      title="Comment"
                     >
                       <span className="icon is-small">
                         <i className="fa-regular fa-message"></i>
@@ -158,6 +181,40 @@ const CartPageItem: React.FC<MenuOptionProps> = ({
               )}
             </div>
           </nav>
+          {showComment && (
+            <div className="content">
+              <div>
+                <textarea
+                  rows={2}
+                  value={commentText}
+                  maxLength={200}
+                  onChange={(event) => handleCommentChanged(event.target.value)}
+                  className="textarea is-primary has-fixed-size"
+                  placeholder="Reply here"
+                ></textarea>
+                <div className="buttons">
+                  <button
+                    onClick={handleSendComment}
+                    className={`${commentText === '' ? 'is-static' : ''} ${
+                      isBusy ? 'is-loading' : ''
+                    } button mt-1 is-small is-primary`}
+                  >
+                    <span className="icon is-small">
+                      <i className="fas fa-paper-plane"></i>
+                    </span>
+                  </button>
+                  <button
+                    onClick={handleCancelComment}
+                    className="button mt-1 is-small"
+                  >
+                    <span className="icon is-small">
+                      <i className="fas fa-close"></i>
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         {canDelete && (
           <div className="media-right">
