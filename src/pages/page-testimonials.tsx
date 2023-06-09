@@ -22,7 +22,7 @@ const TestimonialsPage: React.FC = () => {
 
     fetchReviews();
     fetchShopRating();
-  }, []);
+  }, [rating]);
 
   return (
     <div>

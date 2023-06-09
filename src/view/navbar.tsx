@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import shopName from '../assets/images/shop-name.png';
 import logo from '../assets/images/logo.png';
+import UserInfoComponent from './user-info-component';
 import { useSelector } from 'react-redux';
 import { RootState } from '../reducer/store';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../domain/firebase';
 import { setUser } from '../reducer/cartSlice';
-import UserInfoComponent from './user-info-component';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch } from '../reducer/hook';
 import { fetchUserData } from '../reducer/user-slice';
@@ -35,8 +35,6 @@ const Navbar: React.FC = () => {
 
   useEffect(() => {
     const user = auth.currentUser;
-    dispatch(setUser(user));
-    dispatch(fetchUserData());
     setShownNavbar(shouldDisplayNavbar());
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -45,12 +43,13 @@ const Navbar: React.FC = () => {
       } else {
         dispatch(setUser(null));
       }
+      dispatch(fetchUserData());
     });
 
     return () => {
       unsubscribe();
     };
-  }, [dispatch, location, userData]);
+  }, [location]);
 
   const toggleMenu = () => {
     setShowMenuOnMobile(!showMenuOnMobile);
@@ -88,31 +87,46 @@ const Navbar: React.FC = () => {
         className={`navbar-menu ${showMenuOnMobile ? 'is-active' : ''}`}
       >
         <div className="navbar-start">
-          <a className="navbar-item has-text-weight-semibold" href="/">
-            {t('Home')}
-          </a>
-          <a
-            className="navbar-item has-text-weight-semibold"
-            href="/all-items/drink"
-          >
-            {t('Drinks')}
-          </a>
-          <a
-            className="navbar-item has-text-weight-semibold"
-            href="/all-items/breakfast"
-          >
-            {t('Breakfast')}
-          </a>
-          <a
-            className="navbar-item has-text-weight-semibold"
-            href="/order-history"
-          >
-            {t('My orders')}
-          </a>
+          {userData && userData.role === 'customer' && (
+            <>
+              <a className="navbar-item has-text-weight-semibold" href="/">
+                {t('Home')}
+              </a>
+              <a
+                className="navbar-item has-text-weight-semibold"
+                href="/all-items/drink"
+              >
+                {t('Drinks')}
+              </a>
+              <a
+                className="navbar-item has-text-weight-semibold"
+                href="/all-items/breakfast"
+              >
+                {t('Breakfast')}
+              </a>
+              <a
+                className="navbar-item has-text-weight-semibold"
+                href="/order-history"
+              >
+                {t('My orders')}
+              </a>
+            </>
+          )}
           {userData && userData.role === 'barista' && (
-            <a className="navbar-item has-text-weight-semibold" href="/barista">
-              {t('Barista')}
-            </a>
+            <>
+              <a
+                className="navbar-item has-text-weight-semibold"
+                href="/barista"
+              >
+                {t('Barista')}
+              </a>
+              <a
+                className="navbar-item has-text-weight-semibold"
+                href="/barista-completed"
+              >
+                {t('Completed orders')}
+              </a>
+            </>
           )}
           {userData && userData.role === 'staff' && (
             <a className="navbar-item has-text-weight-semibold" href="/staff">

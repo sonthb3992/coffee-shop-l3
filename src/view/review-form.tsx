@@ -7,14 +7,16 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../reducer/store';
 
 interface ReviewFormProps {
-  isActived: boolean;
+  isModal: boolean;
   order: Order;
-  onClose: () => void;
+  isActived?: boolean;
+  onClose?: () => void;
 }
 
 const ReviewForm: React.FC<ReviewFormProps> = ({
-  isActived,
+  isModal,
   order,
+  isActived,
   onClose,
 }) => {
   const [actived, setActived] = useState<boolean>(false);
@@ -34,7 +36,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     setIsPublic(true);
     setIsSending(false);
     setActived(false);
-    onClose();
+    if (onClose !== undefined) onClose();
   };
 
   const onRatingChanged = (newRating: number) => {
@@ -70,7 +72,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
         reviewDateTime: new Date(Date.now()),
       };
       setIsSending(true);
-      const result = await PushReviewToFirebase(review);
+      const result = await PushReviewToFirebase(review, order);
       setIsSending(false);
       if (result === 'success') {
         handleCancel();
@@ -82,27 +84,34 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   };
 
   useEffect(() => {
-    setActived(isActived);
+    if (isActived !== undefined) setActived(isActived);
   }, [isActived]);
 
   return (
-    <div className={`modal ${actived ? 'is-active' : ''}`}>
-      <div className="modal-background"></div>
-      <div className="modal-card">
-        <header className="modal-card-head">
-          <p className="modal-card-title">{t('Review order')}</p>
-          <button
-            className="delete"
-            onClick={() => handleCancel()}
-            aria-label="close"
-          ></button>
-        </header>
+    <div
+      className={`${isModal ? 'modal' : ''} ${
+        isModal && actived ? 'is-active' : ''
+      }`}
+    >
+      {isModal && <div className="modal-background"></div>}
+      <div className="modal-card card">
+        {isModal && (
+          <header className="modal-card-head">
+            <p className="modal-card-title">{t('Review order')}</p>
+            <button
+              className="delete"
+              onClick={() => handleCancel()}
+              aria-label="close"
+            ></button>
+          </header>
+        )}
         <section className="modal-card-body">
           <div className="block is-flex is-justify-content-center">
             <label className="title is-5">{t('reviewForm.plsRate')}</label>
           </div>
           <div className="block is-flex is-justify-content-center">
             <Rating
+              fixedRating={rating}
               onRatingChanged={(newRating) => onRatingChanged(newRating)}
             ></Rating>
           </div>
@@ -115,6 +124,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
             <div className="block">
               <textarea
                 value={comment}
+                rows={3}
                 maxLength={500}
                 onChange={(event) => onCommentChanged(event.target.value)}
                 className="textarea is-primary has-fixed-size"
@@ -148,16 +158,20 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
             </div>
           )}
         </section>
-        <footer className="modal-card-foot">
-          <button
-            onClick={() => sendReview()}
-            className={`button is-success ${isSending ? 'is-loading' : ''}`}
-          >
-            Sent
-          </button>
-          <button className="button" onClick={() => handleCancel()}>
-            Cancel
-          </button>
+        <footer className={`${isModal ? 'modal-card-foot' : ''}`}>
+          <div className="buttons pl-5 pb-5">
+            <button
+              onClick={() => sendReview()}
+              className={`button is-success ${isSending ? 'is-loading' : ''}`}
+            >
+              Sent
+            </button>
+            {isModal && (
+              <button className="button" onClick={() => handleCancel()}>
+                Cancel
+              </button>
+            )}
+          </div>
         </footer>
       </div>
     </div>

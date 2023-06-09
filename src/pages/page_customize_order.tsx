@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import QuantitySelector from '../view/quanlity-selector';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -7,10 +7,13 @@ import SizeSelector from '../view/size-selector';
 import StyleSelector from '../view/style-selector';
 import {
   addCurrentItemToCart,
-  fetchNewOrderOptions,
+  fetchNewItemOptions,
   setQuantity,
 } from '../reducer/new-order-slice';
 import ToppingSelector from '../view/topping-selector';
+import { async } from '@firebase/util';
+import { MenuOption } from '../domain/menu_option';
+import { Review } from '../domain/review';
 
 const CustomizeOrderPage: React.FC = () => {
   const menuOption = useAppSelector((state) => state.newItem.menuItem);
@@ -25,6 +28,8 @@ const CustomizeOrderPage: React.FC = () => {
 
   const price = useAppSelector((state) => state.newItem.price);
 
+  const [reviews, setReviews] = useState<Review[]>([]);
+
   const appDispath = useAppDispatch();
   const { t } = useTranslation();
 
@@ -32,7 +37,15 @@ const CustomizeOrderPage: React.FC = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    appDispath(fetchNewOrderOptions());
+    appDispath(fetchNewItemOptions());
+
+    const fetchItemReviews = async () => {
+      if (!menuOption?.uid) return;
+      const result = await MenuOption.getReviews(menuOption!.uid);
+      setReviews(result);
+    };
+
+    fetchItemReviews();
   }, [selectedSize, selectedStyle]);
 
   return (
@@ -43,10 +56,11 @@ const CustomizeOrderPage: React.FC = () => {
             <figure className="image is-square">
               <img
                 src={menuOption?.imageUrl}
-                width={500}
+                width={300}
                 alt={menuOption?.nameEn}
               ></img>
             </figure>
+            {reviews && reviews.map((r) => <div>{r.comment}</div>)}
           </div>
           <div className="column">
             <div className="block">

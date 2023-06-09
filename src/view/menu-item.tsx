@@ -19,6 +19,7 @@ const MenuOptionComponent: React.FC<MenuOptionProps> = ({ option }) => {
 
   const onItemClicked = () => {
     dispatch(setNewItemMenuItem(option));
+    console.log(option);
     navigate('/customize-order');
   };
 

@@ -159,7 +159,7 @@ export const {
   fetchNewOrderFailure,
 } = newItemSlice.actions;
 
-export const fetchNewOrderOptions = (): ThunkAction<
+export const fetchNewItemOptions = (): ThunkAction<
   void,
   RootState,
   unknown,

@@ -230,6 +230,102 @@ class Order {
     }
   }
 
+  static async getOrdersByBaristaUid(
+    uid: string,
+    callback: (value: any) => void
+  ): Promise<{ orders: Order[]; unsub: any } | null> {
+    try {
+      const db = getFirestore(app);
+      const ref = collection(db, 'orders');
+      const _query = query(ref, where('baristaUid', '==', uid));
+
+      const querySnapshot = await getDocs(_query);
+      const orders = querySnapshot.docs.map((doc) =>
+        Order.fromFirestore(doc, undefined)
+      );
+
+      const unsubscribe = onSnapshot(_query, (querySnapshot) => {
+        const orders = querySnapshot.docs.map((doc) =>
+          Order.fromFirestore(doc, undefined)
+        );
+        callback(orders);
+      });
+
+      return {
+        orders: orders,
+        unsub: unsubscribe,
+      };
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  static async getUnacceptedOrders(
+    callback: (value: any) => void
+  ): Promise<{ orders: Order[]; unsub: any } | null> {
+    try {
+      const db = getFirestore(app);
+      const ref = collection(db, 'orders');
+      const _query = query(ref, where('status', '==', 1));
+
+      const querySnapshot = await getDocs(_query);
+      const orders = querySnapshot.docs.map((doc) =>
+        Order.fromFirestore(doc, undefined)
+      );
+
+      const unsubscribe = onSnapshot(_query, (querySnapshot) => {
+        const orders = querySnapshot.docs.map((doc) =>
+          Order.fromFirestore(doc, undefined)
+        );
+        callback(orders);
+      });
+
+      return {
+        orders: orders,
+        unsub: unsubscribe,
+      };
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  static async getAcceptedOrders(
+    baristaUid: string,
+    callback: (value: any) => void
+  ): Promise<{ orders: Order[]; unsub: any } | null> {
+    try {
+      const db = getFirestore(app);
+      const ref = collection(db, 'orders');
+      const _query = query(
+        ref,
+        where('baristaUid', '==', baristaUid),
+        where('status', '==', 2)
+      );
+
+      const querySnapshot = await getDocs(_query);
+      const orders = querySnapshot.docs.map((doc) =>
+        Order.fromFirestore(doc, undefined)
+      );
+
+      const unsubscribe = onSnapshot(_query, (querySnapshot) => {
+        const orders = querySnapshot.docs.map((doc) =>
+          Order.fromFirestore(doc, undefined)
+        );
+        callback(orders);
+      });
+
+      return {
+        orders: orders,
+        unsub: unsubscribe,
+      };
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
   static sentToNextStep(item: Order, baristaUid?: string): Promise<string> {
     item.status += 1;
     if (item.status == 1) {

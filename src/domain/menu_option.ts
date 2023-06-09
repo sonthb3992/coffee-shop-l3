@@ -11,9 +11,12 @@ import {
   setDoc,
   doc,
   onSnapshot,
+  orderBy,
+  limit,
 } from 'firebase/firestore';
 import { OptionBase } from './base_option';
 import { app } from './firebase';
+import { Review, ReviewFromFirestore, ReviewToFirestore } from './review';
 
 class MenuOption extends OptionBase {
   nameEn: string = '';
@@ -26,6 +29,7 @@ class MenuOption extends OptionBase {
   availableToppings?: string[];
   likeCount: number = 0;
   dislikeCount: number = 0;
+  uid: string = '';
 
   constructor({
     nameEn = '',
@@ -99,7 +103,8 @@ class MenuOption extends OptionBase {
     if (data?.dislikeCount) {
       option.dislikeCount = parseInt(data?.likeCount.toString());
     }
-
+    console.log(snapshot.id);
+    option.uid = snapshot.id;
     return option;
   }
 
@@ -157,6 +162,27 @@ class MenuOption extends OptionBase {
     }
   }
 
+  static async addReview(option: MenuOption, review: Review): Promise<boolean> {
+    console.log(option);
+    if (!option.uid || option.uid === '') return false;
+
+    try {
+      const db = getFirestore(app);
+      const menuOptionRef = collection(
+        db,
+        'menu_options',
+        option.uid,
+        'reviews'
+      );
+      const reviewDoc = doc(menuOptionRef);
+      await setDoc(reviewDoc, ReviewToFirestore(review));
+      return true;
+    } catch (e) {
+      console.log('Error adding Menu option to Firestore: ' + e);
+      return false;
+    }
+  }
+
   static async getAll(): Promise<MenuOption[]> {
     try {
       if (MenuOption.allMenuOptions && MenuOption.allMenuOptions.length > 0) {
@@ -188,6 +214,66 @@ class MenuOption extends OptionBase {
       MenuOption.allMenuOptions = menuOptions;
 
       return menuOptions;
+    } catch (e) {
+      console.log(e);
+      return [];
+    }
+  }
+
+  static currentItemReviews: {
+    menuOptionUid: string;
+    reviews: Review[];
+  } = {
+    menuOptionUid: '',
+    reviews: [],
+  };
+
+  static async getReviews(menuOptionUid: string): Promise<Review[]> {
+    try {
+      if (
+        MenuOption.currentItemReviews.menuOptionUid === menuOptionUid &&
+        MenuOption.currentItemReviews.reviews.length > 0
+      ) {
+        return MenuOption.currentItemReviews.reviews;
+      }
+
+      const db = getFirestore(app);
+      const reviewCollectionRef = collection(
+        db,
+        'menu_options',
+        menuOptionUid,
+        'reviews'
+      );
+      const _query = query(
+        reviewCollectionRef,
+        orderBy('timestamp', 'desc'),
+        limit(10)
+      );
+
+      const querySnapshot = await getDocs(_query);
+      if (querySnapshot.empty) {
+        console.log('Query snapshot is empty');
+        return [];
+      }
+
+      const reviews = querySnapshot.docs.map((doc) => ReviewFromFirestore(doc));
+
+      const unsubscribe = onSnapshot(_query, (updatedSnapshot) => {
+        const updatedReviews = updatedSnapshot.docs.map((doc) =>
+          ReviewFromFirestore(doc)
+        );
+        MenuOption.currentItemReviews = {
+          menuOptionUid: menuOptionUid,
+          reviews: updatedReviews,
+        };
+      });
+
+      MenuOption.currentItemReviews = {
+        menuOptionUid: menuOptionUid,
+        reviews: reviews,
+      };
+
+      return reviews;
     } catch (e) {
       console.log(e);
       return [];

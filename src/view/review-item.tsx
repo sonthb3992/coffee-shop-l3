@@ -39,6 +39,7 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
         alert('Adding reply failed');
       }
     }
+    loadReplies();
     setIsBusy(false);
   };
 

@@ -54,7 +54,6 @@ export const fetchMenuItems = (): ThunkAction<
     dispatch(fetchMenuItemsRequest());
     MenuOption.getAll()
       .then((data) => {
-        console.log('Dispatching the fetch menu item success');
         dispatch(fetchMenuItemsSuccess(data));
       })
       .catch((error) => {

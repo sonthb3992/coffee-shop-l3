@@ -103,7 +103,10 @@ export async function ReplyToReview(
   }
 }
 
-export async function PushReviewToFirebase(review: Review): Promise<string> {
+export async function PushReviewToFirebase(
+  review: Review,
+  order?: Order
+): Promise<string> {
   try {
     const db = getFirestore(app);
     const isReplying = review.parentId !== '';
@@ -124,19 +127,46 @@ export async function PushReviewToFirebase(review: Review): Promise<string> {
     }
 
     if (!isReplying) {
-      // Set the order data that it has been reviewed
       await Order.updateReviewedToFirebase(review.orderId);
-      console.log('Order data updated with reviewed status:', review.orderId); // Log the ID of the reviewed order
-
-      // Only update shop rating if it's the original review from customer
       await UpdateShopRating(review.rating);
-      console.log('Shop rating updated with:', review.rating); // Log the updated shop rating
+      if (order && order.baristaUid)
+        await UpdateBaristaRating(review.rating, order.baristaUid);
     }
 
     return 'success';
   } catch (e) {
     console.log(e);
     return 'Error adding review to Firestore: ' + e;
+  }
+}
+
+async function UpdateBaristaRating(
+  rating: number,
+  baristaUid: string
+): Promise<boolean> {
+  try {
+    const db = getFirestore(app);
+    const _collectionRef = collection(db, 'users');
+    const _docRef = doc(_collectionRef, baristaUid);
+    const querySnapshot = await getDoc(_docRef);
+
+    if (!querySnapshot.exists()) {
+      console.log('Barista not found.');
+      return false;
+    }
+
+    let count = querySnapshot.data().count ?? 0;
+    let currentRating = querySnapshot.data().averageRating ?? 0;
+    currentRating = (currentRating * count + rating) / ++count;
+
+    await updateDoc(_docRef, {
+      count: count,
+      currentRating: currentRating,
+    });
+    return true;
+  } catch (e) {
+    console.log(e);
+    return false;
   }
 }
 
@@ -182,6 +212,7 @@ export async function GetShopRating(): Promise<number> {
       return 0;
     }
 
+    console.log(querySnapshot.data().average);
     return querySnapshot.data().average;
   } catch (e) {
     console.log(e);
@@ -196,6 +227,32 @@ export async function GetRecentReviews(): Promise<Review[]> {
 
     const querySnapshot = await getDocs(
       query(reviewsRef, orderBy('timestamp', 'desc'), limit(20))
+    );
+
+    if (querySnapshot.empty) {
+      return [];
+    }
+
+    const result = querySnapshot.docs.map((doc) => ReviewFromFirestore(doc));
+    return result;
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
+}
+
+export async function GetReviewsOfOrder(orderUid: string): Promise<Review[]> {
+  try {
+    const db = getFirestore(app);
+    const reviewsRef = collection(db, 'reviews');
+
+    const querySnapshot = await getDocs(
+      query(
+        reviewsRef,
+        where('orderId', '==', orderUid),
+        orderBy('timestamp', 'desc'),
+        limit(20)
+      )
     );
 
     if (querySnapshot.empty) {

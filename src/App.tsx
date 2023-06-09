@@ -20,6 +20,8 @@ import CustomerOrderHistory from './pages/page-order-history';
 import UserProfilePage from './pages/page_user_profile';
 import TestimonialsPage from './pages/page-testimonials';
 import BaristaPage from './pages/page-barista';
+import BaristaOrderPage from './pages/page-barista-order';
+import BaristaOrderHistory from './pages/page-completed-order';
 
 const App: React.FC = () => {
   return (
@@ -37,7 +39,12 @@ const App: React.FC = () => {
               element={<LoginPage formType={FormType.SignUp} />}
             />
             <Route path="/staff" element={<StaffPage />} />
-            <Route path="/barista" element={<BaristaPage />} />
+            {/* <Route path="/barista" element={<BaristaPage />} /> */}
+            <Route path="/barista" element={<BaristaOrderPage />} />
+            <Route
+              path="/barista-completed"
+              element={<BaristaOrderHistory />}
+            />
             <Route
               path="/testimonials"
               element={<TestimonialsPage></TestimonialsPage>}

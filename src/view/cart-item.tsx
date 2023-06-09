@@ -14,6 +14,8 @@ import { auth } from '../domain/firebase';
 import { ToggleUserFavorite } from '../domain/user';
 import { fetchUserData } from '../reducer/user-slice';
 import { useAppDispatch } from '../reducer/hook';
+import { Review } from '../domain/review';
+import { MenuOption } from '../domain/menu_option';
 
 interface MenuOptionProps {
   option: OrderItem;
@@ -74,7 +76,33 @@ const CartPageItem: React.FC<MenuOptionProps> = ({
   };
 
   const handleSendComment = async () => {
+    if (!item.menuOption) {
+      alert('Unexpected error while sending comment.');
+      return;
+    }
+
     setIsBusy(true);
+    const user = auth.currentUser;
+    if (user) {
+      const review: Review = {
+        orderId: '',
+        parentId: '',
+        rating: 0,
+        userUid: user.uid,
+        comment: commentText,
+        uid: '',
+        isPublic: true,
+        reviewerName: user.displayName ?? 'Anonymous user',
+        reviewerImageUrl: user.photoURL ?? '',
+        reviewDateTime: new Date(Date.now()),
+      };
+      const result = await MenuOption.addReview(item.menuOption, review);
+      if (!result) {
+        alert('Unexpected error while sending comment.');
+        handleCancelComment();
+      }
+    }
+    setIsBusy(false);
   };
 
   const handleCancelComment = () => {
@@ -106,11 +134,16 @@ const CartPageItem: React.FC<MenuOptionProps> = ({
             <p>
               <div className="level m-0">
                 <div className="level-left">
-                  <strong>
-                    {language === 'en'
-                      ? item.menuOption!.nameEn
-                      : item.menuOption!.nameVi}
-                  </strong>
+                  <span>
+                    <strong>
+                      {language === 'en'
+                        ? item.menuOption!.nameEn
+                        : item.menuOption!.nameVi}
+                    </strong>
+                    {!canEditQuantity && (
+                      <i className="ml-2">{`x${item.quantity}`}</i>
+                    )}
+                  </span>
                 </div>
                 <div className="level-right">
                   <strong className="has-text-primary">
