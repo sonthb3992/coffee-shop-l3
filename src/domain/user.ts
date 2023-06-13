@@ -20,6 +20,8 @@ export interface UserData {
   phone: string;
   role: string;
   favorites: string[];
+  count?: number;
+  currentRating?: number;
 }
 
 export async function CreateUserDataToFirebase(
@@ -70,8 +72,6 @@ export async function ToggleUserFavorite(
   itemName: string
 ): Promise<string> {
   try {
-    console.log('UserUid', userUid);
-
     const db = getFirestore(app);
     const userRef = doc(collection(db, 'users'), userUid);
     //Get the favorites
@@ -125,7 +125,6 @@ export async function GetUserDataFromFirebase(
 
 export async function GetUserRole(userId: string): Promise<string | null> {
   try {
-    console.log('Getting user role');
     const db = getFirestore(app);
     const userRef = doc(collection(db, 'users'), userId);
     const userDoc = await getDoc(userRef);

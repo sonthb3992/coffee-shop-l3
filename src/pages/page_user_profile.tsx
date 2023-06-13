@@ -25,6 +25,7 @@ const UserProfilePage: React.FC = () => {
   const { t } = useTranslation();
 
   const user = useSelector((state: RootState) => state.cart.user);
+  const userData = useSelector((state: RootState) => state.user.userData);
   const address = useSelector((state: RootState) => state.cart.address);
   const name = useSelector((state: RootState) => state.cart.customer_name);
   const phone = useSelector((state: RootState) => state.cart.phone);
@@ -54,7 +55,7 @@ const UserProfilePage: React.FC = () => {
 
   const saveUserData = () => {
     if (user) {
-      UpdateUserDataToFirebase(user, name, address, phone);
+      UpdateUserDataToFirebase(user, name, address, phone, userData?.role);
       if (userImageUrl) {
         const auth = getAuth();
         if (auth.currentUser)

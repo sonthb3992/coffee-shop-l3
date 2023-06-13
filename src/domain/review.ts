@@ -16,6 +16,7 @@ import {
 import { app } from './firebase';
 import { Order } from './order';
 import { User } from 'firebase/auth';
+import { PutTaskToFirebase } from './task';
 
 export interface Review {
   uid: string;
@@ -129,8 +130,12 @@ export async function PushReviewToFirebase(
     if (!isReplying) {
       await Order.updateReviewedToFirebase(review.orderId);
       await UpdateShopRating(review.rating);
-      if (order && order.baristaUid)
+      if (order && order.baristaUid) {
         await UpdateBaristaRating(review.rating, order.baristaUid);
+        if (review.rating <= 2) {
+          await PutTaskToFirebase(newReviewDocRef.id, order.baristaUid);
+        }
+      }
     }
 
     return 'success';
@@ -156,7 +161,7 @@ async function UpdateBaristaRating(
     }
 
     let count = querySnapshot.data().count ?? 0;
-    let currentRating = querySnapshot.data().averageRating ?? 0;
+    let currentRating = querySnapshot.data().currentRating ?? 0;
     currentRating = (currentRating * count + rating) / ++count;
 
     await updateDoc(_docRef, {
@@ -261,6 +266,26 @@ export async function GetReviewsOfOrder(orderUid: string): Promise<Review[]> {
 
     const result = querySnapshot.docs.map((doc) => ReviewFromFirestore(doc));
     return result;
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
+}
+
+export async function GetReviewsByIds(reviewUid: string[]): Promise<Review[]> {
+  try {
+    const db = getFirestore(app);
+    const reviewsRef = collection(db, 'reviews');
+
+    const reviews: Review[] = [];
+
+    for (let index = 0; index < reviewUid.length; index++) {
+      const id = reviewUid[index];
+      const review = await getDoc(doc(reviewsRef, id));
+      reviews.push(ReviewFromFirestore(review));
+    }
+
+    return reviews;
   } catch (e) {
     console.log(e);
     return [];

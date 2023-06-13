@@ -33,13 +33,10 @@ const userSlice = createSlice({
     fetchUserDataSuccess: (state, action: PayloadAction<UserData | null>) => {
       state.loading = false;
       state.userData = action.payload;
-      console.log(action.payload);
-      console.log('fetch user data success');
     },
     fetchUserDataFailure: (state, action: PayloadAction<Error>) => {
       state.loading = false;
       state.error = action.payload;
-      console.log(action.payload);
     },
     setUserUid: (state, action: PayloadAction<string>) => {
       state.userUid = action.payload;
@@ -61,7 +58,6 @@ export const fetchUserData = (): ThunkAction<
   Action<any>
 > => {
   return async (dispatch) => {
-    console.log('fetching user data');
     dispatch(fetchUserDataRequest());
     try {
     } catch (error: any) {

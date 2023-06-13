@@ -12,10 +12,14 @@ import ReplyItem from './reply-item';
 interface ReviewItemProps {
   review: Review;
   level?: number;
+  showUserAvatar?: boolean;
+  elevated?: boolean;
 }
 
 const ReviewItem: React.FC<ReviewItemProps> = ({
   review: currentReview,
+  showUserAvatar: showUserAvatar = true,
+  elevated: elevated = true,
   level,
 }) => {
   const dispatch = useAppDispatch();
@@ -63,20 +67,22 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
   }, [currentReview, dispatch]);
 
   return (
-    <div className="card p-4 mb-3">
+    <div className={`${elevated ? 'card' : ''} p-4 mb-3`}>
       <article className="media mb-0">
-        <figure className="media-left   ">
-          <p className="image is-64x64">
-            <img
-              src={
-                currentReview.reviewerImageUrl !== ''
-                  ? currentReview.reviewerImageUrl
-                  : defaultPhoto
-              }
-              alt="reviewer avatar"
-            ></img>
-          </p>
-        </figure>
+        {showUserAvatar && (
+          <figure className="media-left   ">
+            <p className="image is-64x64">
+              <img
+                src={
+                  currentReview.reviewerImageUrl !== ''
+                    ? currentReview.reviewerImageUrl
+                    : defaultPhoto
+                }
+                alt="reviewer avatar"
+              ></img>
+            </p>
+          </figure>
+        )}
         <div className="media-content">
           <div className="content">
             <div className="level m-0">

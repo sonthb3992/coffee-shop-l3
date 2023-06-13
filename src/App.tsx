@@ -22,6 +22,7 @@ import TestimonialsPage from './pages/page-testimonials';
 import BaristaPage from './pages/page-barista';
 import BaristaOrderPage from './pages/page-barista-order';
 import BaristaOrderHistory from './pages/page-completed-order';
+import TaskPage from './pages/page-task';
 
 const App: React.FC = () => {
   return (
@@ -58,6 +59,7 @@ const App: React.FC = () => {
             <Route path="/track-order" element={<CustomerTrackPage />} />
             <Route path="/all-items/:filter?" element={<SelectionPage />} />
             <Route path="/cart" element={<CartPage />} />
+            <Route path="/tasks" element={<TaskPage />} />
             <Route path="/user-profile" element={<UserProfilePage />} />
             <Route path="/" element={<PageHome />} />
             {<Route path="*" element={<PageNotFound />} />}{' '}

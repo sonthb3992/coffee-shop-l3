@@ -55,6 +55,18 @@ const Navbar: React.FC = () => {
     setShowMenuOnMobile(!showMenuOnMobile);
   };
 
+  const isCustomerOrNotLoggedIn = (): boolean => {
+    return userData === null || (userData && userData.role === 'customer');
+  };
+
+  const isBarista = (): boolean => {
+    return userData !== null && userData.role === 'barista';
+  };
+
+  const isStaff = (): boolean => {
+    return userData !== null && userData.role === 'staff';
+  };
+
   return showNavbar === false ? (
     <div></div>
   ) : (
@@ -87,7 +99,7 @@ const Navbar: React.FC = () => {
         className={`navbar-menu ${showMenuOnMobile ? 'is-active' : ''}`}
       >
         <div className="navbar-start">
-          {userData && userData.role === 'customer' && (
+          {isCustomerOrNotLoggedIn() && (
             <>
               <a className="navbar-item has-text-weight-semibold" href="/">
                 {t('Home')}
@@ -104,15 +116,17 @@ const Navbar: React.FC = () => {
               >
                 {t('Breakfast')}
               </a>
-              <a
-                className="navbar-item has-text-weight-semibold"
-                href="/order-history"
-              >
-                {t('My orders')}
-              </a>
             </>
           )}
-          {userData && userData.role === 'barista' && (
+          {userData && userData.role === 'customer' && (
+            <a
+              className="navbar-item has-text-weight-semibold"
+              href="/order-history"
+            >
+              {t('My orders')}
+            </a>
+          )}
+          {isBarista() && (
             <>
               <a
                 className="navbar-item has-text-weight-semibold"
@@ -128,9 +142,14 @@ const Navbar: React.FC = () => {
               </a>
             </>
           )}
-          {userData && userData.role === 'staff' && (
+          {isStaff() && (
             <a className="navbar-item has-text-weight-semibold" href="/staff">
               {t('Staff')}
+            </a>
+          )}
+          {(isStaff() || isBarista()) && (
+            <a className="navbar-item has-text-weight-semibold" href="/tasks">
+              {t('Tasks')}
             </a>
           )}
           <a
@@ -143,14 +162,26 @@ const Navbar: React.FC = () => {
         <div className="navbar-end">
           <div className="navbar-item">
             <div className="buttons">
-              <a className="button is-primary" href={user ? '/cart' : '/login'}>
-                <span className="icon">
-                  <i className="fa-solid fa-cart-shopping"></i>
-                </span>
-                <span>{t('GoToCart', { count: orderCount ?? 0 })}</span>
-              </a>
+              {isCustomerOrNotLoggedIn() && (
+                <a
+                  className="button is-primary"
+                  href={user ? '/cart' : '/login'}
+                >
+                  <span className="icon">
+                    <i className="fa-solid fa-cart-shopping"></i>
+                  </span>
+                  <span>{t('GoToCart', { count: orderCount ?? 0 })}</span>
+                </a>
+              )}
             </div>
           </div>
+          {isBarista() && (
+            <span
+              className={`tag is-large ${
+                (userData!.currentRating ?? 0) >= 4 ? 'is-primary' : 'is-danger'
+              }`}
+            >{`Barista Rating: ${userData!.currentRating?.toFixed(2)}`}</span>
+          )}
           {user && <UserInfoComponent user={user}></UserInfoComponent>}
           {!user && (
             <div className="buttons">
@@ -162,7 +193,6 @@ const Navbar: React.FC = () => {
               </a>
             </div>
           )}
-          {/* </a> */}
         </div>
       </div>
     </nav>
