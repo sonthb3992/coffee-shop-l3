@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../reducer/store';
-import { setAddress, setCustomerName, setPhone } from '../reducer/cartSlice';
+import {
+  setAddress,
+  setCustomerName,
+  setPhone,
+  setUser,
+} from '../reducer/cartSlice';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AvatarUploader from '../view/avatar-uploader';
@@ -14,11 +19,13 @@ import {
   setDoc,
 } from 'firebase/firestore';
 import { app } from '../domain/firebase';
+import { UpdateUserDataToFirebase, signUserOut } from '../domain/user';
 
 const UserProfilePage: React.FC = () => {
   const { t } = useTranslation();
 
   const user = useSelector((state: RootState) => state.cart.user);
+  const userData = useSelector((state: RootState) => state.user.userData);
   const address = useSelector((state: RootState) => state.cart.address);
   const name = useSelector((state: RootState) => state.cart.customer_name);
   const phone = useSelector((state: RootState) => state.cart.phone);
@@ -40,20 +47,15 @@ const UserProfilePage: React.FC = () => {
     dispatch(setCustomerName(newName));
   };
 
-  const saveData = async (
-    user: User,
-    name: string,
-    address: string,
-    phone: string
-  ) => {
-    const db = getFirestore(app);
-    const userRef = doc(collection(db, 'users'), user.uid);
-    await setDoc(userRef, { address, name, phone }, { merge: true });
+  const handleUserLogout = async () => {
+    await signUserOut();
+    dispatch(setUser(null));
+    navigate('/');
   };
 
   const saveUserData = () => {
     if (user) {
-      saveData(user, name, address, phone);
+      UpdateUserDataToFirebase(user, name, address, phone, userData?.role);
       if (userImageUrl) {
         const auth = getAuth();
         if (auth.currentUser)
@@ -170,12 +172,20 @@ const UserProfilePage: React.FC = () => {
                 <p className="help is-danger">{t('Address invalid')}</p>
               )}
             </div>
-            <button
-              className={`button  is-fullwidth-desktop is-primary`}
-              onClick={() => saveUserData()}
-            >
-              {t('Save changes')}
-            </button>
+            <div className="buttons">
+              <button
+                className={`button is-primary`}
+                onClick={() => saveUserData()}
+              >
+                {t('Save changes')}
+              </button>
+              <button
+                className={`button is-danger`}
+                onClick={() => handleUserLogout()}
+              >
+                {t('Logout')}
+              </button>
+            </div>
           </div>
 
           <div className="column is-half-desktop p-3">

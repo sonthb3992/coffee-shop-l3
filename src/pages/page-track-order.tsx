@@ -5,6 +5,7 @@ import { Order } from '../domain/order';
 import CartPageItem from '../view/cart-item';
 import { useTranslation } from 'react-i18next';
 import OrderStatusComponent from '../view/order-status';
+import ReviewForm from '../view/review-form';
 
 const TrackOrderPage: React.FC = () => {
   const { orderId } = useParams();
@@ -66,8 +67,6 @@ const TrackOrderPage: React.FC = () => {
                   <i className="fas fa-phone"></i>
                 </span>
               </div>
-              {/* {(!phone &&
-                                <p className="help is-danger">Please enter a valid phone number. Our staff may call you to confirm the order.</p>)} */}
             </div>
 
             <div className="field">
@@ -159,17 +158,20 @@ const TrackOrderPage: React.FC = () => {
                 </div>
               )}
 
-              {order && (
+              {order && (order.status === 1 || order.status === 0) && (
                 <button
-                  className={`button is-fullwidth ${
-                    order.status > 1 || order.status < 0
-                      ? 'is-static'
-                      : 'is-danger'
-                  }`}
+                  className="button is-fullwidth is-danger"
                   onClick={() => Order.cancelOrder(order)}
                 >
                   {t('Cancel order')}
                 </button>
+              )}
+
+              {order && order.status === 4 && !order.isReviewed && (
+                <ReviewForm isModal={false} order={order}></ReviewForm>
+              )}
+              {order && order.isReviewed && (
+                <p>Thank you!. You have reviewed this order.</p>
               )}
             </div>
           </div>

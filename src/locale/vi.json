@@ -56,6 +56,10 @@
   "login.forgotPassword": "Quên mật khẩu",
   "login.needHelp": "Cần trợ giúp",
   "login.error": "Vui lòng nhập email và mật khẩu",
+  "sent": "Gửi",
+  "Testimonials": "Nhận xét của khách hàng",
+  "Review": "Đánh giá",
+  "Logout": "Đăng xuất",
   "signup": {
     "title": "Đăng ký",
     "subtitle": "Tạo tài khoản của bạn",
@@ -66,5 +70,15 @@
     "loginLink": "Đã có tài khoản? Đăng nhập tại đây.",
     "namePlaceholder": "Tên của bạn",
     "error": "Vui lòng nhập đầy đủ thông tin"
+  },
+  "reviewForm": {
+    "title": "Đánh giá đơn hàng",
+    "1star": "Vui lòng cho chúng tôi biết cần phải thay đổi điều gì để được tiếp tục phục vụ bạn?",
+    "2star": "Điều gì khiến bạn chưa hài lòng về chúng tôi. Hãy góp ý giúp chúng tôi nhé.",
+    "3star": "Bạn cho biết chúng tôi cần cải thiện thêm gì nhé?",
+    "4star": "Hãy cho chúng tôi biết cần làm gì tốt hơn để trải nghiệm của bạn được trọn vẹn?",
+    "5star": "Cảm ơn bạn đã dành lời khen. Bạn thích điều gì ở chúng tôi?",
+    "commentPlaceholder": "Hãy chia sẻ trải nghiệm của bạn nhé",
+    "plsRate": "Hãy đánh giá trải nghiệm đặt hàng của bạn"
   }
 }

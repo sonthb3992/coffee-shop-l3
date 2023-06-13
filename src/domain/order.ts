@@ -10,6 +10,7 @@ import {
   where,
   setDoc,
   doc,
+  updateDoc,
 } from 'firebase/firestore';
 import { app } from './firebase';
 import { taxRate } from './settings';
@@ -30,6 +31,8 @@ class Order {
   cancelTime: Date = new Date(0, 0, 0);
   itemcount: number = 0;
   useruid: string = '';
+  baristaUid: string = '';
+  isReviewed: boolean = false;
 
   static fromFirestore(
     snapshot: DocumentSnapshot<any>,
@@ -45,6 +48,8 @@ class Order {
     order.status = data['status'];
     order.price = data['price'];
     order.useruid = data['useruid'];
+    order.isReviewed = data['isReviewed'] ?? false;
+    order.baristaUid = data['baristaUid'];
     return order;
   }
 
@@ -78,6 +83,8 @@ class Order {
       processTime: order.processTime,
       completeTime: order.completeTime,
       useruid: order.useruid,
+      isReviewed: order.isReviewed,
+      baristaUid: order.baristaUid,
     };
   }
 
@@ -108,6 +115,19 @@ class Order {
       const db = getFirestore(app);
       const docRef = doc(db, 'orders', order.id);
       await setDoc(docRef, Order.toFirestore(order));
+      return 'success';
+    } catch (e) {
+      return 'Error adding Menu option to Firestore: ' + e;
+    }
+  }
+
+  static async updateReviewedToFirebase(orderId: string): Promise<string> {
+    try {
+      const db = getFirestore(app);
+      const docRef = doc(db, 'orders', orderId);
+      await updateDoc(docRef, {
+        isReviewed: true,
+      });
       return 'success';
     } catch (e) {
       return 'Error adding Menu option to Firestore: ' + e;
@@ -210,8 +230,114 @@ class Order {
     }
   }
 
-  static sentToNextStep(item: Order): Promise<string> {
+  static async getOrdersByBaristaUid(
+    uid: string,
+    callback: (value: any) => void
+  ): Promise<{ orders: Order[]; unsub: any } | null> {
+    try {
+      const db = getFirestore(app);
+      const ref = collection(db, 'orders');
+      const _query = query(ref, where('baristaUid', '==', uid));
+
+      const querySnapshot = await getDocs(_query);
+      const orders = querySnapshot.docs.map((doc) =>
+        Order.fromFirestore(doc, undefined)
+      );
+
+      const unsubscribe = onSnapshot(_query, (querySnapshot) => {
+        const orders = querySnapshot.docs.map((doc) =>
+          Order.fromFirestore(doc, undefined)
+        );
+        callback(orders);
+      });
+
+      return {
+        orders: orders,
+        unsub: unsubscribe,
+      };
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  static async getUnacceptedOrders(
+    callback: (value: any) => void
+  ): Promise<{ orders: Order[]; unsub: any } | null> {
+    try {
+      const db = getFirestore(app);
+      const ref = collection(db, 'orders');
+      const _query = query(ref, where('status', '==', 1));
+
+      const querySnapshot = await getDocs(_query);
+      const orders = querySnapshot.docs.map((doc) =>
+        Order.fromFirestore(doc, undefined)
+      );
+
+      const unsubscribe = onSnapshot(_query, (querySnapshot) => {
+        const orders = querySnapshot.docs.map((doc) =>
+          Order.fromFirestore(doc, undefined)
+        );
+        callback(orders);
+      });
+
+      return {
+        orders: orders,
+        unsub: unsubscribe,
+      };
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  static async getAcceptedOrders(
+    baristaUid: string,
+    callback: (value: any) => void
+  ): Promise<{ orders: Order[]; unsub: any } | null> {
+    try {
+      const db = getFirestore(app);
+      const ref = collection(db, 'orders');
+      const _query = query(
+        ref,
+        where('baristaUid', '==', baristaUid),
+        where('status', '==', 2)
+      );
+
+      const querySnapshot = await getDocs(_query);
+      const orders = querySnapshot.docs.map((doc) =>
+        Order.fromFirestore(doc, undefined)
+      );
+
+      const unsubscribe = onSnapshot(_query, (querySnapshot) => {
+        const orders = querySnapshot.docs.map((doc) =>
+          Order.fromFirestore(doc, undefined)
+        );
+        callback(orders);
+      });
+
+      return {
+        orders: orders,
+        unsub: unsubscribe,
+      };
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  static sentToNextStep(item: Order, baristaUid?: string): Promise<string> {
     item.status += 1;
+    if (item.status == 1) {
+      item.confirmTime = new Date(Date.now());
+    }
+    if (item.status == 2) {
+      if (baristaUid) item.baristaUid = baristaUid;
+      item.processTime = new Date(Date.now());
+    }
+    if (item.status == 4) {
+      item.completeTime = new Date(Date.now());
+    }
     return Order.updateToFirebase(item);
   }
 
@@ -220,28 +346,6 @@ class Order {
     item.cancelTime = new Date(Date.now());
     return Order.updateToFirebase(item);
   }
-
-  // static async getAll(): Promise<MenuOption[]> {
-  //     try {
-  //         const db = getFirestore(app);
-  //         const menuOptionRef = collection(db, "menu_options");
-
-  //         // Create a query against the collection.
-  //         const querySnapshot = await getDocs(menuOptionRef);
-
-  //         if (querySnapshot.empty) {
-  //             return [];
-  //         }
-
-  //         var result = querySnapshot.docs.map(m => MenuOption.fromFirestore(m, undefined));
-
-  //         return result;
-
-  //     } catch (e) {
-  //         console.log(e);
-  //         return [];
-  //     }
-  // }
 
   static async getOrderById(
     optionId: string | undefined,

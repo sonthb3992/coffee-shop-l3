@@ -1,13 +1,14 @@
-import cartReducer from './cartSlice';
+import thunk from 'redux-thunk'; // Import Redux Thunk middleware
+import cartReducer from './cartSlice'; // Import your cart reducer
 import { configureStore } from '@reduxjs/toolkit';
+import menuOptionSlice from './menu-option-slice';
+import rootReducer from './root-reducer';
 
 const store = configureStore({
-  reducer: {
-    cart: cartReducer,
-  },
+  reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false,
+      serializableCheck: false, // Disable serializable check for non-serializable actions
     }),
 });
 

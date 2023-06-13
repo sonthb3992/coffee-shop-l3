@@ -1,30 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import shopName from '../assets/images/shop-name.png'; // change this to the path of your image
-import logo from '../assets/images/logo.png'; // change this to the path of your image
-import { useDispatch, useSelector } from 'react-redux';
+import shopName from '../assets/images/shop-name.png';
+import logo from '../assets/images/logo.png';
+import UserInfoComponent from './user-info-component';
+import { useSelector } from 'react-redux';
 import { RootState } from '../reducer/store';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../domain/firebase';
 import { setUser } from '../reducer/cartSlice';
-import UserInfoComponent from './user-info-component';
+import { useLocation } from 'react-router-dom';
+import { useAppDispatch } from '../reducer/hook';
+import { fetchUserData } from '../reducer/user-slice';
 
 const Navbar: React.FC = () => {
   const orderCount = useSelector(
     (state: RootState) => state.cart.orderItems.length || 0
   );
   const user = useSelector((state: RootState) => state.cart.user);
+  const userData = useSelector((state: RootState) => state.user.userData);
 
   const [showMenuOnMobile, setShowMenuOnMobile] = useState<boolean>(false);
+  const [showNavbar, setShownNavbar] = useState<boolean>(false);
+  const location = useLocation();
 
   const { t } = useTranslation();
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+
+  const shouldDisplayNavbar = (): boolean => {
+    var result = !location.pathname.startsWith('/login');
+    result &&= !location.pathname.startsWith('/sign-up');
+    return result;
+  };
 
   useEffect(() => {
     const user = auth.currentUser;
-    console.log(user);
-    dispatch(setUser(user));
+    setShownNavbar(shouldDisplayNavbar());
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -32,18 +43,33 @@ const Navbar: React.FC = () => {
       } else {
         dispatch(setUser(null));
       }
+      dispatch(fetchUserData());
     });
 
     return () => {
       unsubscribe();
     };
-  }, [dispatch]);
+  }, [location]);
 
   const toggleMenu = () => {
     setShowMenuOnMobile(!showMenuOnMobile);
   };
 
-  return (
+  const isCustomerOrNotLoggedIn = (): boolean => {
+    return userData === null || (userData && userData.role === 'customer');
+  };
+
+  const isBarista = (): boolean => {
+    return userData !== null && userData.role === 'barista';
+  };
+
+  const isStaff = (): boolean => {
+    return userData !== null && userData.role === 'staff';
+  };
+
+  return showNavbar === false ? (
+    <div></div>
+  ) : (
     <nav
       className="navbar is-spaced is-light"
       role="navigation"
@@ -73,39 +99,89 @@ const Navbar: React.FC = () => {
         className={`navbar-menu ${showMenuOnMobile ? 'is-active' : ''}`}
       >
         <div className="navbar-start">
-          <a className="navbar-item has-text-weight-semibold" href="/">
-            {t('Home')}
-          </a>
+          {isCustomerOrNotLoggedIn() && (
+            <>
+              <a className="navbar-item has-text-weight-semibold" href="/">
+                {t('Home')}
+              </a>
+              <a
+                className="navbar-item has-text-weight-semibold"
+                href="/all-items/drink"
+              >
+                {t('Drinks')}
+              </a>
+              <a
+                className="navbar-item has-text-weight-semibold"
+                href="/all-items/breakfast"
+              >
+                {t('Breakfast')}
+              </a>
+            </>
+          )}
+          {userData && userData.role === 'customer' && (
+            <a
+              className="navbar-item has-text-weight-semibold"
+              href="/order-history"
+            >
+              {t('My orders')}
+            </a>
+          )}
+          {isBarista() && (
+            <>
+              <a
+                className="navbar-item has-text-weight-semibold"
+                href="/barista"
+              >
+                {t('Barista')}
+              </a>
+              <a
+                className="navbar-item has-text-weight-semibold"
+                href="/barista-completed"
+              >
+                {t('Completed orders')}
+              </a>
+            </>
+          )}
+          {isStaff() && (
+            <a className="navbar-item has-text-weight-semibold" href="/staff">
+              {t('Staff')}
+            </a>
+          )}
+          {(isStaff() || isBarista()) && (
+            <a className="navbar-item has-text-weight-semibold" href="/tasks">
+              {t('Tasks')}
+            </a>
+          )}
           <a
+            href="/testimonials"
             className="navbar-item has-text-weight-semibold"
-            href="/all-items/drink"
           >
-            {t('Drinks')}
+            {t('Testimonials')}
           </a>
-          <a
-            className="navbar-item has-text-weight-semibold"
-            href="/all-items/breakfast"
-          >
-            {t('Breakfast')}
-          </a>
-          <a
-            className="navbar-item has-text-weight-semibold"
-            href="/order-history"
-          >
-            {t('My orders')}
-          </a>{' '}
         </div>
         <div className="navbar-end">
           <div className="navbar-item">
             <div className="buttons">
-              <a className="button is-primary" href={user ? '/cart' : '/login'}>
-                <span className="icon">
-                  <i className="fa-solid fa-cart-shopping"></i>
-                </span>
-                <span>{t('GoToCart', { count: orderCount ?? 0 })}</span>
-              </a>
+              {isCustomerOrNotLoggedIn() && (
+                <a
+                  className="button is-primary"
+                  href={user ? '/cart' : '/login'}
+                >
+                  <span className="icon">
+                    <i className="fa-solid fa-cart-shopping"></i>
+                  </span>
+                  <span>{t('GoToCart', { count: orderCount ?? 0 })}</span>
+                </a>
+              )}
             </div>
           </div>
+          {isBarista() && (
+            <span
+              className={`tag is-large ${
+                (userData!.currentRating ?? 0) >= 4 ? 'is-primary' : 'is-danger'
+              }`}
+            >{`Barista Rating: ${userData!.currentRating?.toFixed(2)}`}</span>
+          )}
           {user && <UserInfoComponent user={user}></UserInfoComponent>}
           {!user && (
             <div className="buttons">
@@ -117,7 +193,6 @@ const Navbar: React.FC = () => {
               </a>
             </div>
           )}
-          {/* </a> */}
         </div>
       </div>
     </nav>

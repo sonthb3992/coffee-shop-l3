@@ -14,6 +14,9 @@
 # deploy
 /public
 
+#functions
+/functions
+
 # misc
 .DS_Store
 .env.local
