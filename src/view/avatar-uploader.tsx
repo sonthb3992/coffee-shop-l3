@@ -12,7 +12,6 @@ const AvatarUploader: React.FC<AvatarUploaderProps> = ({
 }) => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string>('');
-  const user = useSelector((state: RootState) => state.cart.user);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -48,25 +47,28 @@ const AvatarUploader: React.FC<AvatarUploaderProps> = ({
       <input type="file" accept="image/*" onChange={handleImageChange} />
       {selectedImage && (
         <div className="flex is-flex-direction-column">
-          <figure className="image">
-            {user?.photoURL && (
+          {/* {selectedImage && (
               <img
-                src={user.photoURL}
+                src={selectedImage.name}
                 alt="Selected Avatar"
                 width="128"
                 height="128"
               />
-            )}
-            {!user?.photoURL && (
+            )} */}
+          {uploadedImageUrl !== '' && (
+            <figure className="image is-128x128">
               <img
+                className="p-2"
                 src={uploadedImageUrl}
                 alt="Selected Avatar"
                 width="128"
                 height="128"
               />
-            )}
-          </figure>
-          <button onClick={handleUpload}>Upload Avatar</button>
+            </figure>
+          )}
+          <button className="button is-link" onClick={handleUpload}>
+            Upload Avatar
+          </button>
         </div>
       )}
     </div>
