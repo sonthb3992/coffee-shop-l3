@@ -23,7 +23,8 @@ import BaristaPage from './pages/page-barista';
 import BaristaOrderPage from './pages/page-barista-order';
 import BaristaOrderHistory from './pages/page-completed-order';
 import TaskPage from './pages/page-task';
-
+import ChallengesPage from './pages/page-challenges';
+0;
 const App: React.FC = () => {
   return (
     <Provider store={store}>
@@ -56,6 +57,7 @@ const App: React.FC = () => {
               path="/order-history"
               element={<CustomerOrderHistory />}
             ></Route>
+            <Route path="/challenges" element={<ChallengesPage />}></Route>
             <Route path="/track-order" element={<CustomerTrackPage />} />
             <Route path="/all-items/:filter?" element={<SelectionPage />} />
             <Route path="/cart" element={<CartPage />} />

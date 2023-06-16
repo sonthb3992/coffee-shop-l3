@@ -158,6 +158,13 @@ const Navbar: React.FC = () => {
           >
             {t('Testimonials')}
           </a>
+
+          <a
+            href="/challenges"
+            className="navbar-item has-text-weight-semibold"
+          >
+            {t('Challenges')}
+          </a>
         </div>
         <div className="navbar-end">
           <div className="navbar-item">

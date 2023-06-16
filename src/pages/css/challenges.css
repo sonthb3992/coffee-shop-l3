@@ -1,0 +1,56 @@
+.Banner {
+    background-image: url('../../assets/images/challenge-background.jpg');
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+    padding: 3rem 0;
+  }
+  
+  .Body {
+    text-align: center;
+  }
+  
+  .title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+  }
+  
+  .subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .button-wrapper {
+    margin-top: 2rem;
+  }
+  
+  .button {
+    font-size: 1.2rem;
+    padding: 1rem 2rem;
+    background-color: #7ed6b7; /* Green pastel color */
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .button:hover {
+    background-color: #67c9a9; /* Darker shade of green pastel color */
+  }
+  
+  .button-wrapper.animated {
+    animation: buttonAnimation 1s ease-in-out;
+  }
+  
+  @keyframes buttonAnimation {
+    0% {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
