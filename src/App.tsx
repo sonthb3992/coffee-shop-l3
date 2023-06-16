@@ -24,7 +24,7 @@ import BaristaOrderPage from './pages/page-barista-order';
 import BaristaOrderHistory from './pages/page-completed-order';
 import TaskPage from './pages/page-task';
 import ChallengesPage from './pages/page-challenges';
-0;
+
 const App: React.FC = () => {
   return (
     <Provider store={store}>
