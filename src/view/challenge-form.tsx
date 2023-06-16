@@ -1,80 +1,66 @@
 import React, { useEffect, useState } from 'react';
-import { PushReviewToFirebase, Review } from '../domain/review';
+import {
+  PutChallengeAnswerToFirebase,
+  ChallengeAnswer,
+} from '../domain/answer_challenge';
 import { useTranslation } from 'react-i18next';
-import { Order } from '../domain/order';
-import Rating from './rating';
 import { useSelector } from 'react-redux';
 import { RootState } from '../reducer/store';
+import ChallengeImageUploader from '../view/challenge-image-uploader';
 
 interface ChallengeFormProps {
   isModal: boolean;
-  order: Order;
   isActived?: boolean;
   onClose?: () => void;
 }
 
 const ChallengeForm: React.FC<ChallengeFormProps> = ({
   isModal,
-  order,
   isActived,
   onClose,
 }) => {
   const [actived, setActived] = useState<boolean>(false);
   const [commentLabel, setCommentLabel] = useState<string>('');
-  const [rating, setRating] = useState(0);
   const [comment, setComment] = useState<string>('');
-  const [isPublic, setIsPublic] = useState<boolean>(true);
   const [isSending, setIsSending] = useState<boolean>(false);
+  const [userImageUrl, setUserImageUrl] = useState<string>('');
   const user = useSelector((state: RootState) => state.cart.user);
 
   const { t } = useTranslation();
 
   const handleCancel = () => {
-    setRating(0);
     setCommentLabel('');
     setComment('');
-    setIsPublic(true);
     setIsSending(false);
     setActived(false);
     if (onClose !== undefined) onClose();
-  };
-
-  const onRatingChanged = (newRating: number) => {
-    setRating(newRating);
-    setCommentLabel('challengeForm.' + newRating.toString() + 'star');
   };
 
   const onCommentChanged = (comment: string) => {
     setComment(comment);
   };
 
-  const handlePublicChanged = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(ev.target.value);
-    setIsPublic(ev.target.value === 'public');
+  const onSetUserImageUrl = (url: string) => {
+    console.log(url);
+    setUserImageUrl(url);
   };
 
-  const sendReview = async () => {
-    if (rating === 0) {
-      alert('Please rate your order.');
-      return;
-    }
+  const sendAnswer = async () => {
     if (user) {
-      const review: Review = {
-        orderId: order.id,
-        parentId: '',
-        rating: rating,
-        userUid: user?.uid,
-        comment: comment,
+      const challengeAnswer: ChallengeAnswer = {
         uid: '',
-        isPublic: isPublic,
-        reviewerName: user.displayName ?? 'Anonymous user',
-        reviewerImageUrl: user.photoURL ?? '',
-        reviewDateTime: new Date(Date.now()),
+        useruid: user?.uid,
+        comment: comment,
+        isVerified: false,
+        timestamp: new Date(Date.now()),
+        imageUrl: userImageUrl ?? '',
+        userAvatarUrl: user.photoURL ?? '',
+        userDisplayName: user.displayName ?? '',
       };
       setIsSending(true);
-      const result = await PushReviewToFirebase(review, order);
+      const result = await PutChallengeAnswerToFirebase(challengeAnswer);
       setIsSending(false);
-      if (result === 'success') {
+      if (result === true) {
         handleCancel();
         return;
       }
@@ -107,14 +93,29 @@ const ChallengeForm: React.FC<ChallengeFormProps> = ({
         )}
         <section className="modal-card-body">
           <div className="block is-flex is-justify-content-center">
-            <label className="title is-5">{t('reviewForm.plsRate')}</label>
+            <label className="title is-5">{t('reviewForm.plsChallenge')}</label>
           </div>
-          {/* Image Form */}
+          <ChallengeImageUploader
+            onImageUrlChanged={(newUrl) => onSetUserImageUrl(newUrl)}
+          ></ChallengeImageUploader>
+          <div className="block is-flex is-justify-content-center">
+            <label>{t(commentLabel)}</label>
+          </div>
+          <div className="block">
+            <textarea
+              value={comment}
+              rows={3}
+              maxLength={500}
+              onChange={(event) => onCommentChanged(event.target.value)}
+              className="textarea is-primary has-fixed-size"
+              placeholder={'Share your story here'}
+            ></textarea>
+          </div>
         </section>
         <footer className={`${isModal ? 'modal-card-foot' : ''}`}>
           <div className="buttons pl-5 pb-5">
             <button
-              onClick={() => sendReview()}
+              onClick={() => sendAnswer()}
               className={`button is-success ${isSending ? 'is-loading' : ''}`}
             >
               Sent
