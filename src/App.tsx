@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import Navbar from './view/navbar';
+import Navbar from './components/navbar';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import CustomizeOrderPage from './pages/page_customize_order';
 import SelectionPage from './pages/page-selection';
@@ -10,7 +10,7 @@ import CartPage from './pages/page-cart';
 import TrackOrderPage from './pages/page-track-order';
 import StaffPage from './pages/page-staff';
 import CustomerTrackPage from './pages/page-customer_track';
-import Footer from './view/footer';
+import Footer from './components/footer';
 import i18n from './locale/i18n';
 import { I18nextProvider } from 'react-i18next';
 import PageHome from './pages/page-home';
@@ -24,6 +24,7 @@ import BaristaOrderPage from './pages/page-barista-order';
 import BaristaOrderHistory from './pages/page-completed-order';
 import TaskPage from './pages/page-task';
 import ChallengesPage from './pages/page-challenges';
+import MenuManagementPage from './pages/pageMenuManagement';
 
 const App: React.FC = () => {
   return (
@@ -64,6 +65,7 @@ const App: React.FC = () => {
             <Route path="/tasks" element={<TaskPage />} />
             <Route path="/user-profile" element={<UserProfilePage />} />
             <Route path="/" element={<PageHome />} />
+            <Route path="menu-management" element={<MenuManagementPage />} />
             {<Route path="*" element={<PageNotFound />} />}{' '}
           </Routes>
           {<Footer />}

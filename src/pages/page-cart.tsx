@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../reducer/store';
-import CartPageItem from '../view/cart-item';
+import CartPageItem from '../components/cart-item';
 import { OrderItem, calculatePrice } from '../domain/selected_item';
 import {
   clearCart,

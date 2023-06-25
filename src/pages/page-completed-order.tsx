@@ -3,14 +3,14 @@ import { Order } from '../domain/order';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../reducer/store';
 import { addItemsToCart } from '../reducer/cartSlice';
-import SingleOrderDisplayCustomerView from '../view/order-item-customer';
+import SingleOrderDisplayCustomerView from '../components/order-item-customer';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import OrderStatusComponent from '../view/order-status';
+import OrderStatusComponent from '../components/order-status';
 import { OrderItem } from '../domain/selected_item';
-import CartPageItem from '../view/cart-item';
-import ReviewForm from '../view/review-form';
-import ReviewItem from '../view/review-item';
+import CartPageItem from '../components/cart-item';
+import ReviewForm from '../components/review-form';
+import ReviewItem from '../components/review-item';
 import { GetReviewsOfOrder, Review } from '../domain/review';
 
 const BaristaOrderHistory: React.FC = () => {

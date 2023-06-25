@@ -1,7 +1,7 @@
 import thunk from 'redux-thunk'; // Import Redux Thunk middleware
 import cartReducer from './cartSlice'; // Import your cart reducer
 import { configureStore } from '@reduxjs/toolkit';
-import menuOptionSlice from './menu-option-slice';
+import menuOptionSlice from './menuItems';
 import rootReducer from './root-reducer';
 
 const store = configureStore({

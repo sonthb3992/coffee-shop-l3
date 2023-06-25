@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import './css/login.css'; // Import the CSS file
 import { useTranslation } from 'react-i18next';
 import logo from '../assets/images/logo.png';
-import SignUpForm from '../view/sign-up-form';
-import SignInForm from '../view/sign-in-form';
+import SignUpForm from '../components/sign-up-form';
+import SignInForm from '../components/sign-in-form';
 
 export enum FormType {
   SignIn = 'sign-in',

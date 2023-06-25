@@ -9,7 +9,7 @@ import {
 } from '../reducer/cartSlice';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import AvatarUploader from '../view/avatar-uploader';
+import AvatarUploader from '../components/avatar-uploader';
 import { User, getAuth, updateProfile } from 'firebase/auth';
 import {
   collection,

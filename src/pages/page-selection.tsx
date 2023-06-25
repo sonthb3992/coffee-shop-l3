@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { MenuItemTypeOption } from '../domain/menu_option_type';
-import Menu from '../view/menu';
+import Menu from '../components/Menu';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';

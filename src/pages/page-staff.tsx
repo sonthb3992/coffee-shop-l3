@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Order } from '../domain/order';
-import SingleOrderDisplay from '../view/order-item';
+import SingleOrderDisplay from '../components/order-item';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../reducer/hook';
 import { auth } from '../domain/firebase';
 import { fetchUserData } from '../reducer/user-slice';
-import PermissionAlertComponent from '../view/permission-alert';
+import PermissionAlertComponent from '../components/permission-alert';
 
 const StaffPage: React.FC = () => {
   const [all_orders, setAllOrders] = useState<Order[]>();

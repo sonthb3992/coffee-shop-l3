@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import ChallengeForm from '../view/challenge-form';
+import ChallengeForm from '../components/challenge-form';
 import { ChallengeAnswer, GetAllAnswers } from '../domain/answer_challenge';
-import AnswerItem from '../view/answer-item';
+import AnswerItem from '../components/answer-item';
 import './css/challenges.css';
 const ChallengesPage: React.FC = () => {
   const { t } = useTranslation();

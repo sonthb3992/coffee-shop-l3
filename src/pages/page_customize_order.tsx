@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import QuantitySelector from '../view/quanlity-selector';
+import QuantitySelector from '../components/quanlity-selector';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../reducer/hook';
-import SizeSelector from '../view/size-selector';
-import StyleSelector from '../view/style-selector';
+import SizeSelector from '../components/size-selector';
+import StyleSelector from '../components/style-selector';
 import {
   addCurrentItemToCart,
   fetchNewItemOptions,
   setQuantity,
 } from '../reducer/new-order-slice';
-import ToppingSelector from '../view/topping-selector';
+import ToppingSelector from '../components/topping-selector';
 import { async } from '@firebase/util';
 import { MenuOption } from '../domain/menu_option';
 import { Review } from '../domain/review';

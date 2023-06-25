@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GetRecentReviews, GetShopRating, Review } from '../domain/review';
-import ReviewItem from '../view/review-item';
-import Rating from '../view/rating';
+import ReviewItem from '../components/review-item';
+import Rating from '../components/rating';
 
 const TestimonialsPage: React.FC = () => {
   const { t } = useTranslation();

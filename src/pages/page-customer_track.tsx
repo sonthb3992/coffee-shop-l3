@@ -3,7 +3,7 @@ import { Order } from '../domain/order';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../reducer/store';
 import { setCustomerName, setPhone } from '../reducer/cartSlice';
-import SingleOrderDisplayCustomerView from '../view/order-item-customer';
+import SingleOrderDisplayCustomerView from '../components/order-item-customer';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 

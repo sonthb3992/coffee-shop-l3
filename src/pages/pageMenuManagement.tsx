@@ -1,16 +1,16 @@
 import React from 'react';
-import Slider from '../components/slider';
+import CreateItemForm from '../components/createItemForm';
 import Menu from '../components/Menu';
 
-const PageHome: React.FC = () => {
+const MenuManagementPage: React.FC = () => {
   return (
     <div>
-      <Slider />
       <section className="section p-0">
         <Menu chunkSize={4} typeFilter="" />
+        <CreateItemForm />
       </section>
     </div>
   );
 };
 
-export default PageHome;
+export default MenuManagementPage;

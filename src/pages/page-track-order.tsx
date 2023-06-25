@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { OrderItem } from '../domain/selected_item';
 import { Order } from '../domain/order';
-import CartPageItem from '../view/cart-item';
+import CartPageItem from '../components/cart-item';
 import { useTranslation } from 'react-i18next';
-import OrderStatusComponent from '../view/order-status';
-import ReviewForm from '../view/review-form';
+import OrderStatusComponent from '../components/order-status';
+import ReviewForm from '../components/review-form';
 
 const TrackOrderPage: React.FC = () => {
   const { orderId } = useParams();

@@ -1,14 +1,18 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import CartReducer from './cartSlice';
-import menuOptionSlice from './menu-option-slice';
+import menuItems from './menuItems';
 import newItemSlice from './new-order-slice';
 import userSlice from './user-slice';
+import item from './item';
 
 const rootReducer = combineReducers({
   cart: CartReducer,
-  menuOptions: menuOptionSlice,
   newItem: newItemSlice,
   user: userSlice,
+
+  menuItems: menuItems,
+  item: item,
+
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

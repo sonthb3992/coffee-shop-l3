@@ -6,7 +6,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { RootState } from '../reducer/store';
-import ChallengeImageUploader from '../view/challenge-image-uploader';
+import ChallengeImageUploader from './challenge-image-uploader';
 
 interface ChallengeFormProps {
   isModal: boolean;

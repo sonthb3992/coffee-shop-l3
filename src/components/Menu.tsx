@@ -1,46 +1,48 @@
 import React, { useEffect } from 'react';
-import MenuOptionComponent from './menu-item';
 import { useSelector } from 'react-redux';
 import { RootState } from '../reducer/store';
-import { fetchMenuItems } from '../reducer/menu-option-slice';
+import { fetchMenuItems } from '../reducer/menuItems';
 import { useAppDispatch } from '../reducer/hook';
+import { Item } from '../models/Item';
+import ItemComponent from './Item';
 
 interface MenuProps {
   chunkSize: number;
   typeFilter: string;
 }
 
-const Menu: React.FC<MenuProps> = ({ chunkSize, typeFilter: filter }) => {
-  // const [menuOptions, setMenuOptions] = useState<MenuOption[]>([]);
-  const menuOptions = useSelector(
-    (state: RootState) => state.menuOptions.menuItems
+const MenuComponent: React.FC<MenuProps> = ({
+  chunkSize,
+  typeFilter: filter,
+}) => {
+  const menuItems = useSelector(
+    (state: RootState) => state.menuItems.menuItems
   );
-
-  const appDispath = useAppDispatch();
+  const appDispatch = useAppDispatch();
 
   useEffect(() => {
-    appDispath(fetchMenuItems());
-  }, [filter]);
+    appDispatch(fetchMenuItems());
+  }, [appDispatch, filter]);
 
   return (
     <div className="container">
       <div className="columns is-mobile is-multiline">
         {chunkSize === 4 &&
-          menuOptions.map((option) => (
+          menuItems.map((item: Item) => (
             <div
-              key={option.nameEn}
+              key={item.name}
               className="column is-half-mobile is-one-thirds-tablet is-one-quarter-desktop"
             >
-              <MenuOptionComponent option={option} />
+              <ItemComponent item={item} />
             </div>
           ))}
         {chunkSize === 3 &&
-          menuOptions.map((option) => (
+          menuItems.map((item: Item) => (
             <div
-              key={option.nameEn}
+              key={item.name}
               className="column is-half-mobile is-one-thirds-tablet"
             >
-              <MenuOptionComponent option={option} />
+              <ItemComponent item={item} />
             </div>
           ))}
       </div>
@@ -48,4 +50,4 @@ const Menu: React.FC<MenuProps> = ({ chunkSize, typeFilter: filter }) => {
   );
 };
 
-export default Menu;
+export default MenuComponent;

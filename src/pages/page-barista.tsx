@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Order } from '../domain/order';
-import SingleOrderDisplay from '../view/order-item';
+import SingleOrderDisplay from '../components/order-item';
 import { useSelector } from 'react-redux';
 import { RootState } from '../reducer/store';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../reducer/hook';
 import { fetchUserData } from '../reducer/user-slice';
 import { auth } from '../domain/firebase';
-import PermissionAlertComponent from '../view/permission-alert';
+import PermissionAlertComponent from '../components/permission-alert';
 
 const BaristaPage: React.FC = () => {
   const [all_orders, setAllOrders] = useState<Order[]>();
