@@ -9,6 +9,9 @@ import { RootState } from '../reducer/store';
 interface ReviewFormProps {
   isModal: boolean;
   order: Order;
+  //userId: string;
+  //orderId: string;
+
   isActived?: boolean;
   onClose?: () => void;
 }
@@ -55,6 +58,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 
   const sendReview = async () => {
     if (rating === 0) {
+      console.log('Rating is 0. Please rate your order.'); // Debugging statement
       alert('Please rate your order.');
       return;
     }
@@ -72,13 +76,16 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
         reviewDateTime: new Date(Date.now()),
       };
       setIsSending(true);
+      console.log('Sending review to Firebase:', review); // Debugging statement
       const result = await PushReviewToFirebase(review, order);
       setIsSending(false);
       if (result === 'success') {
+        console.log('Review sent successfully'); // Debugging statement
         handleCancel();
         return;
       }
       setIsSending(false);
+      console.log('Error sending review:', result); // Debugging statement
       alert(result);
     }
   };
