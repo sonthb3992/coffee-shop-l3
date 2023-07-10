@@ -76,3 +76,7 @@ footer {
 .has-cursor-hand {
   cursor: pointer;
 }
+
+.cart-item-border {
+  border-bottom: solid 1px lightgray;
+}

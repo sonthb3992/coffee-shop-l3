@@ -103,7 +103,6 @@ class MenuOption extends OptionBase {
     if (data?.dislikeCount) {
       option.dislikeCount = parseInt(data?.likeCount.toString());
     }
-    console.log(snapshot.id);
     option.uid = snapshot.id;
     return option;
   }
@@ -163,7 +162,6 @@ class MenuOption extends OptionBase {
   }
 
   static async addReview(option: MenuOption, review: Review): Promise<boolean> {
-    console.log(option);
     if (!option.uid || option.uid === '') return false;
 
     try {
@@ -224,9 +222,9 @@ class MenuOption extends OptionBase {
     menuOptionUid: string;
     reviews: Review[];
   } = {
-    menuOptionUid: '',
-    reviews: [],
-  };
+      menuOptionUid: '',
+      reviews: [],
+    };
 
   static async getReviews(menuOptionUid: string): Promise<Review[]> {
     try {

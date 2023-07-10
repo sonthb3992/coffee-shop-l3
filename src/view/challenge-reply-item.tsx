@@ -13,7 +13,7 @@ const ChallengeReplyItem: React.FC<ReplyItemProps> = ({
 }) => {
   const language = useSelector((state: RootState) => state.cart.language);
 
-  useEffect(() => {}, [currentReply]);
+  useEffect(() => { }, [currentReply]);
 
   return (
     <div className="">

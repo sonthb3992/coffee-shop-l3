@@ -119,7 +119,7 @@ const CartPageItem: React.FC<MenuOptionProps> = ({
   }, [userUid, userData]);
 
   return (
-    <div className="card p-4 mb-3">
+    <div className="pt-2 pb-2 cart-item-border">
       <article className="media mb-0">
         <figure className="media-left   ">
           <p className="image is-64x64">
@@ -228,9 +228,8 @@ const CartPageItem: React.FC<MenuOptionProps> = ({
                 <div className="buttons">
                   <button
                     onClick={handleSendComment}
-                    className={`${commentText === '' ? 'is-static' : ''} ${
-                      isBusy ? 'is-loading' : ''
-                    } button mt-1 is-small is-primary`}
+                    className={`${commentText === '' ? 'is-static' : ''} ${isBusy ? 'is-loading' : ''
+                      } button mt-1 is-small is-primary`}
                   >
                     <span className="icon is-small">
                       <i className="fas fa-paper-plane"></i>

@@ -19,21 +19,20 @@ const MenuOptionComponent: React.FC<MenuOptionProps> = ({ option }) => {
 
   const onItemClicked = () => {
     dispatch(setNewItemMenuItem(option));
-    console.log(option);
     navigate('/customize-order');
   };
 
   return (
     <div role="button" onClick={() => onItemClicked()}>
-      <div className="box p-0">
+      <div className="box m-0 p-0">
         <figure className="image is-square block">
           <img src={option.imageUrl} width="270" alt={`${option.nameEn}`}></img>
         </figure>
       </div>
-      <p className="is-size-5-tablet is-size-6 has-text-weight-semibold">
+      <p className="is-size-5-tablet pt-4 is-size-6 has-text-weight-semibold">
         {language === 'en' ? option.nameEn : option.nameVi}
       </p>
-      <p className="is-size-6">
+      <p className="is-size-6 has-text-weight-light has-text-weight-normal-tablet">
         {t('BasePrice')}: ${option.getBasePrice()}
       </p>
     </div>

@@ -11,6 +11,7 @@ import {
   setDoc,
   doc,
   updateDoc,
+  or,
 } from 'firebase/firestore';
 import { app } from './firebase';
 import { taxRate } from './settings';
@@ -33,6 +34,7 @@ class Order {
   useruid: string = '';
   baristaUid: string = '';
   isReviewed: boolean = false;
+  tableId: string = '';
 
   static fromFirestore(
     snapshot: DocumentSnapshot<any>,
@@ -50,6 +52,7 @@ class Order {
     order.useruid = data['useruid'];
     order.isReviewed = data['isReviewed'] ?? false;
     order.baristaUid = data['baristaUid'];
+    order.tableId = data['tableId'] ?? '';
     return order;
   }
 
@@ -73,8 +76,8 @@ class Order {
     return {
       items: JSON.stringify(order.items),
       address: order.address,
-      phone: order.phoneNumber,
-      customerName: order.receiver,
+      phone: order.phoneNumber ?? '',
+      customerName: order.receiver ?? '',
       id: order.id,
       status: order.status,
       price: order.price,
@@ -85,6 +88,7 @@ class Order {
       useruid: order.useruid,
       isReviewed: order.isReviewed,
       baristaUid: order.baristaUid,
+      tableId: order.tableId
     };
   }
 
