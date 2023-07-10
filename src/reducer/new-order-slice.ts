@@ -309,6 +309,8 @@ export const addCurrentItemToCart = (): ThunkAction<
   };
 };
 
+
+
 const calculate = (
   menu: MenuOption | null,
   style: StyleOption | null,
