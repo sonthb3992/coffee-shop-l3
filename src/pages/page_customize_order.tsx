@@ -98,8 +98,7 @@ const CustomizeOrderPage: React.FC = () => {
               className="button is-primary is-fullwidth mt-6"
               onClick={() => {
                 dispatch(addCurrentItemToCart());
-                if (tableId)
-                  navigate("/order-from-table/tableId");
+                navigate("/all-items");
               }}
             >
               {t('AddToCart')}

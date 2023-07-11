@@ -22,24 +22,55 @@ const SingleOrderDisplay: React.FC<SingleOrderDisplayProps> = ({
 
   return (
     <div className="card m-1 p-3 is-flex is-flex-direction-column is-size-7">
-      <span className="icon-text has-text-small mb-1">
-        <span className="icon">
-          <i className="fas fa-home"></i>
+      {
+        item.address !== '' &&
+        <span className="icon-text is-size-6 mb-1">
+          <span className="icon">
+            <i className="fas fa-home"></i>
+          </span>
+          <span>{item.address}</span>
         </span>
-        <span>{item.address}</span>
-      </span>
-      <span className="icon-text mb-1">
-        <span className="icon">
-          <i className="fas fa-user"></i>
+      }
+      {
+        item.receiver !== '' &&
+        <span className="icon-text is-size-6 mb-1">
+          <span className="icon">
+            <i className="fas fa-user"></i>
+          </span>
+          <span>{item.receiver}</span>
         </span>
-        <span>{item.receiver}</span>
-      </span>
-      <span className="icon-text is-size-7">
-        <span className="icon">
-          <i className="fas fa-phone"></i>
+      }
+      {
+        item.phoneNumber !== '' &&
+        <span className="icon-text is-size-6">
+          <span className="icon">
+            <i className="fas fa-phone"></i>
+          </span>
+          <span>{item.phoneNumber}</span>
         </span>
-        <span>{item.phoneNumber}</span>
+      }
+      {
+        item.tableId !== '' &&
+        <span className="icon-text is-size-6">
+          <span className="icon">
+            <i className="fa-solid fa-chair"></i>
+          </span>
+          <span>{item.tableId}</span>
+        </span>
+      }
+      <span className="icon-text is-size-6">
+        <span className="icon">
+          <i className="fa-solid fa-mug-hot"></i>          </span>
+        <span>Total: {item.itemcount} items</span>
       </span>
+      <span className="icon-text is-size-6">
+        <span className="icon">
+          <i className="fa-solid fa-clock"></i>
+        </span>
+        <span>Time: {item.placeTime.toLocaleTimeString()}</span>
+      </span>
+
+
       <div className="field is-grouped is-flex is-justify-content-flex-end">
         <p className="control">
           {item.status === 0 && userData?.role === 'staff' && (

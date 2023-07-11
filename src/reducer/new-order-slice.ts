@@ -136,6 +136,9 @@ const newItemSlice = createSlice({
         state.quantity
       );
     },
+    clearSelectedToppings: (state, action: PayloadAction) => {
+      state.selectedToppings = [];
+    },
     fetchNewOrderSuccess: (state, action: PayloadAction<MenuOption[]>) => {
       state.loading = false;
     },
@@ -153,6 +156,7 @@ export const {
   setAvailableToppings,
   setSelectedSize,
   setSelectedStyle,
+  clearSelectedToppings,
   setQuantity,
   toggleTopping,
   fetchNewOrderSuccess,
@@ -306,6 +310,9 @@ export const addCurrentItemToCart = (): ThunkAction<
     );
 
     dispatch(addItemToCart(newOrder));
+    dispatch(setSelectedSize(null));
+    dispatch(setSelectedStyle(null));
+    dispatch(clearSelectedToppings());
   };
 };
 

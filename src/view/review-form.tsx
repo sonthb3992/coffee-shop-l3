@@ -96,12 +96,11 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 
   return (
     <div
-      className={`${isModal ? 'modal' : ''} ${
-        isModal && actived ? 'is-active' : ''
-      }`}
+      className={`${isModal ? 'modal' : ''} ${isModal && actived ? 'is-active' : ''
+        }`}
     >
       {isModal && <div className="modal-background"></div>}
-      <div className="modal-card card">
+      <div className="modal-card card m-0">
         {isModal && (
           <header className="modal-card-head">
             <p className="modal-card-title">{t('Review order')}</p>
@@ -142,7 +141,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
           {rating >= 1 && (
             <div className="block">
               <div className="control">
-                <label className="radio">
+                <label className="radio mr-3">
                   <input
                     type="radio"
                     name="answer"
@@ -152,7 +151,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
                   ></input>
                   {' Public my review'}
                 </label>
-                <label className="radio ml-3">
+                <label className="radio ml-0">
                   <input
                     type="radio"
                     name="answer"

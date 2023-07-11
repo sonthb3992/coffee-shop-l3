@@ -8,6 +8,7 @@ import { Order } from '../domain/order';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { or } from 'firebase/firestore';
+import { clearSelectedToppings, setSelectedSize, setSelectedStyle } from './new-order-slice';
 
 interface OrderState {
   language: string;
@@ -91,8 +92,8 @@ export const cartSlice = createSlice({
     },
     setTable: (state, action: PayloadAction<string>) => {
       state.table = action.payload;
-      localStorage.setItem('table', JSON.stringify(action.payload));
-
+      console.log(state.table);
+      localStorage.setItem('table', JSON.stringify(state.table));
     },
     setLanguage: (state, action: PayloadAction<string>) => {
       state.language = action.payload;
@@ -122,10 +123,16 @@ export const cartSlice = createSlice({
     addItemToCart: (state, action: PayloadAction<OrderItem>) => {
       state.orderItems.push(action.payload);
       localStorage.setItem('orders', JSON.stringify(state.orderItems));
+      setSelectedSize(null);
+      setSelectedStyle(null);
+      clearSelectedToppings();
     },
     addItemsToCart: (state, action: PayloadAction<OrderItem[]>) => {
       state.orderItems.push(...action.payload);
       localStorage.setItem('orders', JSON.stringify(state.orderItems));
+      setSelectedSize(null);
+      setSelectedStyle(null);
+      clearSelectedToppings();
     },
     clearCart: (state) => {
       state.orderItems = [];
@@ -144,14 +151,24 @@ export const cartSlice = createSlice({
       state,
       action: PayloadAction<{ id: string; quantity: number }>
     ) => {
+      // Find the index of the order item in the state array
       const index = state.orderItems.findIndex(
         (order) => order.id === action.payload.id
       );
+
+      // Output the index for debugging purposes
+      console.log({ index });
+
+      // If the order item is found in the array
       if (index !== -1) {
+        // Update the quantity of the order item
         state.orderItems[index].quantity = action.payload.quantity;
+
+        // Update the localStorage with the updated order items
         localStorage.setItem('orders', JSON.stringify(state.orderItems));
       }
-    },
+    }
+
   },
 });
 
@@ -202,6 +219,8 @@ export const placeOrder = (): ThunkAction<
     order.itemcount = 0;
     order.items.forEach((i) => (order.itemcount += i.quantity!));
     order.useruid = user !== null ? user.uid : '';
+
+    console.log({ order });
 
     var s = await Order.pushToFirebase(order);
     if (s === 'success') {

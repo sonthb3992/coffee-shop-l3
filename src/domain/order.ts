@@ -53,6 +53,12 @@ class Order {
     order.isReviewed = data['isReviewed'] ?? false;
     order.baristaUid = data['baristaUid'];
     order.tableId = data['tableId'] ?? '';
+    order.itemcount = data['itemcount'] ?? 0;
+    order.placeTime = data['placeTime'].toDate();
+    order.confirmTime = data['confirmTime'].toDate();
+    order.processTime = data['processTime'].toDate();
+    order.completeTime = data['completeTime'].toDate();
+    order.cancelTime = data['cancelTime']?.toDate();
     return order;
   }
 
@@ -88,7 +94,8 @@ class Order {
       useruid: order.useruid,
       isReviewed: order.isReviewed,
       baristaUid: order.baristaUid,
-      tableId: order.tableId
+      tableId: order.tableId,
+      itemcount: order.itemcount
     };
   }
 
