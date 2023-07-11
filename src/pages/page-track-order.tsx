@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 import OrderStatusComponent from '../view/order-status';
 import ReviewForm from '../view/review-form';
 import { useAppSelector } from '../reducer/hook';
+import { GetReviewsOfOrder, Review } from '../domain/review';
+import ReviewItem from '../view/review-item';
 
 const TrackOrderPage: React.FC = () => {
   const { orderId } = useParams();
@@ -15,10 +17,15 @@ const TrackOrderPage: React.FC = () => {
   const table = useAppSelector((state) => state.cart.table);
 
   const [order, setOrder] = useState<Order | null>();
+  const [reviews, setReviews] = useState<Review[]>([]);
 
   const isOrderAtTable = (): boolean => {
     return table !== null && table !== '';
   }
+  const fetchReviews = async (orderUid: string) => {
+    const result = await GetReviewsOfOrder(orderUid);
+    setReviews(result);
+  };
 
   useEffect(() => {
     const fetchMenuOptions = async () => {
@@ -31,6 +38,8 @@ const TrackOrderPage: React.FC = () => {
       }
     };
 
+    if (orderId)
+      fetchReviews(orderId);
     fetchMenuOptions();
   }, [orderId]);
 
@@ -179,7 +188,12 @@ const TrackOrderPage: React.FC = () => {
                 <ReviewForm isModal={false} order={order}></ReviewForm>
               )}
               {order && order.isReviewed && (
-                <p>Thank you! You have reviewed this order.</p>
+                <>
+                  <p>Thank you! You have reviewed this order.</p>
+                  {reviews.map((option) => (
+                    <ReviewItem elevated={false} review={option} />
+                  ))}
+                </>
               )}
             </div>
           </div>
