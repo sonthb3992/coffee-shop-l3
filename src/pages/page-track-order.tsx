@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import OrderStatusComponent from '../view/order-status';
 import ReviewForm from '../view/review-form';
 import { useAppSelector } from '../reducer/hook';
-import { tab } from '@testing-library/user-event/dist/tab';
 
 const TrackOrderPage: React.FC = () => {
   const { orderId } = useParams();
@@ -20,7 +19,6 @@ const TrackOrderPage: React.FC = () => {
   const isOrderAtTable = (): boolean => {
     return table !== null && table !== '';
   }
-
 
   useEffect(() => {
     const fetchMenuOptions = async () => {
@@ -181,7 +179,7 @@ const TrackOrderPage: React.FC = () => {
                 <ReviewForm isModal={false} order={order}></ReviewForm>
               )}
               {order && order.isReviewed && (
-                <p>Thank you!. You have reviewed this order.</p>
+                <p>Thank you! You have reviewed this order.</p>
               )}
             </div>
           </div>
