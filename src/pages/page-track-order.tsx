@@ -33,15 +33,15 @@ const TrackOrderPage: React.FC = () => {
         setOrder(value);
       });
       setOrder(a?.order);
-      if (a?.order?.status && a?.order?.status > 3) {
-        a.unsub();
-      }
+      // if (a?.order?.status && a?.order?.status > 3) {
+      //   a.unsub();
+      // }
     };
 
     if (orderId)
       fetchReviews(orderId);
     fetchMenuOptions();
-  }, [orderId]);
+  }, [order, orderId]);
 
   return (
     <section className="section pt-3">
