@@ -78,7 +78,7 @@ const SingleOrderDisplay: React.FC<SingleOrderDisplayProps> = ({
               Confirm
             </button>
           )}
-          {item.status === 1 && userData?.role === 'barista' && (
+          {item.status === 1 && userData?.role !== 'customer' && (
             <button
               className="button is-link is-small"
               onClick={nextStepClickWithBaristaUid}
