@@ -1,8 +1,14 @@
 // cartSlice.ts
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { OrderItem } from '../domain/selected_item';
+import { Action, createSlice, PayloadAction, ThunkAction } from '@reduxjs/toolkit';
+import { calculatePrice, OrderItem } from '../domain/selected_item';
 import { User } from 'firebase/auth';
 import { auth } from '../domain/firebase';
+import { RootState } from './root-reducer';
+import { Order } from '../domain/order';
+import { useNavigate } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
+import { or } from 'firebase/firestore';
+import { clearSelectedToppings, setSelectedSize, setSelectedStyle } from './new-order-slice';
 
 interface OrderState {
   language: string;
@@ -13,6 +19,7 @@ interface OrderState {
   customer_name: string;
   user: User | null;
   userRole: string;
+  table: string | null;
 }
 
 const isInputValid = (
@@ -54,6 +61,9 @@ const initialState: OrderState = {
   ),
   user: auth.currentUser,
   userRole: '',
+  table: localStorage.getItem('table')
+    ? JSON.parse(localStorage.getItem('table')!)
+    : '',
 };
 
 export const cartSlice = createSlice({
@@ -79,6 +89,11 @@ export const cartSlice = createSlice({
         state.customer_name
       );
       localStorage.setItem('address', JSON.stringify(state.address));
+    },
+    setTable: (state, action: PayloadAction<string>) => {
+      state.table = action.payload;
+      console.log(state.table);
+      localStorage.setItem('table', JSON.stringify(state.table));
     },
     setLanguage: (state, action: PayloadAction<string>) => {
       state.language = action.payload;
@@ -108,10 +123,16 @@ export const cartSlice = createSlice({
     addItemToCart: (state, action: PayloadAction<OrderItem>) => {
       state.orderItems.push(action.payload);
       localStorage.setItem('orders', JSON.stringify(state.orderItems));
+      setSelectedSize(null);
+      setSelectedStyle(null);
+      clearSelectedToppings();
     },
     addItemsToCart: (state, action: PayloadAction<OrderItem[]>) => {
       state.orderItems.push(...action.payload);
       localStorage.setItem('orders', JSON.stringify(state.orderItems));
+      setSelectedSize(null);
+      setSelectedStyle(null);
+      clearSelectedToppings();
     },
     clearCart: (state) => {
       state.orderItems = [];
@@ -130,16 +151,88 @@ export const cartSlice = createSlice({
       state,
       action: PayloadAction<{ id: string; quantity: number }>
     ) => {
+      // Find the index of the order item in the state array
       const index = state.orderItems.findIndex(
         (order) => order.id === action.payload.id
       );
+
+      // Output the index for debugging purposes
+      console.log({ index });
+
+      // If the order item is found in the array
       if (index !== -1) {
+        // Update the quantity of the order item
         state.orderItems[index].quantity = action.payload.quantity;
+
+        // Update the localStorage with the updated order items
         localStorage.setItem('orders', JSON.stringify(state.orderItems));
       }
-    },
+    }
+
   },
 });
+
+
+const calculateSubTotal = (items: OrderItem[]) => {
+  var total = 0;
+  items.forEach((i) => (total += calculatePrice(i)));
+  return total;
+};
+
+const calculateTax = (subtotal: number) => {
+  return subtotal * 0.075;
+};
+
+const calculateTotal = (items: OrderItem[]) => {
+  var total = calculateSubTotal(items);
+  total += calculateTax(total);
+  return total;
+};
+
+
+export const placeOrder = (): ThunkAction<
+  Promise<false | string>,
+  RootState,
+  unknown,
+  Action<any>
+> => {
+  return async (dispatch, getState) => {
+
+    const address = getState().cart.address;
+    const phone = getState().cart.phone;
+    const items = getState().cart.orderItems;
+    const customerName = getState().cart.customer_name;
+    const inputValid = getState().cart.inputValid;
+    const user = getState().cart.user;
+    const table = getState().cart.table ?? '';
+
+    var order = new Order();
+    order.address = address;
+    order.receiver = customerName;
+    order.phoneNumber = phone;
+    order.items = items;
+    order.tableId = table;
+    order.status = 0;
+    order.price = calculateTotal(items);
+    order.id = uuidv4().toLowerCase();
+    order.placeTime = new Date(Date.now());
+    order.itemcount = 0;
+    order.items.forEach((i) => (order.itemcount += i.quantity!));
+    order.useruid = user !== null ? user.uid : '';
+
+    console.log({ order });
+
+    var s = await Order.pushToFirebase(order);
+    if (s === 'success') {
+      dispatch(clearCart());
+      return order.id;
+    } else {
+      alert(s);
+      return false;
+    }
+  };
+};
+
 
 // export const { setOrderCount } = cartSlice.actions;
 export const {
@@ -147,6 +240,7 @@ export const {
   addItemsToCart,
   setAddress,
   setPhone,
+  setTable,
   setCustomerName,
   deleteFromCart,
   setItemQuantity,

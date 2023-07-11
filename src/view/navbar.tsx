@@ -71,7 +71,7 @@ const Navbar: React.FC = () => {
     <div></div>
   ) : (
     <nav
-      className="navbar is-spaced is-light"
+      className="navbar is-spaced is-light is-fixed-top has-shadow"
       role="navigation"
       aria-label="main navigation"
     >
@@ -184,9 +184,8 @@ const Navbar: React.FC = () => {
           </div>
           {isBarista() && (
             <span
-              className={`tag is-large ${
-                (userData!.currentRating ?? 0) >= 4 ? 'is-primary' : 'is-danger'
-              }`}
+              className={`tag is-large ${(userData!.currentRating ?? 0) >= 4 ? 'is-primary' : 'is-danger'
+                }`}
             >{`Barista Rating: ${userData!.currentRating?.toFixed(2)}`}</span>
           )}
           {user && <UserInfoComponent user={user}></UserInfoComponent>}

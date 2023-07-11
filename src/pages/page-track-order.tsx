@@ -6,13 +6,21 @@ import CartPageItem from '../view/cart-item';
 import { useTranslation } from 'react-i18next';
 import OrderStatusComponent from '../view/order-status';
 import ReviewForm from '../view/review-form';
+import { useAppSelector } from '../reducer/hook';
+import { tab } from '@testing-library/user-event/dist/tab';
 
 const TrackOrderPage: React.FC = () => {
   const { orderId } = useParams();
 
   const { t } = useTranslation();
+  const table = useAppSelector((state) => state.cart.table);
 
   const [order, setOrder] = useState<Order | null>();
+
+  const isOrderAtTable = (): boolean => {
+    return table !== null && table !== '';
+  }
+
 
   useEffect(() => {
     const fetchMenuOptions = async () => {
@@ -29,74 +37,73 @@ const TrackOrderPage: React.FC = () => {
   }, [orderId]);
 
   return (
-    <section className="section">
+    <section className="section pt-3">
       <div className="container">
         <div className="columns is-desktop">
-          <div className="column is-half p-3">
-            <p className="title is-4 pt-5">{t('Delivery')}</p>
-            <div className="field">
-              <label className="label">{t('ReceiverName')}</label>
-              <div className="control has-icons-left has-icons-right">
-                <input
-                  readOnly
-                  className={`input is-static ${
-                    order?.receiver ? 'is-success' : 'is-danger'
-                  }`}
-                  type="text"
-                  value={order?.receiver}
-                ></input>
-                <span className="icon is-small is-left">
-                  <i className="fas fa-user"></i>
-                </span>
-              </div>
-            </div>
+          <div className="column is-half p-3 cart-item-border">
+            {
+              (!isOrderAtTable()) &&
+              <>
+                <p className="title is-4 pt-5">{t('Delivery')}</p>
+                <div className="field">
+                  <label className="label">{t('ReceiverName')}</label>
+                  <div className="control has-icons-left has-icons-right">
+                    <input
+                      readOnly
+                      className={`input is-static ${order?.receiver ? 'is-success' : 'is-danger'
+                        }`}
+                      type="text"
+                      value={order?.receiver}
+                    ></input>
+                    <span className="icon is-small is-left">
+                      <i className="fas fa-user"></i>
+                    </span>
+                  </div>
+                </div>
 
-            <div className="field">
-              <label className="label">{t('Phone number')}</label>
-              <div className="control has-icons-left has-icons-right">
-                <input
-                  readOnly
-                  className={`input is-static ${
-                    order?.phoneNumber ? 'is-success' : 'is-danger'
-                  }`}
-                  type="text"
-                  value={order?.phoneNumber}
-                  placeholder="enter phone number"
-                ></input>
-                <span className="icon is-small is-left">
-                  <i className="fas fa-phone"></i>
-                </span>
-              </div>
-            </div>
+                <div className="field">
+                  <label className="label">{t('Phone number')}</label>
+                  <div className="control has-icons-left has-icons-right">
+                    <input
+                      readOnly
+                      className={`input is-static ${order?.phoneNumber ? 'is-success' : 'is-danger'
+                        }`}
+                      type="text"
+                      value={order?.phoneNumber}
+                      placeholder="enter phone number"
+                    ></input>
+                    <span className="icon is-small is-left">
+                      <i className="fas fa-phone"></i>
+                    </span>
+                  </div>
+                </div>
 
-            <div className="field">
-              <label className="label">{t('Address')}</label>
-              <div className="control has-icons-left has-icons-right">
-                <input
-                  readOnly
-                  className={`input is-static ${
-                    order?.address ? 'is-success' : 'is-danger'
-                  }`}
-                  type="email"
-                  value={order?.address}
-                  placeholder="enter delivery address"
-                ></input>
-                <span className="icon is-small is-left">
-                  <i className="fas fa-map"></i>
-                </span>
-              </div>
-              {/* {(!address &&
-                                <p className="help is-danger">Please enter a valid delivery address</p>)} */}
-            </div>
-
-            <p className="title is-4 pt-5">{t('Order status')}</p>
+                <div className="field">
+                  <label className="label">{t('Address')}</label>
+                  <div className="control has-icons-left has-icons-right">
+                    <input
+                      readOnly
+                      className={`input is-static ${order?.address ? 'is-success' : 'is-danger'
+                        }`}
+                      type="email"
+                      value={order?.address}
+                      placeholder="enter delivery address"
+                    ></input>
+                    <span className="icon is-small is-left">
+                      <i className="fas fa-map"></i>
+                    </span>
+                  </div>
+                  {/* {(!address &&                           <p className="help is-danger">Please enter a valid delivery address</p>)} */}
+                </div>
+              </>
+            }
+            <p className={`title is-4 ${isOrderAtTable() ? "" : "pt-5"}`}>{t('Order status')}</p>
             {order && (
               <OrderStatusComponent order={order}></OrderStatusComponent>
             )}
           </div>
-
           <div className="column is-half p-3">
-            <div className="card p-5">
+            <div className={(table !== null && table !== '') ? "" : "card p-5"}>
               <div className="level">
                 <div className="level-left">
                   <p className="title is-4">{t('Selected Items')}</p>
@@ -111,13 +118,15 @@ const TrackOrderPage: React.FC = () => {
                     <React.Fragment key={item.id}>
                       <CartPageItem
                         canEditQuantity={false}
-                        canReview={true}
+                        canReview={!isOrderAtTable()}
                         canDelete={false}
                         option={item}
                       ></CartPageItem>
                     </React.Fragment>
                   ))}
               </div>
+
+              {/*               
               {order && (
                 <div className="level">
                   <div className="level-left">
@@ -156,9 +165,10 @@ const TrackOrderPage: React.FC = () => {
                     </strong>
                   </div>
                 </div>
-              )}
+              )} */}
 
               {order && (order.status === 1 || order.status === 0) && (
+                !isOrderAtTable() &&
                 <button
                   className="button is-fullwidth is-danger"
                   onClick={() => Order.cancelOrder(order)}

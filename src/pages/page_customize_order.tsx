@@ -18,6 +18,7 @@ import { Review } from '../domain/review';
 const CustomizeOrderPage: React.FC = () => {
   const menuOption = useAppSelector((state) => state.newItem.menuItem);
   const language = useAppSelector((state) => state.cart.language);
+  const tableId = useAppSelector((state) => state.cart.table);
 
   const hasStyles = useAppSelector((state) => state.newItem.hasStyles);
   const hasSizes = useAppSelector((state) => state.newItem.hasSizes);
@@ -95,7 +96,10 @@ const CustomizeOrderPage: React.FC = () => {
 
             <button
               className="button is-primary is-fullwidth mt-6"
-              onClick={() => dispatch(addCurrentItemToCart())}
+              onClick={() => {
+                dispatch(addCurrentItemToCart());
+                navigate("/all-items");
+              }}
             >
               {t('AddToCart')}
             </button>

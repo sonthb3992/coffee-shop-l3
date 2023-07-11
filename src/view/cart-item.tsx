@@ -46,6 +46,7 @@ const CartPageItem: React.FC<MenuOptionProps> = ({
   };
 
   const handleOnQuantityChanged = (value: number) => {
+    console.log({ id: item.id!, quantity: value });
     dispatch(setItemQuantity({ id: item.id!, quantity: value }));
   };
 
@@ -119,7 +120,7 @@ const CartPageItem: React.FC<MenuOptionProps> = ({
   }, [userUid, userData]);
 
   return (
-    <div className="card p-4 mb-3">
+    <div className="pt-2 pb-2 cart-item-border">
       <article className="media mb-0">
         <figure className="media-left   ">
           <p className="image is-64x64">
@@ -129,9 +130,10 @@ const CartPageItem: React.FC<MenuOptionProps> = ({
             ></img>
           </p>
         </figure>
-        <div className="media-content">
+        <div className="media-content cart-item-level-right">
           <div className="content">
-            <p>
+            <div>
+              {/* <p> */}
               <div className="level m-0">
                 <div className="level-left">
                   <span>
@@ -145,7 +147,7 @@ const CartPageItem: React.FC<MenuOptionProps> = ({
                     )}
                   </span>
                 </div>
-                <div className="level-right">
+                <div className={`level-right mt-0`}>
                   <strong className="has-text-primary">
                     ${calculatePrice(item).toFixed(2)}
                   </strong>
@@ -156,64 +158,69 @@ const CartPageItem: React.FC<MenuOptionProps> = ({
                   ? getDescription(item)
                   : getDescriptionVi(item)}
               </small>
-            </p>
-          </div>
-          <nav className="level">
-            <div className="level-left">
-              {canEditQuantity && (
-                <QuantitySelector
-                  min={1}
-                  max={99}
-                  disabled={!canEditQuantity}
-                  current={item.quantity}
-                  onQuantityChanged={(value) => handleOnQuantityChanged(value)}
-                ></QuantitySelector>
-              )}
-              {canReview && (
-                <nav className="level is-mobile">
-                  <div className="level-left">
-                    <div
-                      role="button"
-                      onClick={() => handleReorder()}
-                      className="level-item has-text-decoration-none has-cursor-hand has-text-info"
-                      title="Reorder"
-                    >
-                      <span className="icon is-small">
-                        <i className="fa-solid fa-rotate-right"></i>
-                      </span>
-                    </div>
-                    <div
-                      role="button"
-                      onClick={() => handleLikeToggle(liked)}
-                      className="level-item has-text-decoration-none"
-                      title="Like"
-                    >
-                      <span
-                        className="icon is-small has-cursor-hand"
-                        title="Add to favorite"
-                      >
-                        {liked ? (
-                          <i className="fa-solid fa-heart has-text-danger"></i>
-                        ) : (
-                          <i className="fa-regular fa-heart has-text-info"></i>
-                        )}
-                      </span>
-                    </div>
-                    <div
-                      role="button"
-                      onClick={handleCommentToggle}
-                      className="level-item has-text-decoration-none has-text-danger-dark"
-                      title="Comment"
-                    >
-                      <span className="icon is-small">
-                        <i className="fa-regular fa-message"></i>
-                      </span>
-                    </div>
-                  </div>
-                </nav>
-              )}
             </div>
-          </nav>
+
+            {/* </p> */}
+            <nav className="level is-mobile">
+              <div className="level-left">
+                {canEditQuantity && (
+                  <QuantitySelector
+                    min={1}
+                    max={99}
+                    disabled={!canEditQuantity}
+                    current={item.quantity}
+                    onQuantityChanged={(value) => handleOnQuantityChanged(value)}
+                  ></QuantitySelector>
+                )}
+                {canReview && (
+                  <nav className="level is-mobile">
+                    <div className="level-left">
+                      <div
+                        role="button"
+                        onClick={() => handleReorder()}
+                        className="level-item has-text-decoration-none has-cursor-hand has-text-info"
+                        title="Reorder"
+                      >
+                        <span className="icon is-small">
+                          <i className="fa-solid fa-rotate-right"></i>
+                        </span>
+                      </div>
+                      <div
+                        role="button"
+                        onClick={() => handleLikeToggle(liked)}
+                        className="level-item has-text-decoration-none"
+                        title="Like"
+                      >
+                        <span
+                          className="icon is-small has-cursor-hand"
+                          title="Add to favorite"
+                        >
+                          {liked ? (
+                            <i className="fa-solid fa-heart has-text-danger"></i>
+                          ) : (
+                            <i className="fa-regular fa-heart has-text-info"></i>
+                          )}
+                        </span>
+                      </div>
+                      <div
+                        role="button"
+                        onClick={handleCommentToggle}
+                        className="level-item has-text-decoration-none has-text-danger-dark"
+                        title="Comment"
+                      >
+                        <span className="icon is-small">
+                          <i className="fa-regular fa-message"></i>
+                        </span>
+                      </div>
+                    </div>
+                  </nav>
+                )}
+              </div>
+            </nav>
+
+
+          </div>
+
           {showComment && (
             <div className="content">
               <div>
@@ -228,9 +235,8 @@ const CartPageItem: React.FC<MenuOptionProps> = ({
                 <div className="buttons">
                   <button
                     onClick={handleSendComment}
-                    className={`${commentText === '' ? 'is-static' : ''} ${
-                      isBusy ? 'is-loading' : ''
-                    } button mt-1 is-small is-primary`}
+                    className={`${commentText === '' ? 'is-static' : ''} ${isBusy ? 'is-loading' : ''
+                      } button mt-1 is-small is-primary`}
                   >
                     <span className="icon is-small">
                       <i className="fas fa-paper-plane"></i>

@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 import Navbar from './view/navbar';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import CustomizeOrderPage from './pages/page_customize_order';
 import SelectionPage from './pages/page-selection';
 import { Provider } from 'react-redux';
@@ -24,13 +24,17 @@ import BaristaOrderPage from './pages/page-barista-order';
 import BaristaOrderHistory from './pages/page-completed-order';
 import TaskPage from './pages/page-task';
 import ChallengesPage from './pages/page-challenges';
+import TableOrderSelectionPage from './pages/page-selection-table';
+import { NavbarDisplayer } from './view/navbar-displayer';
+import { FooterDisplayer } from './view/footer-displayer';
 
 const App: React.FC = () => {
   return (
     <Provider store={store}>
       <I18nextProvider i18n={i18n}>
         <Router>
-          <Navbar />
+          {/* <Navbar /> */}
+          <NavbarDisplayer></NavbarDisplayer>
           <Routes>
             <Route
               path="/login"
@@ -60,13 +64,15 @@ const App: React.FC = () => {
             <Route path="/challenges" element={<ChallengesPage />}></Route>
             <Route path="/track-order" element={<CustomerTrackPage />} />
             <Route path="/all-items/:filter?" element={<SelectionPage />} />
+            <Route path="/order-from-table/:tableId/:filter?" element={<TableOrderSelectionPage />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/tasks" element={<TaskPage />} />
             <Route path="/user-profile" element={<UserProfilePage />} />
             <Route path="/" element={<PageHome />} />
             {<Route path="*" element={<PageNotFound />} />}{' '}
           </Routes>
-          {<Footer />}
+          {/* {<Footer />} */}
+          <FooterDisplayer></FooterDisplayer>
         </Router>
       </I18nextProvider>
     </Provider>
