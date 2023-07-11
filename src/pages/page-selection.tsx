@@ -16,6 +16,7 @@ const SelectionPage: React.FC = () => {
   );
   const [selectedMenuOptionType, setSelectedMenuOptionType] =
     useState<MenuItemTypeOption | null>(null);
+
   const selectedMenuOptionTypeChanged = (
     selected: MenuItemTypeOption | null
   ) => {
@@ -31,13 +32,14 @@ const SelectionPage: React.FC = () => {
           result.find(
             (type) => type.nameEn.toLowerCase() === filter.toLowerCase()
           ) || null;
+
         if (filtered) {
           setSelectedMenuOptionType(filtered);
         }
       }
     };
     fetchMenuOptionTypes();
-  }, [filter]);
+  }, [filter, selectedMenuOptionType]);
 
   return (
     <section className="section">
@@ -46,9 +48,8 @@ const SelectionPage: React.FC = () => {
           <ul>
             <li className={selectedMenuOptionType === null ? 'is-active' : ''}>
               <button
-                className={`button is-fullwidth ${
-                  selectedMenuOptionType === null ? 'is-primary' : 'is-white'
-                }`}
+                className={`button is-fullwidth ${selectedMenuOptionType === null ? 'is-primary' : 'is-white'
+                  }`}
                 onClick={() => selectedMenuOptionTypeChanged(null)}
               >
                 {t('All items')}
@@ -58,11 +59,10 @@ const SelectionPage: React.FC = () => {
               menuOptionTypes?.map((e) => (
                 <li key={e.nameEn}>
                   <button
-                    className={`button is-fullwidth ${
-                      selectedMenuOptionType?.nameEn === e.nameEn
-                        ? 'is-primary'
-                        : 'is-white'
-                    }`}
+                    className={`button is-fullwidth ${selectedMenuOptionType?.nameEn === e.nameEn
+                      ? 'is-primary'
+                      : 'is-white'
+                      }`}
                     onClick={() => selectedMenuOptionTypeChanged(e)}
                   >
                     {language === 'en' ? e.nameEn : e.nameVi}
