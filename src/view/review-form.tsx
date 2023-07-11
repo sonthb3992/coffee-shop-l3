@@ -29,6 +29,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   const [isPublic, setIsPublic] = useState<boolean>(true);
   const [isSending, setIsSending] = useState<boolean>(false);
   const user = useSelector((state: RootState) => state.cart.user);
+  const table = useSelector((state: RootState) => state.cart.table);
 
   const { t } = useTranslation();
 
@@ -56,23 +57,27 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     setIsPublic(ev.target.value === 'public');
   };
 
+  const isOrderAtTable = (): boolean => {
+    return table !== null && table !== '';
+  }
+
   const sendReview = async () => {
     if (rating === 0) {
       console.log('Rating is 0. Please rate your order.'); // Debugging statement
       alert('Please rate your order.');
       return;
     }
-    if (user) {
+    if (user || isOrderAtTable()) {
       const review: Review = {
         orderId: order.id,
         parentId: '',
         rating: rating,
-        userUid: user?.uid,
+        userUid: user?.uid ?? "OrderAtTableUser",
         comment: comment,
         uid: '',
         isPublic: isPublic,
-        reviewerName: user.displayName ?? 'Anonymous user',
-        reviewerImageUrl: user.photoURL ?? '',
+        reviewerName: user?.displayName ?? 'Anonymous user',
+        reviewerImageUrl: user?.photoURL ?? '',
         reviewDateTime: new Date(Date.now()),
       };
       setIsSending(true);
