@@ -71,7 +71,7 @@ const Navbar: React.FC = () => {
     <div></div>
   ) : (
     <nav
-      className="navbar is-spaced is-light is-fixed-top has-shadow"
+      className="navbar is-light is-fixed-top has-shadow"
       role="navigation"
       aria-label="main navigation"
     >
