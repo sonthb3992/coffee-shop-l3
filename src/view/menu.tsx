@@ -26,23 +26,26 @@ const Menu: React.FC<MenuProps> = ({ chunkSize, typeFilter: filter }) => {
     <div className="container">
       <div className="columns is-mobile is-multiline">
         {chunkSize === 4 &&
-          menuOptions.map((option) => (
-            <div
-              key={option.nameEn}
-              className="column is-half-mobile is-one-thirds-tablet is-one-quarter-desktop"
-            >
-              <MenuOptionComponent option={option} />
-            </div>
-          ))}
+          menuOptions
+            .filter((option) => option.type === filter || filter === '')
+            .map((option) => (
+              <div
+                key={option.nameEn}
+                className="column is-half-mobile is-one-thirds-tablet is-one-quarter-desktop"
+              >
+                <MenuOptionComponent option={option} />
+              </div>
+            ))}
         {chunkSize === 3 &&
-          menuOptions.map((option) => (
-            <div
-              key={option.nameEn}
-              className="column is-half-mobile is-one-thirds-tablet"
-            >
-              <MenuOptionComponent option={option} />
-            </div>
-          ))}
+          menuOptions.filter((option) => option.type === filter || filter === '')
+            .map((option) => (
+              <div
+                key={option.nameEn}
+                className="column is-half-mobile is-one-thirds-tablet"
+              >
+                <MenuOptionComponent option={option} />
+              </div>
+            ))}
       </div>
     </div>
   );
