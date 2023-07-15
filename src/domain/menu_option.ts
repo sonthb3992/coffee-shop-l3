@@ -202,12 +202,12 @@ class MenuOption extends OptionBase {
         MenuOption.fromFirestore(doc, undefined)
       );
 
-      const unsubscribe = onSnapshot(q, (updatedSnapshot) => {
-        const updatedMenuOptions = updatedSnapshot.docs.map((doc) =>
-          MenuOption.fromFirestore(doc, undefined)
-        );
-        MenuOption.allMenuOptions = updatedMenuOptions;
-      });
+      // const unsubscribe = onSnapshot(q, (updatedSnapshot) => {
+      //   const updatedMenuOptions = updatedSnapshot.docs.map((doc) =>
+      //     MenuOption.fromFirestore(doc, undefined)
+      //   );
+      //   MenuOption.allMenuOptions = updatedMenuOptions;
+      // });
 
       MenuOption.allMenuOptions = menuOptions;
 

@@ -105,12 +105,12 @@ class SizeOption extends OptionBase {
         SizeOption.fromFirestore(doc)
       );
 
-      const unsubscribe = onSnapshot(sizeOptionRef, (updatedSnapshot) => {
-        const updatedSizeOptions = updatedSnapshot.docs.map((doc) =>
-          SizeOption.fromFirestore(doc)
-        );
-        SizeOption.allSizeOptions = updatedSizeOptions;
-      });
+      // const unsubscribe = onSnapshot(sizeOptionRef, (updatedSnapshot) => {
+      //   const updatedSizeOptions = updatedSnapshot.docs.map((doc) =>
+      //     SizeOption.fromFirestore(doc)
+      //   );
+      //   SizeOption.allSizeOptions = updatedSizeOptions;
+      // });
 
       SizeOption.allSizeOptions = sizeOptions;
 

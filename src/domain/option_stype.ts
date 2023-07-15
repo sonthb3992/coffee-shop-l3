@@ -113,12 +113,12 @@ class StyleOption extends OptionBase {
         StyleOption.fromFirestore(doc)
       );
 
-      const unsubscribe = onSnapshot(styleOptionRef, (updatedSnapshot) => {
-        const updatedStyleOptions = updatedSnapshot.docs.map((doc) =>
-          StyleOption.fromFirestore(doc)
-        );
-        StyleOption.allStyleOptions = updatedStyleOptions;
-      });
+      // const unsubscribe = onSnapshot(styleOptionRef, (updatedSnapshot) => {
+      //   const updatedStyleOptions = updatedSnapshot.docs.map((doc) =>
+      //     StyleOption.fromFirestore(doc)
+      //   );
+      //   StyleOption.allStyleOptions = updatedStyleOptions;
+      // });
 
       StyleOption.allStyleOptions = styleOptions;
 

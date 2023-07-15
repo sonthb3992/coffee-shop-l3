@@ -136,12 +136,12 @@ class ToppingOption extends OptionBase {
         ToppingOption.fromFirestore(doc)
       );
 
-      const unsubscribe = onSnapshot(_query, (updatedSnapshot) => {
-        const updatedToppingOptions = updatedSnapshot.docs.map((doc) =>
-          ToppingOption.fromFirestore(doc)
-        );
-        ToppingOption.allToppingOptions = updatedToppingOptions;
-      });
+      // const unsubscribe = onSnapshot(_query, (updatedSnapshot) => {
+      //   const updatedToppingOptions = updatedSnapshot.docs.map((doc) =>
+      //     ToppingOption.fromFirestore(doc)
+      //   );
+      //   ToppingOption.allToppingOptions = updatedToppingOptions;
+      // });
 
       ToppingOption.allToppingOptions = toppingOptions;
 
